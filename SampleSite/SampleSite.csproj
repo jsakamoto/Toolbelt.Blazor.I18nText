@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RunCommand>dotnet</RunCommand>
+    <RunArguments>blazor serve</RunArguments>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" PrivateAssets="all" />
+
+    <DotNetCliToolReference Include="Microsoft.AspNetCore.Blazor.Cli" Version="0.7.0" />
+    <DotNetCliToolReference Include="Toolbelt.Blazor.I18nTextCompiler" Version="1.0.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="i18ntext\%40types\" />
+    <Folder Include="wwwroot\content\i18ntext\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+  </ItemGroup>
+
+  <Target Name="CompileI18text" BeforeTargets="BeforeBuild">
+    <Exec Command="dotnet i18ntc"></Exec> 
+  </Target>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo test" />
+  </Target>
+</Project>

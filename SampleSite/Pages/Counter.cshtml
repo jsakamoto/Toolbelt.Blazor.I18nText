@@ -1,0 +1,25 @@
+﻿@page "/counter"
+@inject I18nText I18nText
+
+<h1>Counter</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" onclick="@IncrementCount">@Text.ClickMe</button>
+
+@functions{
+
+    Text Text = new Text();
+
+    int currentCount = 0;
+
+    protected override async Task OnInitAsync()
+    {
+        Text = await I18nText.GetTextTableAsync<Text>();
+    }
+
+    void IncrementCount()
+    {
+        currentCount++;
+    }
+}

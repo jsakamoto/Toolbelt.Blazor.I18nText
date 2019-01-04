@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite", "SampleSite\SampleSite.csproj", "{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A36200F0-D306-4B7C-95B7-1299B29091CF}
+	EndGlobalSection
+EndGlobal
