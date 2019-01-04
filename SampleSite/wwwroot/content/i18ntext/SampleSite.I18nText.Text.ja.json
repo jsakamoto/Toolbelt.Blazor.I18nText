@@ -1,6 +1,6 @@
 {
-  "ClickMe": "ここをクリック",
   "HelloWorld": "こんにちは世界!",
-  "GreetingOfJA": "こんにちは",
-  "Exit": "Exit"
+  "Exit": "Exit",
+  "ClickMe": "ここをクリック",
+  "GreetingOfJA": "こんにちは"
 }

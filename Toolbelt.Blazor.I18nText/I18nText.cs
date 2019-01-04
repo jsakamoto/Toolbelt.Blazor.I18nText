@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor;
+using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
@@ -22,6 +24,16 @@ namespace Toolbelt.Blazor.I18nText
         public I18nText(IServiceProvider serviceProvider)
         {
             this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
+            var refThis = new DotNetObjectRef(this);
+            JSRuntime.Current
+                .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis)
+                .ContinueWith(_ => refThis.Dispose());
+        }
+
+        [JSInvokable(nameof(InitLang)), EditorBrowsable(EditorBrowsableState.Never)]
+        public void InitLang(string[] langCodes)
+        {
+            _CurrentLanguage = langCodes.FirstOrDefault() ?? "en";
         }
 
         public string CurrentLanguage => _CurrentLanguage;
@@ -59,8 +71,17 @@ namespace Toolbelt.Blazor.I18nText
 
         private async Task<T> FetchTextTableAsync<T>() where T : class, new()
         {
+            string[] splitLangCode(string lang)
+            {
+                var splitedLang = lang.Split('-');
+                return splitedLang.Length == 1 ? new[] { lang } : new[] { lang, splitedLang[0] };
+            }
+            var langs = new List<string>(capacity: 4);
+            langs.AddRange(splitLangCode(this._CurrentLanguage));
+            langs.AddRange(splitLangCode(this.FallbackLanguage));
+
             var table = default(T);
-            foreach (var lang in new[] { this._CurrentLanguage, this.FallbackLanguage })
+            foreach (var lang in langs)
             {
                 try
                 {
@@ -75,13 +96,11 @@ namespace Toolbelt.Blazor.I18nText
             {
                 table = Activator.CreateInstance<T>();
                 var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public);
-                foreach (var field in fields)
-                {
-                    field.SetValue(table, field.Name);
-                }
+                foreach (var field in fields) field.SetValue(table, field.Name);
             }
 
             return table;
         }
+
     }
 }
