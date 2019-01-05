@@ -16,19 +16,77 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="i18ntext\%40types\" />
-    <Folder Include="wwwroot\content\i18ntext\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
   </ItemGroup>
 
+  <!--
   <Target Name="CompileI18text" BeforeTargets="BeforeBuild">
     <Exec Command="dotnet i18ntc"></Exec> 
   </Target>
+  -->
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="echo test" />
   </Target>
+
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText" AssemblyFile="C:\Projects\my\Lib\Blazor\I18n\Toolbelt.Blazor.I18nTextCompileTask\Toolbelt.Blazor.I18nTextCompileTask\bin\Debug\netstandard2.0\Toolbelt.Blazor.I18nTextCompileTask.dll" />
+
+  <PropertyGroup>
+    <I18nTextFilePattern>i18ntext\**\*.json</I18nTextFilePattern>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(I18nTextFilePattern)">
+      <Link>..\..\..\obj\$(Configuration)\$(TargetFramework)\%(RelativeDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>true</Visible>
+    </Content>
+  </ItemGroup>  
+
+  <ItemGroup>
+    <None Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <None Remove="i18ntext\Text.en.json" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <None Remove="i18ntext\Text.ja.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(I18nTextFilePattern)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="i18ntext\Text.en.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="i18ntext\Text.ja.json" />
+  </ItemGroup>  
+  <ItemGroup>
+    <Watch Include="$(I18nTextFilePattern)" />
+  </ItemGroup>
+
+  <Target Name="CompileI18nText" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <I18nText Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+    <Message Text="---- CompileI18nText ----" />
+    <!--Inputs="@(I18nText)" Outputs="$(TargetPath)">-->
+    <CompileI18nText Include="@(I18nText)" />
+  </Target>
+  <!--
+  dotnet watch msbuild -nologo -t:CompileI18nText -v:n
+  -->
+
 </Project>

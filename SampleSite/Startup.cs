@@ -11,6 +11,7 @@ namespace SampleSite
             services.AddI18nText();
         }
 
+
         public void Configure(IBlazorApplicationBuilder app)
         {
             app.AddComponent<App>("app");
