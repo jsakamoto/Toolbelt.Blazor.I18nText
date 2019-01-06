@@ -3,9 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite", "SampleSite\SampleSite.csproj", "{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleSites", "SampleSites", "{FACC8A0D-2FBC-4BD3-BAF7-9FB9B4A8F18F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientSide", "ClientSide", "{A543073F-76B0-44B5-AFED-85CEB2F80DEB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerSide", "ServerSide", "{897E631A-D89F-4FC5-96BE-847B0B3961F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerSideSampleSite.App", "SampleSites\ServerSideSampleSite\ServerSideSampleSite.App\ServerSideSampleSite.App.csproj", "{3ABB9601-2B39-4414-A3C9-89A2F160C8AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerSideSampleSite.Server", "SampleSites\ServerSideSampleSite\ServerSideSampleSite.Server\ServerSideSampleSite.Server.csproj", "{F5EB627E-0273-49B6-B303-90488197F49A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClientSideSampleSite", "SampleSites\ClientSideSampleSite\ClientSideSampleSite.csproj", "{582729B4-B0E0-4941-BAB2-D65B08EDBD0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,13 +27,28 @@ Global
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.Build.0 = Release|Any CPU
-		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{08412B9D-E7B9-4F38-8C44-B8B8B19FBDD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ABB9601-2B39-4414-A3C9-89A2F160C8AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ABB9601-2B39-4414-A3C9-89A2F160C8AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ABB9601-2B39-4414-A3C9-89A2F160C8AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ABB9601-2B39-4414-A3C9-89A2F160C8AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5EB627E-0273-49B6-B303-90488197F49A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5EB627E-0273-49B6-B303-90488197F49A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5EB627E-0273-49B6-B303-90488197F49A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5EB627E-0273-49B6-B303-90488197F49A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{582729B4-B0E0-4941-BAB2-D65B08EDBD0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{582729B4-B0E0-4941-BAB2-D65B08EDBD0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{582729B4-B0E0-4941-BAB2-D65B08EDBD0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{582729B4-B0E0-4941-BAB2-D65B08EDBD0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A543073F-76B0-44B5-AFED-85CEB2F80DEB} = {FACC8A0D-2FBC-4BD3-BAF7-9FB9B4A8F18F}
+		{897E631A-D89F-4FC5-96BE-847B0B3961F7} = {FACC8A0D-2FBC-4BD3-BAF7-9FB9B4A8F18F}
+		{3ABB9601-2B39-4414-A3C9-89A2F160C8AF} = {897E631A-D89F-4FC5-96BE-847B0B3961F7}
+		{F5EB627E-0273-49B6-B303-90488197F49A} = {897E631A-D89F-4FC5-96BE-847B0B3961F7}
+		{582729B4-B0E0-4941-BAB2-D65B08EDBD0C} = {A543073F-76B0-44B5-AFED-85CEB2F80DEB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36200F0-D306-4B7C-95B7-1299B29091CF}
