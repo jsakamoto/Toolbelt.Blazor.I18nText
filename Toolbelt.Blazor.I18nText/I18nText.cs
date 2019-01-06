@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor;
+using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -20,6 +21,8 @@ namespace Toolbelt.Blazor.I18nText
         private string _CurrentLanguage = "en";
 
         private readonly List<TextTable> TextTables = new List<TextTable>();
+
+        private List<WeakReference<BlazorComponent>> Components = new List<WeakReference<BlazorComponent>>();
 
         public I18nText(IServiceProvider serviceProvider)
         {
@@ -45,10 +48,24 @@ namespace Toolbelt.Blazor.I18nText
             this._CurrentLanguage = langCode;
             var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync.Invoke(tt.Table));
             await Task.WhenAll(allRefreshTasks);
+
+            SweepGarbageCollectedComponents();
+            var stateHasChangedMethod = typeof(BlazorComponent).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var cref in this.Components)
+            {
+                if (cref.TryGetTarget(out var component))
+                {
+                    stateHasChangedMethod.Invoke(component, new object[] { });
+                }
+            }
         }
 
-        public async Task<T> GetTextTableAsync<T>() where T : class, new()
+        public async Task<T> GetTextTableAsync<T>(BlazorComponent component) where T : class, new()
         {
+            SweepGarbageCollectedComponents();
+            if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
+                this.Components.Add(new WeakReference<BlazorComponent>(component));
+
             var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
             if (fetchedTextTable != null) return fetchedTextTable.Table as T;
 
@@ -67,6 +84,14 @@ namespace Toolbelt.Blazor.I18nText
             };
             this.TextTables.Add(textTable);
             return table;
+        }
+
+        private void SweepGarbageCollectedComponents()
+        {
+            // DEBUG: var beforeCount = this.Components.Count;
+            this.Components = this.Components.Where(cref => cref.TryGetTarget(out var _)).ToList();
+            // DEBUG: var afterCount = this.Components.Count;
+            // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
         private async Task<T> FetchTextTableAsync<T>() where T : class, new()
