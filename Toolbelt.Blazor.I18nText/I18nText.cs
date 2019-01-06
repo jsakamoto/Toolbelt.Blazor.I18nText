@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor;
 using Microsoft.AspNetCore.Blazor.Components;
@@ -14,7 +16,11 @@ namespace Toolbelt.Blazor.I18nText
 {
     public class I18nText
     {
+        private readonly bool RunningOnClientSide;
+
         private readonly HttpClient HttpClient;
+
+        private readonly Uri WebRootUri;
 
         private string FallbackLanguage = "en";
 
@@ -26,13 +32,47 @@ namespace Toolbelt.Blazor.I18nText
 
         private Task InitLangTask;
 
-        public I18nText(IServiceProvider serviceProvider)
+        public I18nText(Type typeOfStartUp, IServiceProvider serviceProvider)
         {
-            this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
+            this.RunningOnClientSide = RuntimeInformation.OSDescription == "web";
+            if (this.RunningOnClientSide)
+                this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
+            else
+                this.WebRootUri = GetWebRootUriOnServerSideBlazor(typeOfStartUp);
+
             var refThis = new DotNetObjectRef(this);
             this.InitLangTask = JSRuntime.Current
                 .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis)
                 .ContinueWith(_ => refThis.Dispose());
+        }
+
+        private static Uri GetWebRootUriOnServerSideBlazor(Type typeOfStartUp)
+        {
+            var typeOfBlazorConfig = Type.GetType("Microsoft.AspNetCore.Blazor.Server.BlazorConfig, Microsoft.AspNetCore.Blazor.Server");
+            if (typeOfBlazorConfig == null) return null;
+
+            var readMethod = typeOfBlazorConfig.GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
+            var webRootPathProp = typeOfBlazorConfig.GetProperty("WebRootPath", BindingFlags.Instance | BindingFlags.Public);
+            var distPathProp = typeOfBlazorConfig.GetProperty("DistPath", BindingFlags.Instance | BindingFlags.Public);
+            if (readMethod == null) return null;
+            if (webRootPathProp == null) return null;
+            if (distPathProp == null) return null;
+
+            var blazorConfig = readMethod.Invoke(null, new object[] { typeOfStartUp.Assembly.Location });
+            if (blazorConfig == null) return null;
+
+            var webRootPath = webRootPathProp.GetValue(blazorConfig, null) as string;
+            var distPath = distPathProp.GetValue(blazorConfig, null) as string;
+
+            var webRootDir = new[] { webRootPath, distPath }
+                .Where(path => !string.IsNullOrEmpty(path))
+                .Where(path => Directory.Exists(path))
+                .FirstOrDefault();
+            if (string.IsNullOrEmpty(webRootDir)) return null;
+
+            if (!webRootDir.EndsWith(Path.DirectorySeparatorChar.ToString())) webRootDir += Path.DirectorySeparatorChar;
+
+            return new Uri(webRootDir);
         }
 
         [JSInvokable(nameof(InitLang)), EditorBrowsable(EditorBrowsableState.Never)]
@@ -98,10 +138,12 @@ namespace Toolbelt.Blazor.I18nText
 
         private async Task<T> FetchTextTableAsync<T>() where T : class, new()
         {
-            if (this.InitLangTask != null && !this.InitLangTask.IsCompleted)
+            var initLangTask = default(Task);
+            lock (this) initLangTask = this.InitLangTask;
+            if (initLangTask != null && !initLangTask.IsCompleted)
             {
-                await this.InitLangTask;
-                lock (this) { this.InitLangTask.Dispose(); this.InitLangTask = null; }
+                await initLangTask;
+                lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
             }
 
             string[] splitLangCode(string lang)
@@ -121,8 +163,24 @@ namespace Toolbelt.Blazor.I18nText
                 try
                 {
                     var jsonUrl = "content/i18ntext/" + typeof(T).FullName + "." + lang + ".json";
-                    table = await this.HttpClient.GetJsonAsync<T>(jsonUrl);
-                    break;
+
+                    if (this.RunningOnClientSide)
+                    {
+                        table = await this.HttpClient.GetJsonAsync<T>(jsonUrl);
+                        break;
+                    }
+                    else
+                    {
+                        if (this.WebRootUri == null) break;
+
+                        var jsonLocalPath = new Uri(baseUri: this.WebRootUri, relativeUri: jsonUrl).LocalPath;
+                        if (File.Exists(jsonLocalPath))
+                        {
+                            var jsonText = File.ReadAllText(jsonLocalPath);
+                            table = Json.Deserialize<T>(jsonText);
+                            break;
+                        }
+                    }
                 }
                 catch (Exception) { }
             }

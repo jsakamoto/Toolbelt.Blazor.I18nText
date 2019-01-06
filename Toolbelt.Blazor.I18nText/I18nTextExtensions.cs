@@ -11,9 +11,9 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         ///  Adds a I18n Text service to the specified Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
-        public static IServiceCollection AddI18nText(this IServiceCollection services)
+        public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services) where TStartup : class
         {
-            services.AddScoped(serviceProvider => new I18nText.I18nText(serviceProvider));
+            services.AddScoped(serviceProvider => new I18nText.I18nText(typeof(TStartup), serviceProvider));
             return services;
         }
     }
