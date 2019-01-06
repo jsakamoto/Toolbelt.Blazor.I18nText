@@ -24,11 +24,13 @@ namespace Toolbelt.Blazor.I18nText
 
         private List<WeakReference<BlazorComponent>> Components = new List<WeakReference<BlazorComponent>>();
 
+        private Task InitLangTask;
+
         public I18nText(IServiceProvider serviceProvider)
         {
             this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
             var refThis = new DotNetObjectRef(this);
-            JSRuntime.Current
+            this.InitLangTask = JSRuntime.Current
                 .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis)
                 .ContinueWith(_ => refThis.Dispose());
         }
@@ -96,14 +98,22 @@ namespace Toolbelt.Blazor.I18nText
 
         private async Task<T> FetchTextTableAsync<T>() where T : class, new()
         {
+            if (this.InitLangTask != null && !this.InitLangTask.IsCompleted)
+            {
+                await this.InitLangTask;
+                lock (this) { this.InitLangTask.Dispose(); this.InitLangTask = null; }
+            }
+
             string[] splitLangCode(string lang)
             {
                 var splitedLang = lang.Split('-');
                 return splitedLang.Length == 1 ? new[] { lang } : new[] { lang, splitedLang[0] };
             }
+            void appendLangCode(List<string> target, string[] source) { foreach (var item in source) if (!target.Contains(item)) target.Add(item); }
+
             var langs = new List<string>(capacity: 4);
-            langs.AddRange(splitLangCode(this._CurrentLanguage));
-            langs.AddRange(splitLangCode(this.FallbackLanguage));
+            appendLangCode(langs, splitLangCode(this._CurrentLanguage));
+            appendLangCode(langs, splitLangCode(this.FallbackLanguage));
 
             var table = default(T);
             foreach (var lang in langs)
