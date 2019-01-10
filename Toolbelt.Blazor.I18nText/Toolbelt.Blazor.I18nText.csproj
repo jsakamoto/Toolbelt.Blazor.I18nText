@@ -6,39 +6,33 @@
     <IsPackable>true</IsPackable>
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
     <LangVersion>7.3</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Authors>J.Sakamoto</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0.5</Version>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.6.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.6.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" PrivateAssets="all" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
     <EmbeddedResource Include="content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="content\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
-    <EmbeddedResource Include="content\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Remove="Properties\launchSettings.json" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Remove="content\script.ts" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Remove="content\script.ts" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
-  
+
   <ItemGroup>
+    <None Remove="content\script.ts" />
     <TypeScriptCompile Include="content\script.ts" />
   </ItemGroup>
 
@@ -57,4 +51,16 @@
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="build\Toolbelt.Blazor.I18nText.targets">
+      <PackagePath>build\Toolbelt.Blazor.I18nText.targets</PackagePath>
+      <Pack>true</Pack>
+    </None>
+    <None Update="build\I18nTextPackageBuild.targets">
+      <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
+      <Pack>true</Pack>
+    </None>
+  </ItemGroup>
+
 </Project>

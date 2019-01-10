@@ -1,0 +1,34 @@
+﻿<Project>
+
+  <!--
+  This targets file will be bundled with a NuGet package of this library in 'build' package path,
+  and will be imported the project file that references this package.
+  -->
+
+  <!--
+  Configure files that should be included as a NuGet package's content. 
+  -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\targets\I18nTextPackageBuild.targets">
+      <PackagePath>build\$(PackageId).targets</PackagePath>
+      <Pack>true</Pack>
+      <Visible>false</Visible>
+    </None>
+    <Content Remove="wwwroot\content\i18ntext\**\*.json" />
+    <Content Include="wwwroot\content\i18ntext\**\*.json">
+      <PackagePath>i18ntext\</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <!--
+  Configure files that should be copied to output directory
+  when this project is project-referenced from the other project.
+  -->
+  <ItemGroup Condition=" '$(OutputType.ToLowerInvariant())' == 'library' ">
+    <ContentWithTargetPath Include="wwwroot\content\i18ntext\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+</Project>

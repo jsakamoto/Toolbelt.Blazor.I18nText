@@ -1,0 +1,19 @@
+﻿<Project>
+  <!-- 
+  This targets file will be bundled with a Blazor library NuGet package 
+  in 'build' folder, rename with NuGet package id.
+  -->
+
+  <ItemGroup>
+    <!--
+    Configure i18n text files, that are included this Blazor component library NuGet package, 
+    will be copied to output directory. 
+    -->
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\i18ntext\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+</Project>
