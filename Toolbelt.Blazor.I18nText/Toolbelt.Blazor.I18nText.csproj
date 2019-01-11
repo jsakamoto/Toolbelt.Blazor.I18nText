@@ -10,7 +10,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Authors>J.Sakamoto</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.5</Version>
+    <Version>1.0.0.8</Version>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
@@ -63,4 +63,17 @@
     </None>
   </ItemGroup>
 
+  <Target Name="BuildI18nTextCompileTask"
+          BeforeTargets="PreBuildEvent">
+    <PropertyGroup>
+      <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
+    </PropertyGroup>
+    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration)"/>
+    <ItemGroup>
+      <None Include="$(I18nTextCompileTaskProjectDir)$(OutDir)*.*">
+        <PackagePath>tools\</PackagePath>
+        <Pack>true</Pack>
+      </None>
+    </ItemGroup>
+  </Target>
 </Project>

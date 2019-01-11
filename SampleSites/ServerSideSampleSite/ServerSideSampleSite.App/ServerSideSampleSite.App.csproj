@@ -12,11 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nTextCompileTask" Version="1.0.0.17" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.8" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,4 +31,49 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
+
+  <PropertyGroup>
+    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">i18ntext\**\*.json</I18nTextFilePattern>
+    <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(I18nTextFilePattern)">
+      <Link>..\..\..\obj\$(Configuration)\$(TargetFramework)\%(RelativeDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>true</Visible>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(I18nTextFilePattern)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="$(I18nTextFilePattern)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Watch Include="$(I18nTextFilePattern)" />
+  </ItemGroup>
+
+  <!-- Watch command: "dotnet watch msbuild -nologo -t:CompileI18nText -v:n" -->
+  <Target Name="CompileI18nText" BeforeTargets="PreBuildEvent">
+
+    <ItemGroup>
+      <I18nText Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+
+    <CompileI18nText Include="@(I18nText)"
+                     BaseDir="$(ProjectDir)"
+                     Namespace="$(I18nTextNamespace)"/>
+  </Target>
+
 </Project>
