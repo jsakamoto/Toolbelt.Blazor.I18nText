@@ -20,7 +20,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly HttpClient HttpClient;
 
-        private readonly Uri WebRootUri;
+        private readonly BlazorPathInfo BlazorPathInfo;
 
         private string FallbackLanguage = "en";
 
@@ -38,41 +38,15 @@ namespace Toolbelt.Blazor.I18nText
             if (this.RunningOnClientSide)
                 this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
             else
-                this.WebRootUri = GetWebRootUriOnServerSideBlazor(typeOfStartUp);
+            {
+                var blazorPathInfoService = serviceProvider.GetService(typeof(BlazorPathInfoService)) as BlazorPathInfoService;
+                this.BlazorPathInfo = blazorPathInfoService.GetPathInfo(typeOfStartUp);
+            }
 
             var refThis = new DotNetObjectRef(this);
             this.InitLangTask = JSRuntime.Current
                 .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis)
                 .ContinueWith(_ => refThis.Dispose());
-        }
-
-        private static Uri GetWebRootUriOnServerSideBlazor(Type typeOfStartUp)
-        {
-            var typeOfBlazorConfig = Type.GetType("Microsoft.AspNetCore.Blazor.Server.BlazorConfig, Microsoft.AspNetCore.Blazor.Server");
-            if (typeOfBlazorConfig == null) return null;
-
-            var readMethod = typeOfBlazorConfig.GetMethod("Read", BindingFlags.Static | BindingFlags.Public);
-            var webRootPathProp = typeOfBlazorConfig.GetProperty("WebRootPath", BindingFlags.Instance | BindingFlags.Public);
-            var distPathProp = typeOfBlazorConfig.GetProperty("DistPath", BindingFlags.Instance | BindingFlags.Public);
-            if (readMethod == null) return null;
-            if (webRootPathProp == null) return null;
-            if (distPathProp == null) return null;
-
-            var blazorConfig = readMethod.Invoke(null, new object[] { typeOfStartUp.Assembly.Location });
-            if (blazorConfig == null) return null;
-
-            var webRootPath = webRootPathProp.GetValue(blazorConfig, null) as string;
-            var distPath = distPathProp.GetValue(blazorConfig, null) as string;
-
-            var webRootDir = new[] { webRootPath, distPath }
-                .Where(path => !string.IsNullOrEmpty(path))
-                .Where(path => Directory.Exists(path))
-                .FirstOrDefault();
-            if (string.IsNullOrEmpty(webRootDir)) return null;
-
-            if (!webRootDir.EndsWith(Path.DirectorySeparatorChar.ToString())) webRootDir += Path.DirectorySeparatorChar;
-
-            return new Uri(webRootDir);
         }
 
         [JSInvokable(nameof(InitLang)), EditorBrowsable(EditorBrowsableState.Never)]
@@ -82,6 +56,7 @@ namespace Toolbelt.Blazor.I18nText
         }
 
         public string CurrentLanguage => _CurrentLanguage;
+
 
         public async Task SetCurrentLanguageAsync(string langCode)
         {
@@ -157,13 +132,18 @@ namespace Toolbelt.Blazor.I18nText
             appendLangCode(langs, splitLangCode(this._CurrentLanguage));
             appendLangCode(langs, splitLangCode(this.FallbackLanguage));
 
-            var table = default(T);
+            var jsonUrls = new List<string>(langs.Count * 2);
             foreach (var lang in langs)
+            {
+                jsonUrls.Add("content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
+                jsonUrls.Add("_content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
+            }
+
+            var table = default(T);
+            foreach (var jsonUrl in jsonUrls)
             {
                 try
                 {
-                    var jsonUrl = "content/i18ntext/" + typeof(T).FullName + "." + lang + ".json";
-
                     if (this.RunningOnClientSide)
                     {
                         table = await this.HttpClient.GetJsonAsync<T>(jsonUrl);
@@ -171,9 +151,10 @@ namespace Toolbelt.Blazor.I18nText
                     }
                     else
                     {
-                        if (this.WebRootUri == null) break;
+                        if (this.BlazorPathInfo == null) break;
 
-                        var jsonLocalPath = new Uri(baseUri: this.WebRootUri, relativeUri: jsonUrl).LocalPath;
+                        var baseUri = jsonUrl.StartsWith("_") ? this.BlazorPathInfo.DistUri : this.BlazorPathInfo.WebRootUri;
+                        var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
                         if (File.Exists(jsonLocalPath))
                         {
                             var jsonText = File.ReadAllText(jsonLocalPath);

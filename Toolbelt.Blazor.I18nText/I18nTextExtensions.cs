@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.Extensions.DependencyInjection
 {
@@ -13,6 +14,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
         public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services) where TStartup : class
         {
+            services.AddSingleton<BlazorPathInfoService>();
             services.AddScoped(serviceProvider => new I18nText.I18nText(typeof(TStartup), serviceProvider));
             return services;
         }

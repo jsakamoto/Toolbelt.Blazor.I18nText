@@ -47,6 +47,7 @@
       <Link>..\..\..\obj\$(Configuration)\$(TargetFramework)\%(RelativeDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>true</Visible>
+      <Pack>false</Pack>
     </Content>
   </ItemGroup>
 
