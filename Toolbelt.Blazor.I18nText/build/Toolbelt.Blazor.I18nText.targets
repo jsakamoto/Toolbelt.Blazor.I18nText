@@ -14,8 +14,7 @@
       <Pack>true</Pack>
       <Visible>false</Visible>
     </None>
-    <Content Remove="wwwroot\content\i18ntext\**\*.json" />
-    <Content Include="wwwroot\content\i18ntext\**\*.json">
+    <Content Update="wwwroot\content\i18ntext\**\*.json">
       <PackagePath>i18ntext\</PackagePath>
     </Content>
   </ItemGroup>
