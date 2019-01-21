@@ -16,4 +16,15 @@
     </ContentWithTargetPath>
   </ItemGroup>
 
+  <Target Name="BlazorI18nTextGetCopyToPublishDirectoryItems" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <ItemGroup>
+      <_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
+      </_BlazorI18nTextResourceJsons>
+      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
+        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+  </Target>
+
 </Project>

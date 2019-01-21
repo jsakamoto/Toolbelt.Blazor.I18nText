@@ -15,7 +15,7 @@
       <Visible>false</Visible>
     </None>
     <Content Update="wwwroot\content\i18ntext\**\*.json">
-      <PackagePath>i18ntext\</PackagePath>
+      <PackagePath>i18ntext\%(Filename)%(Extension)</PackagePath>
     </Content>
   </ItemGroup>
 
@@ -26,9 +26,25 @@
   <ItemGroup Condition=" '$(OutputType.ToLowerInvariant())' == 'library' ">
     <ContentWithTargetPath Include="wwwroot\content\i18ntext\**\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <!--<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>-->
       <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
     </ContentWithTargetPath>
   </ItemGroup>
+
+  <Target Name="BlazorLibI18nTextGetCopyToPublishDirectoryItems" BeforeTargets="BlazorGetCopyToPublishDirectoryItems">
+    <Message Text="M-1 - OutputType is [$(OutputType)]" Importance="high"/>
+    <ItemGroup>
+      <BlazorItemOutput Include="$(TargetDir)\dist\_content\i18ntext\*.json">
+        <TargetOutputPath>$(TargetDir)dist\_content\i18ntext\%(FileName)%(Extension)</TargetOutputPath>
+      </BlazorItemOutput>
+      <!--<_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
+      </_BlazorI18nTextResourceJsons>
+      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
+        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>-->
+    </ItemGroup>
+  </Target>
 
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
