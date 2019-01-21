@@ -24,14 +24,14 @@ namespace Toolbelt.Blazor.I18nText.Test
         }
 
         public static IEnumerable<object[]> Projects = new[] {
-            new object[]{"StandAloneApp",   "StandAloneApp",        "netstandard2.0"},
-            new object[]{"HostedApp",       "HostedApp.Server",     "netcoreapp2.1"},
-            new object[]{"ServerSideApp",   "ServerSideApp.Server", "netcoreapp2.1"},
+            new object[]{"StandAloneApp", "StandAloneApp",        "netstandard2.0", "StandAloneApp"},
+            new object[]{"HostedApp",     "HostedApp.Server",     "netcoreapp2.1",  "HostedApp.Client"},
+            new object[]{"ServerSideApp", "ServerSideApp.Server", "netcoreapp2.1",  "ServerSideApp.App"},
         };
 
         [Theory(DisplayName = "Build")]
         [MemberData(nameof(Projects))]
-        public void BasicBuildTest(string solutionName, string stratupProjName, string platform)
+        public void BasicBuildTest(string solutionName, string stratupProjName, string platform, string _)
         {
             var testDir = GetTestDir();
             var startupProjDir = Path.Combine(testDir, solutionName, stratupProjName);
@@ -52,6 +52,28 @@ namespace Toolbelt.Blazor.I18nText.Test
             Exists(distDir, "Lib4ProjRef.I18nText.Text.ja.json").IsTrue();
         }
 
+        [Theory(DisplayName = "Publish")]
+        [MemberData(nameof(Projects))]
+        public void PublishTest(string solutionName, string stratupProjName, string platform, string publishSubDir)
+        {
+            var testDir = GetTestDir();
+            var startupProjDir = Path.Combine(testDir, solutionName, stratupProjName);
+
+            var binDir = Path.Combine(startupProjDir, "bin");
+            var objDir = Path.Combine(startupProjDir, "obj");
+            var distDir = Path.Combine(binDir, Path.Combine($"Debug/{platform}/publish/{publishSubDir}/dist/_content/i18ntext".Split('/')));
+
+            Delete(binDir);
+            Delete(objDir);
+
+            Run(testDir, "dotnet", "publish", $"{solutionName}.sln");
+            ErrorLevel.Is(0);
+
+            Exists(distDir, "Lib4PackRef.I18nText.Text.en.json").IsTrue();
+            Exists(distDir, "Lib4PackRef.I18nText.Text.ja.json").IsTrue();
+            Exists(distDir, "Lib4ProjRef.I18nText.Text.en.json").IsTrue();
+            Exists(distDir, "Lib4ProjRef.I18nText.Text.ja.json").IsTrue();
+        }
     }
 
     public static class Shell
