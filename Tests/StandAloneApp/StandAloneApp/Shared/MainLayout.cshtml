@@ -1,4 +1,5 @@
 @inherits BlazorLayoutComponent
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <div class="sidebar">
     <NavMenu />
@@ -11,5 +12,42 @@
 
     <div class="content px-4">
         @Body
+
+        <div class="footer">
+            <div class="form-row align-items-center text-muted px-4">
+                <div class="col"></div>
+                <div class="col-auto">
+                    <span class="oi oi-globe" aria-hidden="true"></span>
+                </div>
+                <div class="col-auto">
+                    <select class="form-control form-control-sm" onchange="@OnChangeCurrentLang">
+                        <option value="en" selected="@(CurrentLang == "en")">English</option>
+                        <option value="ja" selected="@(CurrentLang == "ja")">日本語</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@functions{
+
+    string CurrentLang;
+
+    protected override async Task OnInitAsync()
+    {
+        var lang = I18nText.CurrentLanguage.Split('-')[0];
+        if (new[] { "en", "ja" }.Contains(lang))
+            CurrentLang = lang;
+        else
+            CurrentLang = "en";
+        await I18nText.SetCurrentLanguageAsync(CurrentLang);
+    }
+
+    async Task OnChangeCurrentLang(UIChangeEventArgs args)
+    {
+        Console.WriteLine($"OnChange: {args.Type}, {args.Value}");
+        CurrentLang = args.Value as string;
+        await I18nText.SetCurrentLanguageAsync(CurrentLang);
+    }
+}
