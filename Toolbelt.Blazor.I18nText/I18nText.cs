@@ -16,6 +16,8 @@ namespace Toolbelt.Blazor.I18nText
 {
     public class I18nText
     {
+        private readonly I18nTextOptions Options;
+
         private readonly bool RunningOnClientSide;
 
         private readonly HttpClient HttpClient;
@@ -32,7 +34,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private Task InitLangTask;
 
-        public I18nText(Type typeOfStartUp, IServiceProvider serviceProvider)
+        internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider, I18nTextOptions options)
         {
             this.RunningOnClientSide = RuntimeInformation.OSDescription == "web";
             if (this.RunningOnClientSide)
@@ -43,10 +45,25 @@ namespace Toolbelt.Blazor.I18nText
                 this.BlazorPathInfo = blazorPathInfoService.GetPathInfo(typeOfStartUp);
             }
 
+            this.Options = options;
+            if (this.Options.GetInitialLanguage == null) this.Options.GetInitialLanguage = this.GetInitialLanguage;
+            if (this.Options.PersistCurrentLanguageAsync == null) this.Options.PersistCurrentLanguageAsync = this.PersistCurrentLanguageAsync;
+
+            _CurrentLanguage = this.Options.GetInitialLanguage.Invoke();
+        }
+
+        private string GetInitialLanguage()
+        {
             var refThis = new DotNetObjectRef(this);
             this.InitLangTask = JSRuntime.Current
                 .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis)
                 .ContinueWith(_ => refThis.Dispose());
+            return _CurrentLanguage;
+        }
+
+        private Task PersistCurrentLanguageAsync(string langCode)
+        {
+            return JSRuntime.Current.InvokeAsync<object>("Toolbelt.Blazor.I18nText.setCurrentLang", langCode);
         }
 
         [JSInvokable(nameof(InitLang)), EditorBrowsable(EditorBrowsableState.Never)]
@@ -61,6 +78,8 @@ namespace Toolbelt.Blazor.I18nText
         public async Task SetCurrentLanguageAsync(string langCode)
         {
             if (this._CurrentLanguage == langCode) return;
+
+            await this.Options.PersistCurrentLanguageAsync?.Invoke(langCode);
 
             this._CurrentLanguage = langCode;
             var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync.Invoke(tt.Table));

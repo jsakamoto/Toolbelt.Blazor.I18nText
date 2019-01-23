@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
@@ -8,7 +9,9 @@ namespace StandAloneApp
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddI18nText<Startup>();
+            services.AddI18nText<Startup>(option =>
+            {
+            });
         }
 
         public void Configure(IBlazorApplicationBuilder app)
