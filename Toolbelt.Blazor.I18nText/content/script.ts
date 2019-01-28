@@ -3,16 +3,29 @@
         invokeMethodAsync(methodName: string, ...args: any[]): Promise<any>;
     }
 
-    const key = 'Toolbelt.Blazor.I18nText.CurrentLanguage';
+    export var storageKyes = {
+        currentLanguage: 'Toolbelt.Blazor.I18nText.CurrentLanguage'
+    };
 
-    export function initLang(svcObj: DotNetObjectRef): void {
-        const lang = sessionStorage.getItem(key) || localStorage.getItem(key);
-        const langs = lang !== null ? [lang] : (navigator.languages || [(navigator as any).browserLanguage]);
-        svcObj.invokeMethodAsync('InitLang', langs);
+    const enum PersistanceLevel {
+        None,
+        Session,
+        SessionAndLocal
     }
 
-    export function setCurrentLang(lang: string): void {
-        sessionStorage.setItem(key, lang);
-        localStorage.setItem(key, lang);
+    export function initLang(svcObj: DotNetObjectRef, persistanceLevel: PersistanceLevel): void {
+        const key = storageKyes.currentLanguage;
+        let lang = (persistanceLevel >= PersistanceLevel.Session ? sessionStorage.getItem(key) : null) || (persistanceLevel >= PersistanceLevel.SessionAndLocal ? localStorage.getItem(key) : null);
+        const langs = (lang !== null ? [lang] : (navigator.languages || [(navigator as any).browserLanguage])) as string[];
+
+        lang = langs[0] || 'en';
+        setCurrentLang(lang, persistanceLevel);
+        svcObj.invokeMethodAsync('InitLang', lang);
+    }
+
+    export function setCurrentLang(lang: string, persistanceLevel: PersistanceLevel): void {
+        const key = storageKyes.currentLanguage;
+        if (persistanceLevel >= PersistanceLevel.Session) sessionStorage.setItem(key, lang);
+        if (persistanceLevel >= PersistanceLevel.SessionAndLocal) localStorage.setItem(key, lang);
     }
 }

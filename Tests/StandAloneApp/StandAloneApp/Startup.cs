@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Blazor.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Toolbelt.Blazor.I18nText;
 
 namespace StandAloneApp
 {
@@ -11,6 +12,7 @@ namespace StandAloneApp
         {
             services.AddI18nText<Startup>(option =>
             {
+                option.PersistanceLevel = PersistanceLevel.Session;
             });
         }
 
