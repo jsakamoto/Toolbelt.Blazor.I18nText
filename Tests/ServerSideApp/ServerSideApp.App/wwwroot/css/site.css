@@ -121,3 +121,29 @@ app {
         display: block;
     }
 }
+
+.footer::before {
+    content: '';
+    display: block;
+    height: 50px;
+}
+
+.footer .form-row {
+    background-color: #e6e6e6;
+    padding: 8px;
+    margin: 0;
+    position: fixed;
+    right: 0;
+    left: 250px;
+    bottom: 0;
+}
+
+    .footer .form-row select {
+        background-color: transparent;
+    }
+
+@media (max-width: 767.98px) {
+    .footer .form-row {
+        left: 0;
+    }
+}

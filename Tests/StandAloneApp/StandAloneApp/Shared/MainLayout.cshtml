@@ -22,6 +22,7 @@
                 <div class="col-auto">
                     <select class="form-control form-control-sm" onchange="@OnChangeCurrentLang">
                         <option value="en" selected="@(CurrentLang == "en")">English</option>
+                        <option value="es" selected="@(CurrentLang == "es")">Español</option>
                         <option value="ja" selected="@(CurrentLang == "ja")">日本語</option>
                     </select>
                 </div>
@@ -37,7 +38,7 @@
     protected override async Task OnInitAsync()
     {
         var lang = I18nText.CurrentLanguage.Split('-')[0];
-        if (new[] { "en", "ja" }.Contains(lang))
+        if (new[] { "en", "es", "ja" }.Contains(lang))
             CurrentLang = lang;
         else
             CurrentLang = "en";

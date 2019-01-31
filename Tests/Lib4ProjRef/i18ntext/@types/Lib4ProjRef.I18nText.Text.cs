@@ -1,8 +1,10 @@
 namespace Lib4ProjRef.I18nText
 {
-    public class Text
+    public partial class Text : global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage
     {
-        /// <summary>This Blazor component is defined in the Lib4ProjRef package.</summary>
+        string global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage.FallBackLanguage => "ja";
+
+        /// <summary>"この Blazor コンポーネントは Lib4ProjRef で定義されています。"</summary>
         public string Message;
     }
 }

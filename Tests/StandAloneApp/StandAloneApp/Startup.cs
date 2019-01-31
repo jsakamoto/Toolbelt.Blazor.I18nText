@@ -12,7 +12,7 @@ namespace StandAloneApp
         {
             services.AddI18nText<Startup>(option =>
             {
-                option.PersistanceLevel = PersistanceLevel.Session;
+                //option.PersistanceLevel = PersistanceLevel.Session;
             });
         }
 
