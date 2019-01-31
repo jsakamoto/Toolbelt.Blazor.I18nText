@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -10,11 +11,25 @@ namespace Toolbelt.Blazor.I18nText
 {
     public class I18nTextCompiler
     {
-        public void Compile(string[] srcFilesPath, I18nTextCompilerOptions options)
+        public bool Compile(string[] srcFilesPath, I18nTextCompilerOptions options)
         {
-            var i18textSrc = ParseSourceFiles(srcFilesPath, options);
-            OutputTypesFiles(options, i18textSrc);
-            OutputI18nTextJsonFiles(options, i18textSrc);
+            try
+            {
+                var i18textSrc = ParseSourceFiles(srcFilesPath, options);
+                OutputTypesFiles(options, i18textSrc);
+                OutputI18nTextJsonFiles(options, i18textSrc);
+                return true;
+            }
+            catch (AggregateException e) when (e.InnerException is I18nTextCompileException compileException)
+            {
+                options.LogError(compileException.Message);
+                return false;
+            }
+            catch (I18nTextCompileException compileException)
+            {
+                options.LogError(compileException.Message);
+                return false;
+            }
         }
 
         private static I18nTextSource ParseSourceFiles(string[] srcFilesPath, I18nTextCompilerOptions options)
@@ -83,19 +98,25 @@ namespace Toolbelt.Blazor.I18nText
 
                 var typeFilePath = Path.Combine(options.TypesDirectory, typeFullName + ".cs");
 
-                var defaultLangCode = type.Value.Langs.Keys.OrderBy(langCode => langCode.StartsWith("en") ? "0" : langCode).First();
-                var textTable = type.Value.Langs[defaultLangCode];
+                var langs = type.Value.Langs;
+                var langParts = options.FallBackLanguage.Split('-');
+                var fallbackLangs = langParts.Length > 1 ? new[] { options.FallBackLanguage, langParts[0] } : new[] { options.FallBackLanguage };
+                var fallbackLang = fallbackLangs.FirstOrDefault(lang => langs.ContainsKey(lang));
+                if (fallbackLang == null) throw new I18nTextCompileException($"IN1001: Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{type.Key}'.");
+                var textTable = langs[fallbackLang];
 
                 var typeCode = new List<string>();
                 typeCode.Add($"namespace {typeNamespace}");
                 typeCode.Add("{");
-                typeCode.Add($"    public class {typeName}");
+                typeCode.Add($"    public partial class {typeName} : global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage");
                 typeCode.Add("    {");
+                typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage.FallBackLanguage => \"{options.FallBackLanguage}\";");
+                typeCode.Add("");
                 var is1stLine = true;
                 foreach (var textKey in type.Value.TextKeys)
                 {
                     if (!is1stLine) typeCode.Add("");
-                    typeCode.Add($"        /// <summary>{SecurityElement.Escape(textTable[textKey])}</summary>");
+                    typeCode.Add($"        /// <summary>\"{SecurityElement.Escape(textTable[textKey])}\"</summary>");
                     typeCode.Add($"        public string {textKey};");
                     is1stLine = false;
                 }

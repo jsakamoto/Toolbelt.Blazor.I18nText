@@ -31,10 +31,11 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Theory(DisplayName = "Build")]
         [MemberData(nameof(Projects))]
-        public void BasicBuildTest(string solutionName, string stratupProjName, string platform, string _)
+        public void BasicBuildTest(string solutionName, string stratupProjName, string platform, string clientProjName)
         {
             var testDir = GetTestDir();
             var startupProjDir = Path.Combine(testDir, solutionName, stratupProjName);
+            var clientProjDir = Path.Combine(testDir, solutionName, clientProjName);
 
             var binDir = Path.Combine(startupProjDir, "bin");
             var objDir = Path.Combine(startupProjDir, "obj");
@@ -43,6 +44,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             Delete(binDir);
             Delete(objDir);
 
+            Run(clientProjDir, "dotnet", "add", "package", "Lib4PackRef");
+            ErrorLevel.Is(0);
             Run(testDir, "dotnet", "build", $"{solutionName}.sln");
             ErrorLevel.Is(0);
 
@@ -54,18 +57,21 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Theory(DisplayName = "Publish")]
         [MemberData(nameof(Projects))]
-        public void PublishTest(string solutionName, string stratupProjName, string platform, string publishSubDir)
+        public void PublishTest(string solutionName, string stratupProjName, string platform, string clientProjName)
         {
             var testDir = GetTestDir();
             var startupProjDir = Path.Combine(testDir, solutionName, stratupProjName);
+            var clientProjDir = Path.Combine(testDir, solutionName, clientProjName);
 
             var binDir = Path.Combine(startupProjDir, "bin");
             var objDir = Path.Combine(startupProjDir, "obj");
-            var distDir = Path.Combine(binDir, Path.Combine($"Debug/{platform}/publish/{publishSubDir}/dist/_content/i18ntext".Split('/')));
+            var distDir = Path.Combine(binDir, Path.Combine($"Debug/{platform}/publish/{clientProjName}/dist/_content/i18ntext".Split('/')));
 
             Delete(binDir);
             Delete(objDir);
 
+            Run(clientProjDir, "dotnet", "add", "package", "Lib4PackRef");
+            ErrorLevel.Is(0);
             Run(testDir, "dotnet", "publish", $"{solutionName}.sln");
             ErrorLevel.Is(0);
 

@@ -18,6 +18,9 @@ namespace Toolbelt.Blazor.I18nText
 
         public string NameSpace { get; set; }
 
+        [Required]
+        public string FallBackLanguage { get; set; }
+
         public override bool Execute()
         {
             try
@@ -35,10 +38,13 @@ namespace Toolbelt.Blazor.I18nText
                 options.OutDirectory = this.OutDirectory ?? options.OutDirectory;
                 options.NameSpace = string.IsNullOrEmpty(this.NameSpace) ? options.NameSpace : this.NameSpace;
                 options.LogMessage = msg => Log.LogMessage(msg);
+                options.LogError = msg => Log.LogError(msg);
+                options.FallBackLanguage = this.FallBackLanguage ?? options.FallBackLanguage;
 
                 Log.LogMessage($"TypesDirectory: [{options.TypesDirectory}]");
                 Log.LogMessage($"OutDirectory  : [{options.OutDirectory}]");
                 Log.LogMessage($"NameSpace     : [{options.NameSpace}]");
+                Log.LogMessage($"FallBackLanguage: [{options.FallBackLanguage}]");
 
                 var srcFilesPath = this.Include
                     .Select(taskItem => Path.Combine(baseDir, taskItem.ItemSpec))
@@ -47,9 +53,8 @@ namespace Toolbelt.Blazor.I18nText
                 foreach (var src in srcFilesPath) Log.LogMessage($"- {src}");
 
                 var compiler = new I18nTextCompiler();
-                compiler.Compile(srcFilesPath, options);
-
-                return true;
+                var successOrNot = compiler.Compile(srcFilesPath, options);
+                return successOrNot;
             }
             catch (Exception e)
             {

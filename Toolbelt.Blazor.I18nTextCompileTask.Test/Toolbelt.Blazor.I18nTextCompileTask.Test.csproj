@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Toolbelt.Blazor.I18nText.CompileTask\Toolbelt.Blazor.I18nText.CompileTask.csproj" />
+    <ProjectReference Include="..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
   </ItemGroup>
 
 </Project>

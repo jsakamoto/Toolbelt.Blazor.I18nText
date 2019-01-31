@@ -35,13 +35,18 @@ namespace Toolbelt.Blazor.I18nText.Test
             Environment.CurrentDirectory = _OriginalCurrentDir;
         }
 
-        [Fact(DisplayName = "Compile - I18n Text Typed Class was generated")]
-        public void Compile_I18nTextTypedClassWasGenerated_Test()
+        [Theory(DisplayName = "Compile - I18n Text Typed Class was generated")]
+        [InlineData("en")]
+        [InlineData("en-us")]
+        [InlineData("ja")]
+        [InlineData("ja-jp")]
+        public void Compile_I18nTextTypedClassWasGenerated_Test(string langCode)
         {
             var srcFilePath = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories);
-            var options = new I18nTextCompilerOptions();
+            var options = new I18nTextCompilerOptions { FallBackLanguage = langCode };
             var compiler = new I18nTextCompiler();
-            compiler.Compile(srcFilePath, options);
+            var success = compiler.Compile(srcFilePath, options);
+            success.IsTrue();
 
             // Compiled an i18n text type file should exist.
             var csFileName = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.cs";
@@ -52,7 +57,10 @@ namespace Toolbelt.Blazor.I18nText.Test
             var typeCode = File.ReadAllText(Path.Combine(_TypesDir, csFileName));
             var syntaxTree = CSharpSyntaxTree.ParseText(typeCode);
             var assemblyName = Path.GetRandomFileName();
-            var references = new[] { MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location) };
+            var references = new[] {
+                MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(I18nTextFallbackLanguage).GetTypeInfo().Assembly.Location),
+            };
             var compilation = CSharpCompilation.Create(
                assemblyName,
                syntaxTrees: new[] { syntaxTree },
@@ -80,6 +88,10 @@ namespace Toolbelt.Blazor.I18nText.Test
             fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "HelloWorld").IsTrue();
             fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "Exit").IsTrue();
             fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "GreetingOfJA").IsTrue();
+
+            var textTableObj = Activator.CreateInstance(compiledType) as I18nTextFallbackLanguage;
+            textTableObj.IsNotNull();
+            textTableObj.FallBackLanguage.Is(langCode);
         }
 
         [Fact(DisplayName = "Compile - I18n Text JSON files were generated")]
@@ -88,7 +100,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             var srcFilePath = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories);
             var options = new I18nTextCompilerOptions();
             var compiler = new I18nTextCompiler();
-            compiler.Compile(srcFilePath, options);
+            var success = compiler.Compile(srcFilePath, options);
+            success.IsTrue();
 
             // Compiled i18n text json files should exist.
             var jsonDir = Path.Combine(_WwwRootDir, "content", "i18ntext");
@@ -117,10 +130,28 @@ namespace Toolbelt.Blazor.I18nText.Test
         {
             var options = new I18nTextCompilerOptions();
             var compiler = new I18nTextCompiler();
-            compiler.Compile(new string[] { }, options);
+            var success = compiler.Compile(new string[] { }, options);
 
+            success.IsTrue();
             Directory.Exists(_TypesDir).IsFalse();
             Directory.Exists(_WwwRootDir).IsFalse();
+        }
+
+        [Fact(DisplayName = "Compile - Error by fallback lang not exist")]
+        public void Compile_Error_FallbackLangNotExist()
+        {
+            var srcFilePath = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories);
+            var logErr = new List<string>();
+            var options = new I18nTextCompilerOptions
+            {
+                FallBackLanguage = "fr",
+                LogError = msg => logErr.Add(msg)
+            };
+            var compiler = new I18nTextCompiler();
+            var suceess = compiler.Compile(srcFilePath, options);
+
+            suceess.IsFalse();
+            logErr.Is("IN1001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar'.");
         }
     }
 }

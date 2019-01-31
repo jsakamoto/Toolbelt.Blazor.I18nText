@@ -13,6 +13,10 @@ namespace Toolbelt.Blazor.I18nText
 
         public Action<string> LogMessage { get; set; }
 
+        public Action<string> LogError { get; set; }
+
+        public string FallBackLanguage { get; set; }
+
         public I18nTextCompilerOptions() : this(Directory.GetCurrentDirectory())
         {
         }
@@ -23,6 +27,8 @@ namespace Toolbelt.Blazor.I18nText
             this.OutDirectory = Path.Combine(baseDir, "wwwroot", "content", "i18ntext");
             this.NameSpace = Path.GetFileName(baseDir.TrimEnd('\\')) + ".I18nText";
             this.LogMessage = _ => { };
+            this.LogError = _ => { };
+            this.FallBackLanguage = "en";
         }
     }
 }

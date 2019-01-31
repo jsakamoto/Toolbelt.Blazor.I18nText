@@ -24,8 +24,6 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly BlazorPathInfo BlazorPathInfo;
 
-        private string FallbackLanguage = "en";
-
         private string _CurrentLanguage = "en";
 
         private readonly List<TextTable> TextTables = new List<TextTable>();
@@ -96,7 +94,7 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        public async Task<T> GetTextTableAsync<T>(BlazorComponent component) where T : class, new()
+        public async Task<T> GetTextTableAsync<T>(BlazorComponent component) where T : class, I18nTextFallbackLanguage, new()
         {
             SweepGarbageCollectedComponents();
             if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
@@ -130,7 +128,7 @@ namespace Toolbelt.Blazor.I18nText
             // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
-        private async Task<T> FetchTextTableAsync<T>() where T : class, new()
+        private async Task<T> FetchTextTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
         {
             var initLangTask = default(Task);
             lock (this) initLangTask = this.InitLangTask;
@@ -139,6 +137,8 @@ namespace Toolbelt.Blazor.I18nText
                 await initLangTask;
                 lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
             }
+
+            var fallbackLanguage = (Activator.CreateInstance<T>() as I18nTextFallbackLanguage).FallBackLanguage;
 
             string[] splitLangCode(string lang)
             {
@@ -149,7 +149,7 @@ namespace Toolbelt.Blazor.I18nText
 
             var langs = new List<string>(capacity: 4);
             appendLangCode(langs, splitLangCode(this._CurrentLanguage));
-            appendLangCode(langs, splitLangCode(this.FallbackLanguage));
+            appendLangCode(langs, splitLangCode(fallbackLanguage));
 
             var jsonUrls = new List<string>(langs.Count * 2);
             foreach (var lang in langs)
