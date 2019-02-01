@@ -7,7 +7,7 @@
 
 <div class="main">
     <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        <a href="http://blazor.net" target="_blank" class="ml-md-auto">@Text.About</a>
     </div>
 
     <div class="content px-4">
@@ -22,7 +22,6 @@
                 <div class="col-auto">
                     <select class="form-control form-control-sm" onchange="@OnChangeCurrentLang">
                         <option value="en" selected="@(CurrentLang == "en")">English</option>
-                        <option value="es" selected="@(CurrentLang == "es")">Español</option>
                         <option value="ja" selected="@(CurrentLang == "ja")">日本語</option>
                     </select>
                 </div>
@@ -33,16 +32,20 @@
 
 @functions{
 
+    Text Text = new Text();
+
     string CurrentLang;
 
     protected override async Task OnInitAsync()
     {
         var lang = I18nText.CurrentLanguage.Split('-')[0];
-        if (new[] { "en", "es", "ja" }.Contains(lang))
+        if (new[] { "en", "ja" }.Contains(lang))
             CurrentLang = lang;
         else
             CurrentLang = "en";
         await I18nText.SetCurrentLanguageAsync(CurrentLang);
+
+        Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
     async Task OnChangeCurrentLang(UIChangeEventArgs args)

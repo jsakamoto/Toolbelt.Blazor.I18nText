@@ -147,3 +147,7 @@ app {
         left: 0;
     }
 }
+
+.survay-prompt a {
+    font-weight: bold;
+}

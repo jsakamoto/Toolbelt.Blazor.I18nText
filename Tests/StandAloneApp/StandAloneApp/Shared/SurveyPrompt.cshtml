@@ -1,15 +1,24 @@
-﻿<div class="alert alert-secondary mt-4" role="alert">
-    <span class="oi oi-pencil mr-2" aria-hidden="true"></span> 
+﻿<div class="alert alert-secondary mt-4 survay-prompt" role="alert">
+    <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
     <strong>@Title</strong>
 
-    <span class="text-nowrap">
-        Please take our
-        <a target="_blank" class="font-weight-bold" href="https://go.microsoft.com/fwlink/?linkid=2041371">brief survey</a>
-    </span>
-    and tell us what you think.
+    @Text.SurveyPrompt.Format(SurveyUrl).AsMarkdownToHtml()
+
 </div>
 
-@functions {
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
+
+@functions{
+
+    Text Text = new Text();
+
+    readonly string SurveyUrl = "https://go.microsoft.com/fwlink/?linkid=2041371";
+
     [Parameter]
     string Title { get; set; } // Demonstrates how a parent component can supply parameters
+
+    protected override async Task OnInitAsync()
+    {
+        Text = await I18nText.GetTextTableAsync<Text>(this);
+    }
 }

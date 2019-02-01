@@ -1,0 +1,29 @@
+{
+  "StandAloneApp": "単独アプリ",
+
+  "About": "Blazor について",
+  "Home": "ホーム",
+  "Counter": "カウンター",
+  "FetchData": "データ取得",
+  "HelloWorld": "こんにちは、世界!",
+  "WelcomeToYourNewApp": "あなたの新しいアプリにようこそ。",
+
+  "CurrentCount": "現在のカウント",
+  "ClickMe": "ここをクリック",
+
+  "WeatherForecast": "天気予報",
+  "WeatherForecast_Description": "このコンポーネントはサーバーからのデータ取得のデモンストレーションです。",
+  "Loading": "読み込み中...",
+  "Date": "日付",
+  "TempC": "気温(°C)",
+  "TempF": "気温(°F)",
+  "Summary": "概況",
+
+  "Freezing": "凍結",
+  "Chilly": "肌寒い",
+  "Bracing": "爽やか",
+  "Balmy": "温和",
+
+  "SurveyTitle": "Blazor はいかがですか?",
+  "SurveyPrompt": "ぜひ[アンケート]({0})に回答頂き、あなたの考えをお聞かせ下さい。"
+}
