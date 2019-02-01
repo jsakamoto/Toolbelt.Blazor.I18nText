@@ -19,7 +19,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.30" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.31" />
   </ItemGroup>
 
   <ItemGroup>
