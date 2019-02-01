@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Blazor;
 using Microsoft.AspNetCore.Blazor.Components;
 using Microsoft.JSInterop;
+using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText

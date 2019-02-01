@@ -108,9 +108,11 @@ namespace Toolbelt.Blazor.I18nText
                 var typeCode = new List<string>();
                 typeCode.Add($"namespace {typeNamespace}");
                 typeCode.Add("{");
-                typeCode.Add($"    public partial class {typeName} : global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage");
+                typeCode.Add($"    public partial class {typeName} : global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextLateBinding");
                 typeCode.Add("    {");
-                typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.I18nTextFallbackLanguage.FallBackLanguage => \"{options.FallBackLanguage}\";");
+                typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage.FallBackLanguage => \"{options.FallBackLanguage}\";");
+                typeCode.Add("");
+                typeCode.Add("        public string this[string key] => global::Toolbelt.Blazor.I18nText.I18nTextExtensions.GetFieldValue(this, key);");
                 typeCode.Add("");
                 var is1stLine = true;
                 foreach (var textKey in type.Value.TextKeys)

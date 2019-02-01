@@ -1,29 +1,13 @@
-﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Toolbelt.Blazor.I18nText;
-using Toolbelt.Blazor.I18nText.Internals;
+﻿using System.Reflection;
+using Toolbelt.Blazor.I18nText.Interfaces;
 
-namespace Toolbelt.Blazor.Extensions.DependencyInjection
+namespace Toolbelt.Blazor.I18nText
 {
-    /// <summary>
-    /// Extension methods for adding I18n Text service.
-    /// </summary>
     public static class I18nTextExtensions
     {
-        /// <summary>
-        ///  Adds a I18n Text service to the specified Microsoft.Extensions.DependencyInjection.IServiceCollection.
-        /// </summary>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
-        public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services, Action<I18nTextOptions> configure = null) where TStartup : class
+        public static string GetFieldValue<T>(this T value, string key) where T : I18nTextLateBinding
         {
-            services.AddSingleton<BlazorPathInfoService>();
-            services.AddScoped(serviceProvider =>
-            {
-                var options = new I18nTextOptions();
-                configure?.Invoke(options);
-                return new I18nText.I18nText(typeof(TStartup), serviceProvider, options);
-            });
-            return services;
+            return typeof(T).GetField(key, BindingFlags.Public | BindingFlags.Instance)?.GetValue(value) as string ?? key;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Runtime.Loader;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
+using Toolbelt.Blazor.I18nText.Interfaces;
 using Xunit;
 
 namespace Toolbelt.Blazor.I18nText.Test
@@ -59,6 +60,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             var assemblyName = Path.GetRandomFileName();
             var references = new[] {
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a").Location),
                 MetadataReference.CreateFromFile(typeof(I18nTextFallbackLanguage).GetTypeInfo().Assembly.Location),
             };
             var compilation = CSharpCompilation.Create(
@@ -89,9 +92,10 @@ namespace Toolbelt.Blazor.I18nText.Test
             fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "Exit").IsTrue();
             fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "GreetingOfJA").IsTrue();
 
-            var textTableObj = Activator.CreateInstance(compiledType) as I18nTextFallbackLanguage;
+            var textTableObj = Activator.CreateInstance(compiledType);
             textTableObj.IsNotNull();
-            textTableObj.FallBackLanguage.Is(langCode);
+            (textTableObj as I18nTextFallbackLanguage).FallBackLanguage.Is(langCode);
+            (textTableObj as I18nTextLateBinding)["HelloWorld"].Is("HelloWorld");
         }
 
         [Fact(DisplayName = "Compile - I18n Text JSON files were generated")]
