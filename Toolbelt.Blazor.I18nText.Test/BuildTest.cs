@@ -65,7 +65,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             var binDir = Path.Combine(startupProjDir, "bin");
             var objDir = Path.Combine(startupProjDir, "obj");
-            var distDir = Path.Combine(binDir, Path.Combine($"Debug/{platform}/publish/{clientProjName}/dist/_content/i18ntext".Split('/')));
+            var distDir = Path.Combine(binDir, Path.Combine($"Debug/{platform}/publish/{clientProjName}/dist/content/i18ntext".Split('/')));
 
             Delete(binDir);
             Delete(objDir);
