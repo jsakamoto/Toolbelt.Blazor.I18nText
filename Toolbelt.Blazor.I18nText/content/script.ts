@@ -13,14 +13,14 @@
         SessionAndLocal
     }
 
-    export function initLang(svcObj: DotNetObjectRef, persistanceLevel: PersistanceLevel): void {
+    export function initLang(persistanceLevel: PersistanceLevel): string {
         const key = storageKyes.currentLanguage;
         let lang = (persistanceLevel >= PersistanceLevel.Session ? sessionStorage.getItem(key) : null) || (persistanceLevel >= PersistanceLevel.SessionAndLocal ? localStorage.getItem(key) : null);
         const langs = (lang !== null ? [lang] : (navigator.languages || [(navigator as any).browserLanguage])) as string[];
 
         lang = langs[0] || 'en';
         setCurrentLang(lang, persistanceLevel);
-        svcObj.invokeMethodAsync('InitLang', lang);
+        return lang;
     }
 
     export function setCurrentLang(lang: string, persistanceLevel: PersistanceLevel): void {

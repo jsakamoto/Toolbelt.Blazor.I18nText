@@ -38,8 +38,8 @@
 
     protected override async Task OnInitAsync()
     {
-        var lang = I18nText.CurrentLanguage.Split('-')[0];
-        if (new[] { "en", "es", "ja" }.Contains(lang))
+        var lang = await I18nText.GetCurrentLanguageAsync();
+        if (new[] { "en", "es", "ja" }.Contains(lang.Split('-')[0]))
             CurrentLang = lang;
         else
             CurrentLang = "en";

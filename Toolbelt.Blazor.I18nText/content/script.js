@@ -7,13 +7,13 @@ var Toolbelt;
             I18nText.storageKyes = {
                 currentLanguage: 'Toolbelt.Blazor.I18nText.CurrentLanguage'
             };
-            function initLang(svcObj, persistanceLevel) {
+            function initLang(persistanceLevel) {
                 const key = I18nText.storageKyes.currentLanguage;
                 let lang = (persistanceLevel >= 1 ? sessionStorage.getItem(key) : null) || (persistanceLevel >= 2 ? localStorage.getItem(key) : null);
                 const langs = (lang !== null ? [lang] : (navigator.languages || [navigator.browserLanguage]));
                 lang = langs[0] || 'en';
                 setCurrentLang(lang, persistanceLevel);
-                svcObj.invokeMethodAsync('InitLang', lang);
+                return lang;
             }
             I18nText.initLang = initLang;
             function setCurrentLang(lang, persistanceLevel) {

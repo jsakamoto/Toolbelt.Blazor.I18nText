@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -45,19 +44,18 @@ namespace Toolbelt.Blazor.I18nText
             }
 
             this.Options = options;
-            if (this.Options.GetInitialLanguage == null) this.Options.GetInitialLanguage = this.GetInitialLanguage;
+            if (this.Options.GetInitialLanguageAsync == null) this.Options.GetInitialLanguageAsync = this.GetInitialLanguageAsync;
             if (this.Options.PersistCurrentLanguageAsync == null) this.Options.PersistCurrentLanguageAsync = this.PersistCurrentLanguageAsync;
 
-            _CurrentLanguage = this.Options.GetInitialLanguage.Invoke(this.Options);
+            this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.Options).ContinueWith(t =>
+            {
+                _CurrentLanguage = t.IsCompleted ? t.Result : "en";
+            });
         }
 
-        private string GetInitialLanguage(I18nTextOptions options)
+        private Task<string> GetInitialLanguageAsync(I18nTextOptions options)
         {
-            var refThis = new DotNetObjectRef(this);
-            this.InitLangTask = JSRuntime.Current
-                .InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", refThis, options.PersistanceLevel)
-                .ContinueWith(_ => refThis.Dispose());
-            return _CurrentLanguage;
+            return JSRuntime.Current.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
         }
 
         private Task PersistCurrentLanguageAsync(string langCode, I18nTextOptions options)
@@ -65,14 +63,11 @@ namespace Toolbelt.Blazor.I18nText
             return JSRuntime.Current.InvokeAsync<object>("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }
 
-        [JSInvokable(nameof(InitLang)), EditorBrowsable(EditorBrowsableState.Never)]
-        public void InitLang(string langCode)
+        public async Task<string> GetCurrentLanguageAsync()
         {
-            _CurrentLanguage = langCode;
+            await EnsureInitialLangAsync();
+            return _CurrentLanguage;
         }
-
-        public string CurrentLanguage => _CurrentLanguage;
-
 
         public async Task SetCurrentLanguageAsync(string langCode)
         {
@@ -131,13 +126,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private async Task<T> FetchTextTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
         {
-            var initLangTask = default(Task);
-            lock (this) initLangTask = this.InitLangTask;
-            if (initLangTask != null && !initLangTask.IsCompleted)
-            {
-                await initLangTask;
-                lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
-            }
+            await EnsureInitialLangAsync();
 
             var fallbackLanguage = (Activator.CreateInstance<T>() as I18nTextFallbackLanguage).FallBackLanguage;
 
@@ -196,5 +185,15 @@ namespace Toolbelt.Blazor.I18nText
             return table;
         }
 
+        private async Task EnsureInitialLangAsync()
+        {
+            var initLangTask = default(Task);
+            lock (this) initLangTask = this.InitLangTask;
+            if (initLangTask != null && !initLangTask.IsCompleted)
+            {
+                await initLangTask;
+                lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
+            }
+        }
     }
 }
