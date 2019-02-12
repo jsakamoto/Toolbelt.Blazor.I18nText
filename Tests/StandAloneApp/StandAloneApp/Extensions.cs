@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Blazor;
+using Microsoft.AspNetCore.Components;
 
 namespace StandAloneApp
 {

@@ -6,8 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
@@ -28,7 +27,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly List<TextTable> TextTables = new List<TextTable>();
 
-        private List<WeakReference<BlazorComponent>> Components = new List<WeakReference<BlazorComponent>>();
+        private List<WeakReference<ComponentBase>> Components = new List<WeakReference<ComponentBase>>();
 
         private Task InitLangTask;
 
@@ -80,7 +79,7 @@ namespace Toolbelt.Blazor.I18nText
             await Task.WhenAll(allRefreshTasks);
 
             SweepGarbageCollectedComponents();
-            var stateHasChangedMethod = typeof(BlazorComponent).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
+            var stateHasChangedMethod = typeof(ComponentBase).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var cref in this.Components)
             {
                 if (cref.TryGetTarget(out var component))
@@ -90,11 +89,11 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        public async Task<T> GetTextTableAsync<T>(BlazorComponent component) where T : class, I18nTextFallbackLanguage, new()
+        public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
         {
             SweepGarbageCollectedComponents();
             if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
-                this.Components.Add(new WeakReference<BlazorComponent>(component));
+                this.Components.Add(new WeakReference<ComponentBase>(component));
 
             var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
             if (fetchedTextTable != null) return fetchedTextTable.Table as T;
