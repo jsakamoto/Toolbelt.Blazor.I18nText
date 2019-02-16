@@ -25,8 +25,9 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         public static IEnumerable<object[]> Projects = new[] {
             new object[]{"StandAloneApp", "StandAloneApp",        "netstandard2.0", "StandAloneApp"},
-            new object[]{"HostedApp",     "HostedApp.Server",     "netcoreapp2.1",  "HostedApp.Client"},
-            new object[]{"ServerSideApp", "ServerSideApp.Server", "netcoreapp2.1",  "ServerSideApp.App"},
+            new object[]{"HostedApp",     "HostedApp.Server",     "netcoreapp3.0",  "HostedApp.Client"},
+            // TODO: Currently ASP.NET Core Razor Component (a.k.a Server Side Blazor) doesn't support Blazor library feature.
+            // new object[]{"ServerSideApp", "ServerSideApp.Server", "netcoreapp2.1",  "ServerSideApp.App"},
         };
 
         [Theory(DisplayName = "Build")]
