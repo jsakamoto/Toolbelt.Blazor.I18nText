@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nTextCompileTask.Test", "Toolbelt.Blazor.I18nTextCompileTask.Test\Toolbelt.Blazor.I18nTextCompileTask.Test.csproj", "{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20BA4-E0AC-482A-8561-1FEA406BF42B}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
