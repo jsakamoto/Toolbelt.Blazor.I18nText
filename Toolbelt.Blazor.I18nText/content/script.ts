@@ -19,7 +19,6 @@
         const langs = (lang !== null ? [lang] : (navigator.languages || [(navigator as any).browserLanguage])) as string[];
 
         lang = langs[0] || 'en';
-        setCurrentLang(lang, persistanceLevel);
         return lang;
     }
 

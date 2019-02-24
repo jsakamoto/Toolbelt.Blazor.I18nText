@@ -12,6 +12,6 @@ namespace Toolbelt.Blazor.I18nText
 
         public PersistCurrentLanguageAsync PersistCurrentLanguageAsync { get; set; }
 
-        public PersistanceLevel PersistanceLevel { get; set; } = PersistanceLevel.SessionAndLocal;
+        public PersistanceLevel PersistanceLevel { get; set; } = PersistanceLevel.Session;
     }
 }

@@ -12,7 +12,6 @@ var Toolbelt;
                 let lang = (persistanceLevel >= 1 ? sessionStorage.getItem(key) : null) || (persistanceLevel >= 2 ? localStorage.getItem(key) : null);
                 const langs = (lang !== null ? [lang] : (navigator.languages || [navigator.browserLanguage]));
                 lang = langs[0] || 'en';
-                setCurrentLang(lang, persistanceLevel);
                 return lang;
             }
             I18nText.initLang = initLang;

@@ -43,7 +43,6 @@
             CurrentLang = lang;
         else
             CurrentLang = "en";
-        await I18nText.SetCurrentLanguageAsync(CurrentLang);
 
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }
