@@ -75,7 +75,7 @@ namespace Toolbelt.Blazor.I18nText
             await this.Options.PersistCurrentLanguageAsync?.Invoke(langCode, this.Options);
 
             this._CurrentLanguage = langCode;
-            var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync.Invoke(tt.Table));
+            var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync());
             await Task.WhenAll(allRefreshTasks);
 
             SweepGarbageCollectedComponents();
@@ -89,30 +89,19 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
+        public Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
         {
             SweepGarbageCollectedComponents();
             if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
                 this.Components.Add(new WeakReference<ComponentBase>(component));
 
             var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
-            if (fetchedTextTable != null) return fetchedTextTable.Table as T;
-
-            var table = await FetchTextTableAsync<T>();
-
-            var textTable = new TextTable
+            if (fetchedTextTable == null)
             {
-                TableType = typeof(T),
-                Table = table,
-                RefreshTableAsync = (t) => FetchTextTableAsync<T>().ContinueWith(task =>
-                {
-                    var result = task.Result;
-                    var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public);
-                    foreach (var field in fields) field.SetValue(t, field.GetValue(result));
-                })
-            };
-            this.TextTables.Add(textTable);
-            return table;
+                fetchedTextTable = new TextTable(typeof(T), () => FetchTextTableAsync<T>());
+                this.TextTables.Add(fetchedTextTable);
+            }
+            return fetchedTextTable.GetTableAsync<T>();
         }
 
         private void SweepGarbageCollectedComponents()
@@ -123,7 +112,7 @@ namespace Toolbelt.Blazor.I18nText
             // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
-        private async Task<T> FetchTextTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
+        private async Task<object> FetchTextTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
         {
             await EnsureInitialLangAsync();
 

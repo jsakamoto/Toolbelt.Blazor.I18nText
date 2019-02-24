@@ -10,7 +10,7 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
     <Authors>J.Sakamoto</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.34</Version>
+    <Version>1.0.0.36</Version>
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
