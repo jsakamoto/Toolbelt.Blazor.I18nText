@@ -43,8 +43,6 @@ namespace Toolbelt.Blazor.I18nText
             }
 
             this.Options = options;
-            if (this.Options.GetInitialLanguageAsync == null) this.Options.GetInitialLanguageAsync = this.GetInitialLanguageAsync;
-            if (this.Options.PersistCurrentLanguageAsync == null) this.Options.PersistCurrentLanguageAsync = this.PersistCurrentLanguageAsync;
 
             this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.Options).ContinueWith(t =>
             {
@@ -52,12 +50,12 @@ namespace Toolbelt.Blazor.I18nText
             });
         }
 
-        private Task<string> GetInitialLanguageAsync(I18nTextOptions options)
+        internal static Task<string> GetInitialLanguageAsync(I18nTextOptions options)
         {
             return JSRuntime.Current.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
         }
 
-        private Task PersistCurrentLanguageAsync(string langCode, I18nTextOptions options)
+        internal static Task PersistCurrentLanguageAsync(string langCode, I18nTextOptions options)
         {
             return JSRuntime.Current.InvokeAsync<object>("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }

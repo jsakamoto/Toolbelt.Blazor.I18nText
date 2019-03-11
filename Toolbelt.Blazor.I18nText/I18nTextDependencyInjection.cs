@@ -19,7 +19,11 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
             services.AddSingleton<BlazorPathInfoService>();
             services.AddScoped(serviceProvider =>
             {
-                var options = new I18nTextOptions();
+                var options = new I18nTextOptions
+                {
+                    GetInitialLanguageAsync = I18nText.I18nText.GetInitialLanguageAsync,
+                    PersistCurrentLanguageAsync = I18nText.I18nText.PersistCurrentLanguageAsync,
+                };
                 configure?.Invoke(options);
                 return new I18nText.I18nText(typeof(TStartup), serviceProvider, options);
             });

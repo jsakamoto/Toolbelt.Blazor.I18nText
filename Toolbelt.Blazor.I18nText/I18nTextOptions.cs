@@ -8,10 +8,10 @@ namespace Toolbelt.Blazor.I18nText
 
     public class I18nTextOptions
     {
-        public GetInitialLanguage GetInitialLanguageAsync { get; set; }
+        public GetInitialLanguage GetInitialLanguageAsync;
 
-        public PersistCurrentLanguageAsync PersistCurrentLanguageAsync { get; set; }
+        public PersistCurrentLanguageAsync PersistCurrentLanguageAsync;
 
-        public PersistanceLevel PersistanceLevel { get; set; } = PersistanceLevel.Session;
+        public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
     }
 }
