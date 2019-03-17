@@ -31,6 +31,8 @@ namespace Toolbelt.Blazor.I18nText
 
         private Task InitLangTask;
 
+        private readonly IServiceProvider ServiceProvider;
+
         internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider, I18nTextOptions options)
         {
             this.RunningOnClientSide = RuntimeInformation.OSDescription == "web";
@@ -42,22 +44,25 @@ namespace Toolbelt.Blazor.I18nText
                 this.BlazorPathInfo = blazorPathInfoService.GetPathInfo(typeOfStartUp);
             }
 
+            this.ServiceProvider = serviceProvider;
             this.Options = options;
 
-            this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.Options).ContinueWith(t =>
+            this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options).ContinueWith(t =>
             {
                 _CurrentLanguage = t.IsCompleted ? t.Result : "en";
             });
         }
 
-        internal static Task<string> GetInitialLanguageAsync(I18nTextOptions options)
+        internal static Task<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            return JSRuntime.Current.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
+            var jsRuntime = serviceProvider.GetService(typeof(IJSRuntime)) as IJSRuntime;
+            return jsRuntime.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
         }
 
-        internal static Task PersistCurrentLanguageAsync(string langCode, I18nTextOptions options)
+        internal static Task PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
         {
-            return JSRuntime.Current.InvokeAsync<object>("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
+            var jsRuntime = serviceProvider.GetService(typeof(IJSRuntime)) as IJSRuntime;
+            return jsRuntime.InvokeAsync<object>("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }
 
         public async Task<string> GetCurrentLanguageAsync()
@@ -70,7 +75,7 @@ namespace Toolbelt.Blazor.I18nText
         {
             if (this._CurrentLanguage == langCode) return;
 
-            await this.Options.PersistCurrentLanguageAsync?.Invoke(langCode, this.Options);
+            await this.Options.PersistCurrentLanguageAsync?.Invoke(this.ServiceProvider, langCode, this.Options);
 
             this._CurrentLanguage = langCode;
             var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync());
