@@ -120,13 +120,13 @@ namespace Toolbelt.Blazor.I18nText.Test
             var enTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(enJsonText);
             enTexts["HelloWorld"].Is("Hello World!");
             enTexts["Exit"].Is("Exit");
-            enTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
+            enTexts["GreetingOfJA"].Is("ã“ã‚“ã«ã¡ã¯");
 
             var jaJsonText = File.ReadAllText(Path.Combine(jsonDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
             var jaTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(jaJsonText);
-            jaTexts["HelloWorld"].Is("‚±‚ñ‚É‚¿‚Í¢ŠE!");
+            jaTexts["HelloWorld"].Is("ã“ã‚“ã«ã¡ã¯ä¸–ç•Œ!");
             jaTexts["Exit"].Is("Exit");
-            jaTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
+            jaTexts["GreetingOfJA"].Is("ã“ã‚“ã«ã¡ã¯");
         }
 
         [Fact(DisplayName = "Compile - No Source Files")]
