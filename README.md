@@ -4,7 +4,11 @@
 
 This is a NuGet package that allows you to localize texts in your Blazor app.
 
-![movie.1](.assets/movie-001.gif)
+![movie.1](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/movie-001.gif)
+
+### Live Demo
+
+- [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/)
 
 ## Quick Start
 
@@ -44,7 +48,7 @@ and the naming rule of localized text files must be bellow.
 <Text Table Name>.<Language Code>.json
 ```
 
-![fig.1](.assets/fig.001.png)
+![fig.1](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.001.png)
 
 ### Step.3 - Build the project always when localized text JSON files are created or updated.
 
@@ -54,7 +58,7 @@ After building the project, **"Typed text table class" C# files** will be genera
 
 And also, **localized text resource json files** will be generated at the `wwwroot/content/i18ntext` folder, too.
 
-![fig.2](.assets/fig.002.png)
+![fig.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002.png)
 
 **NOTE** - If you want to do this automatically  whenever those i18n JSON files are changed, you can use `dotnet watch` command with following arguments.
 
@@ -64,7 +68,7 @@ $ dotnet watch msbuild -t:CompileI18nText
 
 After entry this dotnet CLI command, dotnet CLI stay in execution state and watch the changing of localized text files. If it detect the changing of localized text files, then the dotnet CLI re-compile localized text files into Text Table classes and Localized Resource JSON files.
 
-![fig.2-2](.assets/fig.002-2.png)
+![fig.2-2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002-2.png)
 
 ### Step.4 - Configure your app to use I18nText service
 
@@ -74,7 +78,7 @@ Open the C# source file of the "Startup" class of your Blazor app in your editor
 services.AddI18nText<Startup>();
 ```
 
-![fig.3](.assets/fig.003.png)
+![fig.3](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.003.png)
 
 ### Step.5 - Get the Text Table object in your Blazor component
 
@@ -104,7 +108,7 @@ protected override async Task OnInitAsync()
   MyText = await I18nText.GetTextTableAsync<I18nText.MyText>(this);
 ```
 
-![fig.4](.assets/fig.004.png)
+![fig.4](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.004.png)
 
 ### Step.6 - Use the Text Table
 
@@ -112,7 +116,7 @@ After doing the these steps, you can reference a field of the Text Table object 
 
 If you are using Visual Studio in Windows OS and Blazor extensions is installed in that Visual Studio, you can get "IntelliSense" and "Document comment" support.
 
-![movie.2](.assets/movie-002.gif)
+![movie.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/movie-002.gif)
 
 **_Note:_** Text Table object allows you to get localized text by key string dynamically, with indexer syntax, like this.
 
@@ -132,7 +136,7 @@ Build and run your Blazor app.
 
 The I18nText service detects the language settings of the Web browser, and reads the localized text resource JSON which is most suitable for the language detected.
 
-![fig.5](.assets/fig.005.png)
+![fig.5](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.005.png)
 
 ## Limitations
 
@@ -331,4 +335,4 @@ This field value is used by the static method that is the default value of `Pers
 
 ## License
 
-[Mozilla Public License Version 2.0](LICENSE)
+[Mozilla Public License Version 2.0](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/LICENSE)
