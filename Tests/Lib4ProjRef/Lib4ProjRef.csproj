@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
@@ -7,31 +7,26 @@
     <BlazorLinkOnBuild>false</BlazorLinkOnBuild>
     <LangVersion>7.3</LangVersion>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
+    <Version>1.0.1</Version>
   </PropertyGroup>
-
   <ItemGroup>
     <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
     <EmbeddedResource Include="content\**\*.js" LogicalName="blazor:js:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="content\**\*.css" LogicalName="blazor:css:%(RecursiveDir)%(Filename)%(Extension)" />
     <EmbeddedResource Include="content\**" Exclude="**\*.js;**\*.css" LogicalName="blazor:file:%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Build" Version="3.0.0-preview3-19153-02" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.43" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.45" />
   </ItemGroup>
-
   <ItemGroup>
     <Watch Remove="i18ntext\Text.en.json" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="i18ntext\Text.en.json" />
   </ItemGroup>
-
   <ItemGroup>
     <Watch Remove="i18ntext\Text.ja.json" />
   </ItemGroup>
-
 </Project>
