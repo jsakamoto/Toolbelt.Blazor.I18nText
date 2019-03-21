@@ -48,8 +48,8 @@ namespace Toolbelt.Blazor.I18nText
                 Log.LogMessage($"FallBackLanguage: [{options.FallBackLanguage}]");
 
                 var srcFiles = this.Include
-                    .Select(taskItem => Path.Combine(baseDir, taskItem.ItemSpec))
-                    .Select(path => new I18nTextSourceFile(path, Encoding.UTF8))
+                    .Select(taskItem => (Path: Path.Combine(baseDir, taskItem.ItemSpec), Encoding: GetEncoding(taskItem)))
+                    .Select(item => new I18nTextSourceFile(item.Path, item.Encoding))
                     .ToArray();
 
                 foreach (var src in srcFiles) Log.LogMessage($"- {src}");
@@ -63,6 +63,13 @@ namespace Toolbelt.Blazor.I18nText
                 Log.LogErrorFromException(e, showStackTrace: true, showDetail: true, file: null);
                 return false;
             }
+        }
+
+        private static Encoding GetEncoding(ITaskItem taskItem)
+        {
+            var encodingName = taskItem.GetMetadata("Encoding");
+            if (string.IsNullOrEmpty(encodingName)) return Encoding.UTF8;
+            return Encoding.GetEncoding(encodingName);
         }
     }
 }

@@ -51,7 +51,7 @@
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <PropertyGroup>
-    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">i18ntext\**\*.json</I18nTextFilePattern>
+    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">i18ntext\**\*.json;i18ntext\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
