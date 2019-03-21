@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TinyCsvParser;
+using TinyCsvParser.Mapping;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
@@ -43,7 +45,7 @@ namespace Toolbelt.Blazor.I18nText
                 var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 1));
                 var langCode = fnameParts.Last();
                 var srcText = File.ReadAllText(srcFile.Path, srcFile.Encoding);
-                var textTable = DeserializeSrcText(srcText);
+                var textTable = DeserializeSrcText(srcText, Path.GetExtension(srcFile.Path).ToLower());
 
                 var type = i18textSrc.Types.GetOrAdd(typeName, new I18nTextType());
                 type.Langs[langCode] = textTable;
@@ -75,12 +77,48 @@ namespace Toolbelt.Blazor.I18nText
             return i18textSrc;
         }
 
-        private static I18nTextTable DeserializeSrcText(string srcText)
+        private static I18nTextTable DeserializeSrcText(string srcText, string fileNameExtension)
+        {
+            switch (fileNameExtension)
+            {
+                case ".json": return DeserializeSrcTextFromJson(srcText);
+                case ".csv": return DeserializeSrcTextFromCsv(srcText);
+                default: throw new I18nTextCompileException($"Unknown file type ({fileNameExtension}) as an I18n Text source file.");
+            }
+        }
+
+        private static I18nTextTable DeserializeSrcTextFromJson(string srcText)
         {
             // NOTE:
             // a JSON.NET old version has problem that it can't deserialize ConcurrentDictionary directly.
             // Therefore, deserialize into normal dictionary at first, and second, re - constrauct as ConcurrentDictionary.
             var tableTextRaw = JsonConvert.DeserializeObject<Dictionary<string, string>>(srcText);
+            return new I18nTextTable(tableTextRaw);
+        }
+
+        internal class KeyValue
+        {
+            public string Key { get; set; }
+
+            public string Value { get; set; }
+        }
+
+        internal class CsvKeyValueMapping : CsvMapping<KeyValue>
+        {
+            public CsvKeyValueMapping() : base()
+            {
+                MapProperty(0, x => x.Key);
+                MapProperty(1, x => x.Value);
+            }
+        }
+
+        private static I18nTextTable DeserializeSrcTextFromCsv(string srcText)
+        {
+            var csvParser = new CsvParser<KeyValue>(
+                new CsvParserOptions(skipHeader: false, fieldsSeparator: ','),
+                new CsvKeyValueMapping());
+            var tableTextRaw = csvParser.ReadFromString(new CsvReaderOptions(new[] { "\r\n", "\n" }), srcText)
+                .ToDictionary(row => row.Result.Key, row => row.Result.Value);
             return new I18nTextTable(tableTextRaw);
         }
 

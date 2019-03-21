@@ -44,7 +44,8 @@ namespace Toolbelt.Blazor.I18nText.Test
         [InlineData("ja-jp")]
         public void Compile_I18nTextTypedClassWasGenerated_Test(string langCode)
         {
-            var srcFiles = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories)
+            var srcFiles = "*.json;*.csv".Split(';')
+                .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
             var options = new I18nTextCompilerOptions { FallBackLanguage = langCode };
             var compiler = new I18nTextCompiler();
@@ -103,7 +104,8 @@ namespace Toolbelt.Blazor.I18nText.Test
         [Fact(DisplayName = "Compile - I18n Text JSON files were generated")]
         public void Compile_I18nTextJsonFilesWereGenerated_Test()
         {
-            var srcFiles = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories)
+            var srcFiles = "*.json;*.csv".Split(';')
+                .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
             var options = new I18nTextCompilerOptions();
             var compiler = new I18nTextCompiler();
