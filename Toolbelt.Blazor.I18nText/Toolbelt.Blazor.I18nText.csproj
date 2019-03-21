@@ -52,6 +52,13 @@
     <TypeScriptSourceMap>True</TypeScriptSourceMap>
     <TypeScriptMapRoot />
     <TypeScriptSourceRoot />
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
+    <PackageTags>blazor,localize,i18n</PackageTags>
+    <PackageReleaseNotes>v.1.0.0
+- 1st release.</PackageReleaseNotes>
+    <Copyright>Copyright © 2019 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 
   <ItemGroup>
