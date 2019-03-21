@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Build.Framework;
 
 namespace Toolbelt.Blazor.I18nText
@@ -46,14 +47,15 @@ namespace Toolbelt.Blazor.I18nText
                 Log.LogMessage($"NameSpace     : [{options.NameSpace}]");
                 Log.LogMessage($"FallBackLanguage: [{options.FallBackLanguage}]");
 
-                var srcFilesPath = this.Include
+                var srcFiles = this.Include
                     .Select(taskItem => Path.Combine(baseDir, taskItem.ItemSpec))
+                    .Select(path => new I18nTextSourceFile(path, Encoding.UTF8))
                     .ToArray();
 
-                foreach (var src in srcFilesPath) Log.LogMessage($"- {src}");
+                foreach (var src in srcFiles) Log.LogMessage($"- {src}");
 
                 var compiler = new I18nTextCompiler();
-                var successOrNot = compiler.Compile(srcFilesPath, options);
+                var successOrNot = compiler.Compile(srcFiles, options);
                 return successOrNot;
             }
             catch (Exception e)

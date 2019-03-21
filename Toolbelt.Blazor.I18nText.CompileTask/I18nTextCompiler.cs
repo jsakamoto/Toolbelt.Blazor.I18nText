@@ -11,11 +11,11 @@ namespace Toolbelt.Blazor.I18nText
 {
     public class I18nTextCompiler
     {
-        public bool Compile(string[] srcFilesPath, I18nTextCompilerOptions options)
+        public bool Compile(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
             try
             {
-                var i18textSrc = ParseSourceFiles(srcFilesPath, options);
+                var i18textSrc = ParseSourceFiles(srcFiles, options);
                 OutputTypesFiles(options, i18textSrc);
                 OutputI18nTextJsonFiles(options, i18textSrc);
                 return true;
@@ -32,17 +32,17 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        private static I18nTextSource ParseSourceFiles(string[] srcFilesPath, I18nTextCompilerOptions options)
+        private static I18nTextSource ParseSourceFiles(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
             var i18textSrc = new I18nTextSource();
-            if (!srcFilesPath.Any()) return i18textSrc;
+            if (!srcFiles.Any()) return i18textSrc;
 
-            Parallel.ForEach(srcFilesPath, srcPath =>
+            Parallel.ForEach(srcFiles, srcFile =>
             {
-                var fnameParts = Path.GetFileNameWithoutExtension(srcPath).Split('.');
+                var fnameParts = Path.GetFileNameWithoutExtension(srcFile.Path).Split('.');
                 var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 1));
                 var langCode = fnameParts.Last();
-                var srcText = File.ReadAllText(srcPath);
+                var srcText = File.ReadAllText(srcFile.Path, srcFile.Encoding);
                 var textTable = DeserializeSrcText(srcText);
 
                 var type = i18textSrc.Types.GetOrAdd(typeName, new I18nTextType());
