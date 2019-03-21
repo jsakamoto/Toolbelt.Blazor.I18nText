@@ -15,7 +15,7 @@
     <PackageReference Include="Lib4PackRef" Version="1.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="0.9.0-preview3-19154-02" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.9.0-preview3-19154-02" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.45" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.49" />
 
     <DotNetCliToolReference Include="Microsoft.AspNetCore.Blazor.Cli" Version="0.9.0-preview3-19154-02" />
   </ItemGroup>

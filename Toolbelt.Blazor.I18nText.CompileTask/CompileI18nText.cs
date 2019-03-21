@@ -52,7 +52,7 @@ namespace Toolbelt.Blazor.I18nText
                     .Select(item => new I18nTextSourceFile(item.Path, item.Encoding))
                     .ToArray();
 
-                foreach (var src in srcFiles) Log.LogMessage($"- {src}");
+                foreach (var src in srcFiles) Log.LogMessage($"- {src.Path}, {src.Encoding.BodyName}");
 
                 var compiler = new I18nTextCompiler();
                 var successOrNot = compiler.Compile(srcFiles, options);
