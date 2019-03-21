@@ -10,7 +10,7 @@
     <LangVersion>7.3</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>1.0.9</Version>
+    <Version>1.0.12</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,11 +23,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Browser" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Build" Version="3.0.0-preview3-19153-02" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.40" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="1.0.0.43" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="i18ntext\%40types\" />
+    <I18nText Include="i18ntext\Text.ja.csv">
+      <Encoding>Shift_Jis</Encoding>
+    </I18nText>
   </ItemGroup>
 
 </Project>
