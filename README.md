@@ -6,6 +6,13 @@ This is a NuGet package that allows you to localize texts in your Blazor app.
 
 ![movie.1](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/movie-001.gif)
 
+### Feature
+
+- It works without Server-Side.
+- You can develop only plain text editor - No need .resx
+- Static Typing - IntelliSense, Code Hint...
+- It also works well on Blazor components libraries. 
+
 ### Live Demo
 
 - [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/)
