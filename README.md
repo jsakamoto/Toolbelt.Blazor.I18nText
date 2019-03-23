@@ -49,7 +49,7 @@ The localized text source files must be simple key-value only JSON file like a b
 }
 ```
 
-or, 2 coulmn only CSV file without header row like a bellow example.
+or, 2 column only CSV file without header row like a bellow example.
 
 ```
 Key1,Localized text 1
@@ -107,7 +107,7 @@ Open your Blazor component file (.cshtml) in your editor, and do this:
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 ```
 
-2. Add a filed of the Text Table class generated from localized text source files, and asign the default instance.
+2. Add a filed of the Text Table class generated from localized text source files, and assign the default instance.
 
 ```csharp
 @functions {
@@ -117,7 +117,7 @@ Open your Blazor component file (.cshtml) in your editor, and do this:
 
 **NOTE** - The namespace of the Text Table class is `<default namespace of your Blazor project>` + `"I18nText"`.
 
-3. Override `OnInitAsync()` method of the Blazor component, and asign a Text Table object that's a return value of `GetTextTableAsync<T>()` method of `I18nText` service instance to the Text Table field.
+3. Override `OnInitAsync()` method of the Blazor component, and assign a Text Table object that's a return value of `GetTextTableAsync<T>()` method of `I18nText` service instance to the Text Table field.
 
 ```csharp
 protected override async Task OnInitAsync()
