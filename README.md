@@ -35,11 +35,11 @@ You can also do it in Package Manager Console of Visual Studio, if you are using
 PM> Install-Package Toolbelt.Blazor.I18nText
 ```
 
-### Step.2 - Create localized text files as JSON
+### Step.2 - Create localized text source files as JSON or CSV
 
-Add localized text files for each language in a `i18ntext` folder under  your Blazor app project folder.
+Add localized text source files for each language in a `i18ntext` folder under  your Blazor app project folder.
 
-The localized text files must be simple key-value only JSON file like a bellow example,
+The localized text source files must be simple key-value only JSON file like a bellow example,
 
 ```json
 {
@@ -49,31 +49,38 @@ The localized text files must be simple key-value only JSON file like a bellow e
 }
 ```
 
-and the naming rule of localized text files must be bellow.
+or, 2 coulmn only CSV file without header row like a bellow example.
 
 ```
-<Text Table Name>.<Language Code>.json
+Key1,Localized text 1
+Key2,Localized text 2
+```
+
+And, the naming rule of localized text source files must be bellow.
+
+```
+<Text Table Name>.<Language Code>.{json|csv}
 ```
 
 ![fig.1](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.001.png)
 
-### Step.3 - Build the project always when localized text JSON files are created or updated.
+### Step.3 - Build the project always when localized text source files are created or updated.
 
-After creating or updating those localized text files, **you have to build your Blazor app project.**
+After creating or updating those localized text source files, **you have to build your Blazor app project.**
 
-After building the project, **"Typed text table class" C# files** will be generated in the `i18ntext/@types` folder, by the building process.
+After building the project, **"Typed Text Table class" C# files** will be generated in the `i18ntext/@types` folder, by the building process.
 
-And also, **localized text resource json files** will be generated at the `wwwroot/content/i18ntext` folder, too.
+And also, **"Localized Text Resource JSON" files** will be generated at the `wwwroot/content/i18ntext` folder, too.
 
 ![fig.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002.png)
 
-**NOTE** - If you want to do this automatically  whenever those i18n JSON files are changed, you can use `dotnet watch` command with following arguments.
+**NOTE** - If you want to do this automatically  whenever those localized text source files (.json or .csv) are changed, you can use `dotnet watch` command with following arguments.
 
 ```shell
 $ dotnet watch msbuild -t:CompileI18nText
 ```
 
-After entry this dotnet CLI command, dotnet CLI stay in execution state and watch the changing of localized text files. If it detect the changing of localized text files, then the dotnet CLI re-compile localized text files into Text Table classes and Localized Resource JSON files.
+After entry this dotnet CLI command, dotnet CLI stay in execution state and watch the changing of localized text source files. If it detect the changing of localized text source files, then the dotnet CLI re-compile localized text source files into **"Typed Text Table class"** files and **"Localized Text Resource JSON" files**.
 
 ![fig.2-2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002-2.png)
 
@@ -87,7 +94,7 @@ services.AddI18nText<Startup>();
 
 ![fig.3](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.003.png)
 
-### Step.5 - Get the Text Table object in your Blazor component
+### Step.5 - Get the "Text Table" object in your Blazor component
 
 Open your Blazor component file (.cshtml) in your editor, and do this:
 
@@ -97,7 +104,7 @@ Open your Blazor component file (.cshtml) in your editor, and do this:
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 ```
 
-2. Add a filed of the Text Table class generated from localized text files, and asign the default instance.
+2. Add a filed of the Text Table class generated from localized text source files, and asign the default instance.
 
 ```csharp
 @functions {
@@ -230,7 +237,7 @@ public Task<T> GetTextTableAsync<T>(ComponentBase component);
 
 
 This method returns the "Text Table" object specified with type argument `T`.
-The type `T` is the class auto generated from localized text file in the building process.
+The type `T` is the class auto generated from localized text source file in the building process.
 
 The fields of "Text Table" object are initialized by Localized Resource Text JSON file which is most suitable for the language code returned by the `GetCurrentLanguageAsync()` method.
 
