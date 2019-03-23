@@ -56,6 +56,9 @@ Key1,Localized text 1
 Key2,Localized text 2
 ```
 
+**NOTICE** - The encoding of CSV file must be **UTF-8**.
+
+
 And, the naming rule of localized text source files must be bellow.
 
 ```
