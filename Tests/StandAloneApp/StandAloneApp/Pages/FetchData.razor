@@ -1,5 +1,6 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <h1>@Text.WeatherForecast</h1>
 
@@ -7,7 +8,6 @@
 
 @if (forecasts == null)
 {
-    @Text
     <p><em>@Text.Loading</em></p>
 }
 else
@@ -35,9 +35,7 @@ else
     </table>
 }
 
-@inject Toolbelt.Blazor.I18nText.I18nText I18nText
-
-@functions{
+@functions {
     Text Text = new Text();
 
     WeatherForecast[] forecasts;
@@ -52,8 +50,11 @@ else
     class WeatherForecast
     {
         public DateTime Date { get; set; }
+
         public int TemperatureC { get; set; }
+
         public int TemperatureF { get; set; }
+
         public string Summary { get; set; }
     }
 }

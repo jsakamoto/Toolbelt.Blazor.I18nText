@@ -1,4 +1,4 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <div class="sidebar">
@@ -12,7 +12,6 @@
 
     <div class="content px-4">
         @Body
-
         <div class="footer">
             <div class="form-row align-items-center text-muted px-4">
                 <div class="col"></div>
@@ -40,9 +39,13 @@
     {
         var lang = await I18nText.GetCurrentLanguageAsync();
         if (new[] { "en", "ja" }.Contains(lang.Split('-')[0]))
+        {
             CurrentLang = lang;
+        }
         else
+        {
             CurrentLang = "en";
+        }
 
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }

@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <h1>@Text.Counter</h1>
 
@@ -6,9 +7,7 @@
 
 <button class="btn btn-primary" onclick="@IncrementCount">@Text.ClickMe</button>
 
-@inject Toolbelt.Blazor.I18nText.I18nText I18nText
-
-@functions{
+@functions {
 
     Text Text = new Text();
 

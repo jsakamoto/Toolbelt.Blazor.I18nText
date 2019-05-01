@@ -1,0 +1,23 @@
+﻿@page "/"
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
+
+<h1>@Text.HelloWorld</h1>
+
+@Text.WelcomeToYourNewApp
+
+<SurveyPrompt Title="@(Text.SurveyTitle)" />
+
+<Lib4PackRefComponent></Lib4PackRefComponent>
+
+<Lib4ProjRefComponent></Lib4ProjRefComponent>
+
+
+@functions{
+
+    Text Text = new Text();
+
+    protected override async Task OnInitAsync()
+    {
+        Text = await I18nText.GetTextTableAsync<Text>(this);
+    }
+}
