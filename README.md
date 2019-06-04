@@ -17,6 +17,10 @@ This is a NuGet package that allows you to localize texts in your Blazor app.
 
 - [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/)
 
+### Notice
+
+**Server-side** Blazor is **not supported** at this time.
+
 ## Quick Start
 
 ### Step.1 - Add "Toolbelt.Blazor.I18nText" Package
