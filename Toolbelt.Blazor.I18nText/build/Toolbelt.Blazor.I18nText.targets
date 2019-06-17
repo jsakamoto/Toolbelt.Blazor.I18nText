@@ -14,14 +14,6 @@
       <Pack>true</Pack>
       <Visible>false</Visible>
     </None>
-    <Content Update="wwwroot\content\i18ntext\**\*.json">
-      <PackagePath>i18ntext\%(Filename)%(Extension)</PackagePath>
-      <Pack>true</Pack>
-    </Content>
-    <None Update="wwwroot\content\i18ntext\**\*.json">
-      <PackagePath>i18ntext\%(Filename)%(Extension)</PackagePath>
-      <Pack>true</Pack>
-    </None>
   </ItemGroup>
 
   <!--

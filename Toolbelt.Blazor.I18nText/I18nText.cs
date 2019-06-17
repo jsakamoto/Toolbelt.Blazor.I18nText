@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -101,7 +103,7 @@ namespace Toolbelt.Blazor.I18nText
             var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
             if (fetchedTextTable == null)
             {
-                fetchedTextTable = new TextTable(typeof(T), () => FetchTextTableAsync<T>());
+                fetchedTextTable = new TextTable(typeof(T), t => FetchTextTableAsync<T>(t as T));
                 this.TextTables.Add(fetchedTextTable);
             }
             return fetchedTextTable.GetTableAsync<T>();
@@ -115,7 +117,7 @@ namespace Toolbelt.Blazor.I18nText
             // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
-        private async Task<object> FetchTextTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
+        private async Task<object> FetchTextTableAsync<T>(T table) where T : class, I18nTextFallbackLanguage, new()
         {
             await EnsureInitialLangAsync();
 
@@ -139,14 +141,15 @@ namespace Toolbelt.Blazor.I18nText
                 jsonUrls.Add("_content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
             }
 
-            var table = default(T);
+            var textMap = default(Dictionary<string, string>);
             foreach (var jsonUrl in jsonUrls)
             {
                 try
                 {
                     if (this.RunningOnClientSide)
                     {
-                        table = await this.HttpClient.GetJsonAsync<T>(jsonUrl);
+                        var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
+                        textMap = JsonSerializer.Parse<Dictionary<string, string>>(jsonText);
                         break;
                     }
                     else
@@ -158,20 +161,24 @@ namespace Toolbelt.Blazor.I18nText
                         if (File.Exists(jsonLocalPath))
                         {
                             var jsonText = File.ReadAllText(jsonLocalPath);
-                            table = Json.Deserialize<T>(jsonText);
+                            textMap = JsonSerializer.Parse<Dictionary<string, string>>(jsonText);
                             break;
                         }
                     }
                 }
-                catch (Exception) { }
+                catch (JsonException) { }
+                catch (HttpRequestException e) when (e.Message.Split(' ').Contains("404")) { }
             }
 
-            if (table == null)
+            var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.FieldType == typeof(string));
+            if (textMap != null)
             {
-                table = Activator.CreateInstance<T>();
-                var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public);
-                foreach (var field in fields) field.SetValue(table, field.Name);
+                foreach (var field in fields)
+                {
+                    field.SetValue(table, textMap.TryGetValue(field.Name, out var text) ? text : field.Name);
+                }
             }
+            else foreach (var field in fields) field.SetValue(table, field.Name);
 
             return table;
         }

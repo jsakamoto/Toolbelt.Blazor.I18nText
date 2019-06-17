@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText.Internals
 {
-    internal delegate Task<object> FetchTextTableAsync();
+    internal delegate Task<object> FetchTextTableAsync(object table);
 
     internal class TextTable
     {
@@ -18,8 +17,9 @@ namespace Toolbelt.Blazor.I18nText.Internals
         public TextTable(Type tableType, FetchTextTableAsync fetchTextTableAsync)
         {
             TableType = tableType;
+            var table = Activator.CreateInstance(tableType);
             FetchTextTableAsync = fetchTextTableAsync;
-            FetchTextTableTask = fetchTextTableAsync();
+            FetchTextTableTask = fetchTextTableAsync(table);
         }
 
         public async Task<T> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
@@ -30,9 +30,7 @@ namespace Toolbelt.Blazor.I18nText.Internals
         public async Task RefreshTableAsync()
         {
             var table = await FetchTextTableTask;
-            var newTable = await FetchTextTableAsync();
-            var fields = TableType.GetFields(BindingFlags.Instance | BindingFlags.Public);
-            foreach (var field in fields) field.SetValue(table, field.GetValue(newTable));
+            await FetchTextTableAsync(table);
         }
     }
 }
