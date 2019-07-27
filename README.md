@@ -356,6 +356,7 @@ This field value is used by the static method that is the default value of `Pers
 
 ## Release Note
 
+- **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
 - **v.3.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
 - **v.2.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
 - **v.1.0.0** - 1st release.

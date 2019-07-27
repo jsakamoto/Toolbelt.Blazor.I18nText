@@ -149,7 +149,7 @@ namespace Toolbelt.Blazor.I18nText
                     if (this.RunningOnClientSide)
                     {
                         var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
-                        textMap = JsonSerializer.Parse<Dictionary<string, string>>(jsonText);
+                        textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
                         break;
                     }
                     else
@@ -161,7 +161,7 @@ namespace Toolbelt.Blazor.I18nText
                         if (File.Exists(jsonLocalPath))
                         {
                             var jsonText = File.ReadAllText(jsonLocalPath);
-                            textMap = JsonSerializer.Parse<Dictionary<string, string>>(jsonText);
+                            textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
                             break;
                         }
                     }
