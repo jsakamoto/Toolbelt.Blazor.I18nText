@@ -9,7 +9,7 @@
     Configure i18n text files, that are included this Blazor component library NuGet package, 
     will be copied to output directory. 
     -->
-    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\staticwebassets\content\i18ntext\*.json">
+    <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\i18ntext\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
       <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
@@ -20,10 +20,10 @@
           BeforeTargets="GetCopyToPublishDirectoryItems"
           Condition="'$(OutputType.ToLowerInvariant())'=='exe'">
     <ItemGroup>
-      <_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
+      <_BlazorI18nTextResourceJsons Include="$(TargetDir)dist\_content\i18ntext\*.json">
       </_BlazorI18nTextResourceJsons>
       <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
-        <TargetPath>$(BlazorPublishDistDir)content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </ContentWithTargetPath>
     </ItemGroup>

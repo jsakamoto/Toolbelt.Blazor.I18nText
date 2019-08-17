@@ -9,7 +9,7 @@
 
     Text Text = new Text();
 
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         this.Text = await I18nText.GetTextTableAsync<Text>(this);
     }

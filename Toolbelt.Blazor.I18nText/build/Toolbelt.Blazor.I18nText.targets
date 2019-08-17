@@ -5,41 +5,7 @@
   and will be imported the project file that references this package.
   -->
 
-  <!--
-  Configure files that should be included as a NuGet package's content. 
-  -->
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\targets\I18nTextPackageBuild.targets">
-      <PackagePath>build\$(PackageId).targets</PackagePath>
-      <Pack>true</Pack>
-      <Visible>false</Visible>
-    </None>
-  </ItemGroup>
-
-  <!--
-  Configure files that should be copied to output directory
-  when this project is project-referenced from the other project.
-  -->
-  <ItemGroup Condition=" '$(OutputType.ToLowerInvariant())' == 'library' ">
-    <ContentWithTargetPath Include="wwwroot\content\i18ntext\**\*.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-
-  <Target Name="BlazorI18nTextGetCopyToPublishDirectoryItems"
-          BeforeTargets="GetCopyToPublishDirectoryItems"
-          Condition="'$(OutputType.ToLowerInvariant())'=='exe'">
-    <ItemGroup>
-      <_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
-      </_BlazorI18nTextResourceJsons>
-      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
-        <TargetPath>$(BlazorPublishDistDir)content\i18ntext\%(Filename)%(Extension)</TargetPath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ContentWithTargetPath>
-    </ItemGroup>
-  </Target>
-
+  <!-- FOR COMPILING -->
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <PropertyGroup>
@@ -51,27 +17,15 @@
 
   <ItemGroup>
     <Content Remove="$(I18nTextFilePattern)" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="$(I18nTextFilePattern)">
       <Link>..\..\..\obj\$(Configuration)\$(TargetFramework)\%(RelativeDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>true</Visible>
       <Pack>false</Pack>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="$(I18nTextFilePattern)" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="$(I18nTextFilePattern)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Watch Remove="$(I18nTextFilePattern)" />
-  </ItemGroup>
-  <ItemGroup>
     <Watch Include="$(I18nTextFilePattern)" />
   </ItemGroup>
 
@@ -83,9 +37,67 @@
     </ItemGroup>
 
     <CompileI18nText Include="@(I18nText)"
+                     OutDirectory="$(IntermediateOutputPath)dist\_content\i18ntext"
                      BaseDir="$(ProjectDir)"
                      Namespace="$(I18nTextNamespace)"
                      FallBackLanguage="$(I18nTextFallBackLanguage)"/>
+
+    <ItemGroup>
+      <_IntermediateBlazorI18nTextResourceJsons Include="$(IntermediateOutputPath)dist\_content\i18ntext\*.json"></_IntermediateBlazorI18nTextResourceJsons>
+      <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </ContentWithTargetPath>
+    </ItemGroup>
+
+  </Target>
+
+  <ItemGroup>
+    <_IntermediateBlazorI18nTextResourceJsons Include="$(IntermediateOutputPath)dist\_content\i18ntext\*.json"></_IntermediateBlazorI18nTextResourceJsons>
+    <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+      <Visible>false</Visible>
+      <Pack>false</Pack>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <!-- FOR CREATE PACKAGE -->
+  <PropertyGroup>
+    <BeforePack>_IncludeBlazorI18nTextResourceJsonsForPack; $(BeforePack)</BeforePack>
+  </PropertyGroup>
+  <Target Name="_IncludeBlazorI18nTextResourceJsonsForPack" DependsOnTargets="CompileI18nText" >
+    <ItemGroup>
+
+      <None Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+        <PackagePath>i18ntext\%(filename)%(extension)</PackagePath>
+        <Pack>true</Pack>
+        <Visible>false</Visible>
+      </None>
+
+      <None Include="$(MSBuildThisFileDirectory)..\targets\I18nTextPackageBuild.targets">
+        <PackagePath>build\$(PackageId).targets</PackagePath>
+        <Pack>true</Pack>
+        <Visible>false</Visible>
+      </None>
+
+    </ItemGroup>
+  </Target>
+
+  <!-- FOR PUBLISHING -->
+  <Target Name="BlazorI18nTextGetCopyToPublishDirectoryItems"
+          BeforeTargets="GetCopyToPublishDirectoryItems"
+          Condition="'$(OutputType.ToLowerInvariant())'=='exe'">
+    <ItemGroup>
+      <_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
+      </_BlazorI18nTextResourceJsons>
+      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
+        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
   </Target>
 
 </Project>
