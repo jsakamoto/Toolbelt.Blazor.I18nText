@@ -11,8 +11,10 @@
     -->
     <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\i18ntext\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       <Visible>false</Visible>
       <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+      <Pack>false</Pack>
     </ContentWithTargetPath>
   </ItemGroup>
 

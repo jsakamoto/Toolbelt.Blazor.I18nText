@@ -46,6 +46,7 @@
       <_IntermediateBlazorI18nTextResourceJsons Include="$(IntermediateOutputPath)dist\_content\i18ntext\*.json"></_IntermediateBlazorI18nTextResourceJsons>
       <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
         <Visible>false</Visible>
         <Pack>false</Pack>
@@ -58,6 +59,7 @@
     <_IntermediateBlazorI18nTextResourceJsons Include="$(IntermediateOutputPath)dist\_content\i18ntext\*.json"></_IntermediateBlazorI18nTextResourceJsons>
     <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       <Visible>false</Visible>
       <Pack>false</Pack>
