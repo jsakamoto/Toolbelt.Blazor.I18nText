@@ -19,7 +19,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         private string _TypesDir;
 
-        private string _WwwRootDir;
+        private string _TextResJsonsDir;
 
         public I18nTextCompilerTest()
         {
@@ -27,13 +27,13 @@ namespace Toolbelt.Blazor.I18nText.Test
             while (!Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Any())
                 Environment.CurrentDirectory = Path.GetDirectoryName(Environment.CurrentDirectory);
             _TypesDir = Path.Combine(Environment.CurrentDirectory, "i18ntext", "@types");
-            _WwwRootDir = Path.Combine(Environment.CurrentDirectory, "wwwroot");
+            _TextResJsonsDir = Path.Combine(Environment.CurrentDirectory, "obj", "Debug", "netstandard2.0", "dist", "_content", "i18ntext");
         }
 
         public void Dispose()
         {
             if (Directory.Exists(_TypesDir)) Directory.Delete(_TypesDir, recursive: true);
-            if (Directory.Exists(_WwwRootDir)) Directory.Delete(_WwwRootDir, recursive: true);
+            if (Directory.Exists(_TextResJsonsDir)) Directory.Delete(_TextResJsonsDir, recursive: true);
             Environment.CurrentDirectory = _OriginalCurrentDir;
         }
 
@@ -47,7 +47,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             var srcFiles = "*.json;*.csv".Split(';')
                 .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
-            var options = new I18nTextCompilerOptions { FallBackLanguage = langCode };
+            var options = new I18nTextCompilerOptions { FallBackLanguage = langCode, OutDirectory = _TextResJsonsDir };
             var compiler = new I18nTextCompiler();
             var success = compiler.Compile(srcFiles, options);
             success.IsTrue();
@@ -107,27 +107,26 @@ namespace Toolbelt.Blazor.I18nText.Test
             var srcFiles = "*.json;*.csv".Split(';')
                 .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
-            var options = new I18nTextCompilerOptions();
+            var options = new I18nTextCompilerOptions { OutDirectory = _TextResJsonsDir };
             var compiler = new I18nTextCompiler();
             var success = compiler.Compile(srcFiles, options);
             success.IsTrue();
 
             // Compiled i18n text json files should exist.
-            var jsonDir = Path.Combine(_WwwRootDir, "content", "i18ntext");
-            Directory.Exists(jsonDir).IsTrue();
-            Directory.GetFiles(jsonDir)
+            Directory.Exists(_TextResJsonsDir).IsTrue();
+            Directory.GetFiles(_TextResJsonsDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name)
                 .Is("Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json",
                     "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json");
 
-            var enJsonText = File.ReadAllText(Path.Combine(jsonDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
+            var enJsonText = File.ReadAllText(Path.Combine(_TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
             var enTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(enJsonText);
             enTexts["HelloWorld"].Is("Hello World!");
             enTexts["Exit"].Is("Exit");
             enTexts["GreetingOfJA"].Is("こんにちは");
 
-            var jaJsonText = File.ReadAllText(Path.Combine(jsonDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
+            var jaJsonText = File.ReadAllText(Path.Combine(_TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
             var jaTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(jaJsonText);
             jaTexts["HelloWorld"].Is("こんにちは世界!");
             jaTexts["Exit"].Is("Exit");
@@ -143,7 +142,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             success.IsTrue();
             Directory.Exists(_TypesDir).IsFalse();
-            Directory.Exists(_WwwRootDir).IsFalse();
+            Directory.Exists(_TextResJsonsDir).IsFalse();
         }
 
         [Fact(DisplayName = "Compile - Error by fallback lang not exist")]
@@ -155,7 +154,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             var options = new I18nTextCompilerOptions
             {
                 FallBackLanguage = "fr",
-                LogError = msg => logErr.Add(msg)
+                LogError = msg => logErr.Add(msg),
+                OutDirectory = _TextResJsonsDir
             };
             var compiler = new I18nTextCompiler();
             var suceess = compiler.Compile(srcFiles, options);
