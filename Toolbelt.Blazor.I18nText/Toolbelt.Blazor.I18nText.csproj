@@ -53,7 +53,9 @@
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
     <PackageTags>blazor,localize,i18n</PackageTags>
-    <PackageReleaseNotes>v.4.0.0
+    <PackageReleaseNotes>v.5.0.0
+- BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
+v.4.0.0
 - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
 v.3.0.0
 - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
