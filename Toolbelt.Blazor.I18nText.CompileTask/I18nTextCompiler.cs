@@ -196,24 +196,31 @@ namespace Toolbelt.Blazor.I18nText
             if (!i18textSrc.Types.Any()) return;
             if (!Directory.Exists(options.OutDirectory)) Directory.CreateDirectory(options.OutDirectory);
 
-            Parallel.ForEach(i18textSrc.Types, type =>
+            var types = i18textSrc.Types
+                .SelectMany(type => type.Value.Langs.Select(lang => (lang, jsonPath: Path.Combine(options.OutDirectory, options.NameSpace + "." + type.Key + "." + lang.Key + ".json"))))
+                .ToArray();
+
+            // Sweep old generated/should be purge text json files.
+            var existsTextJsonFiles = Directory.GetFiles(options.OutDirectory, "*.json");
+            var shouldBeSweepedFiles = existsTextJsonFiles.Except(types.Select(t => t.jsonPath));
+            foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
             {
-                Parallel.ForEach(type.Value.Langs, lang =>
+                File.Delete(shouldBeSweepedFile);
+            }
+
+            Parallel.ForEach(types, ((KeyValuePair<string, I18nTextTable> lang, string jsonPath) arg) =>
+            {
+                var textTable = new SortedDictionary<string, string>(arg.lang.Value);
+                var jsonText = JsonConvert.SerializeObject(textTable, Formatting.Indented);
+
+                var skipOutput = false;
+                if (File.Exists(arg.jsonPath))
                 {
-                    var jsonPath = Path.Combine(options.OutDirectory, options.NameSpace + "." + type.Key + "." + lang.Key + ".json");
+                    var prevJsonText = File.ReadAllText(arg.jsonPath);
+                    skipOutput = prevJsonText == jsonText;
+                }
 
-                    var textTable = new SortedDictionary<string, string>(lang.Value);
-                    var jsonText = JsonConvert.SerializeObject(textTable, Formatting.Indented);
-
-                    var skipOutput = false;
-                    if (File.Exists(jsonPath))
-                    {
-                        var prevJsonText = File.ReadAllText(jsonPath);
-                        skipOutput = prevJsonText == jsonText;
-                    }
-
-                    if (!skipOutput) File.WriteAllText(jsonPath, jsonText);
-                });
+                if (!skipOutput) File.WriteAllText(arg.jsonPath, jsonText);
             });
         }
     }
