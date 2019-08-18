@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.CompileTask", "Toolbelt.Blazor.I18nText.CompileTask\Toolbelt.Blazor.I18nText.CompileTask.csproj", "{784D7AF5-C724-4642-96D2-1A8915188A70}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.Test", "Toolbelt.Blazor.I18nText.Test\Toolbelt.Blazor.I18nText.Test.csproj", "{8F36CDCB-F53D-45F8-AA40-A2CC48BC328C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nTextCompileTask.Test", "Toolbelt.Blazor.I18nTextCompileTask.Test\Toolbelt.Blazor.I18nTextCompileTask.Test.csproj", "{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}"
 EndProject
@@ -15,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20B
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.Test", "Toolbelt.Blazor.I18nText.Test\Toolbelt.Blazor.I18nText.Test.csproj", "{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,14 +30,14 @@ Global
 		{784D7AF5-C724-4642-96D2-1A8915188A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{784D7AF5-C724-4642-96D2-1A8915188A70}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{784D7AF5-C724-4642-96D2-1A8915188A70}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8F36CDCB-F53D-45F8-AA40-A2CC48BC328C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F36CDCB-F53D-45F8-AA40-A2CC48BC328C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F36CDCB-F53D-45F8-AA40-A2CC48BC328C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F36CDCB-F53D-45F8-AA40-A2CC48BC328C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

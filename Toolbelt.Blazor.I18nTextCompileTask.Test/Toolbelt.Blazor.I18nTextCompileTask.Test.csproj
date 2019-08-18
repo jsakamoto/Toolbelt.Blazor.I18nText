@@ -8,6 +8,10 @@
     <RootNamespace>Toolbelt.Blazor.I18nText.Test</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="i18ntext\%40types\**" />
     <EmbeddedResource Remove="i18ntext\%40types\**" />

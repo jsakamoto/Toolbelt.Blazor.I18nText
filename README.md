@@ -77,7 +77,7 @@ After creating or updating those localized text source files, **you have to buil
 
 After building the project, **"Typed Text Table class" C# files** will be generated in the `i18ntext/@types` folder, by the building process.
 
-And also, **"Localized Text Resource JSON" files** will be generated at the `wwwroot/content/i18ntext` folder, too.
+And also, **"Localized Text Resource JSON" files** will be generated in the output folder, too.
 
 ![fig.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002.png)
 
@@ -124,7 +124,7 @@ Open your Blazor component file (.razor) in your editor, and do this:
 3. Override `OnInitAsync()` method of the Blazor component, and assign a Text Table object that's a return value of `GetTextTableAsync<T>()` method of `I18nText` service instance to the Text Table field.
 
 ```csharp
-protected override async Task OnInitAsync()
+protected override async Task OnInitializedAsync()
 {
   MyText = await I18nText.GetTextTableAsync<I18nText.MyText>(this);
 ```
@@ -356,6 +356,7 @@ This field value is used by the static method that is the default value of `Pers
 
 ## Release Note
 
+- **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
 - **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
 - **v.3.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
 - **v.2.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
