@@ -1,23 +1,24 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
-<h1>Weather forecast</h1>
+<h1>@Text.WeatherForecast</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<p>@Text.WeatherForecast_Description</p>
 
 @if (forecasts == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>@Text.Loading</em></p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>@Text.Date</th>
+                <th>@Text.TempC</th>
+                <th>@Text.TempF</th>
+                <th>@Text.Summary</th>
             </tr>
         </thead>
         <tbody>
@@ -27,7 +28,7 @@ else
                     <td>@forecast.Date.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <td>@Text[forecast.Summary]</td>
                 </tr>
             }
         </tbody>
@@ -35,10 +36,13 @@ else
 }
 
 @code {
+    Text Text = new Text();
+
     WeatherForecast[] forecasts;
 
     protected override async Task OnInitializedAsync()
     {
+        Text = await I18nText.GetTextTableAsync<Text>(this);
         forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
     }
 

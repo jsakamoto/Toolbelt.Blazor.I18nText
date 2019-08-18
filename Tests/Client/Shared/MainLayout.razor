@@ -7,7 +7,7 @@
 
 <div class="main">
     <div class="top-row px-4">
-        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        <a href="http://blazor.net" target="_blank" class="ml-md-auto">@Text.About</a>
     </div>
 
     <div class="content px-4">
@@ -33,6 +33,8 @@
 
     string CurrentLang;
 
+    Text Text = new Text();
+
     protected override async Task OnInitializedAsync()
     {
         var lang = await I18nText.GetCurrentLanguageAsync();
@@ -44,6 +46,8 @@
         {
             CurrentLang = "en";
         }
+
+        Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
     async Task OnChangeCurrentLang(UIChangeEventArgs args)

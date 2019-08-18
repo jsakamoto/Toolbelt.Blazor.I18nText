@@ -1,13 +1,24 @@
 ﻿@page "/"
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 @using Lib4ProjRef
 @using Lib4PackRef
 
-<h1>Hello, world!</h1>
+<h1>@Text.HelloWorld</h1>
 
-Welcome to your new app.
+@Text.WelcomeToYourNewApp
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<SurveyPrompt Title="@Text.SurveyTitle" />
 
 <Lib4ProjRefComponent></Lib4ProjRefComponent>
 
 <Lib4PackRefComponent></Lib4PackRefComponent>
+
+@code {
+
+    Text Text = new Text();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Text = await I18nText.GetTextTableAsync<Text>(this);
+    }
+}
