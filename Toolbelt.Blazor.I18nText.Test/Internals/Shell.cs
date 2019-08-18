@@ -6,8 +6,6 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
 {
     public static class Shell
     {
-        public static int ErrorLevel { get; set; }
-
         public static bool Exists(string dir, string wildCard)
         {
             return Directory.GetFiles(dir, wildCard, SearchOption.TopDirectoryOnly).Any();
@@ -29,7 +27,6 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
             };
             var process = Process.Start(pi);
             process.WaitForExit();
-            ErrorLevel = process.ExitCode;
             return process;
         }
     }

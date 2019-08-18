@@ -49,7 +49,7 @@ namespace Toolbelt.Blazor.I18nText.Test
                 {
                     var libVerNode = libProjDocAfter.Descendants("Version").First();
                     var libCurVer = Version.Parse(libVerNode.Value);
-                    var libNextVer = $"1.0.{libCurVer.Build + 1}";
+                    var libNextVer = $"{libCurVer.ToString(3)}.{libCurVer.Revision + 1}";
                     libVerNode.Value = libNextVer;
                     libProjDocAfter.Save(libProjPath);
                 }

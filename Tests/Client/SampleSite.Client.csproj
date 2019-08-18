@@ -12,8 +12,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview8.19405.7" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.0.0-preview8.19405.7" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.DevServer" Version="3.0.0-preview8.19405.7" PrivateAssets="all" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="5.0.0.17" />
-    <PackageReference Include="Lib4PackRef" Version="5.0.0.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="5.0.0.18" />
+    <PackageReference Include="Lib4PackRef" Version="5.0.0.3" />
   </ItemGroup>
 
   <ItemGroup>
