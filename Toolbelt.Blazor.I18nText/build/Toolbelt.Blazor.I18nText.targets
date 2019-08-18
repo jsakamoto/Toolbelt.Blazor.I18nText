@@ -20,6 +20,7 @@
     <Content Include="$(I18nTextFilePattern)">
       <Link>..\..\..\obj\$(Configuration)\$(TargetFramework)\%(RelativeDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       <Visible>true</Visible>
       <Pack>false</Pack>
     </Content>

@@ -6,7 +6,7 @@
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <!-- .js/.css files will be referenced via <script>/<link> tags; other content files will just be included in the app's 'dist' directory without any tags referencing them -->
@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0-preview8.19405.7" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0-preview8.19405.7" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="5.0.0.18" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="5.0.0.19" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="i18ntext\Text.en.csv" />
