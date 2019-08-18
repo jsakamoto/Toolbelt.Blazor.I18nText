@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20B
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.Test", "Toolbelt.Blazor.I18nText.Test\Toolbelt.Blazor.I18nText.Test.csproj", "{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
