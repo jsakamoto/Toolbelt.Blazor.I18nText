@@ -17,9 +17,11 @@ This is a NuGet package that allows you to localize texts in your Blazor app.
 
 - [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/)
 
-### Notice
+### Supported Blazor versions
 
-**Server-side** Blazor is **not supported** at this time.
+"Blazor Internationalization (I18n) Text" ver.6.x supports Blazor WebAssembly App versions **3.0.0 preview 9.**
+
+**[NOTICE]** - **Server-side** Blazor is **not supported** at this time.
 
 ## Quick Start
 
@@ -356,6 +358,7 @@ This field value is used by the static method that is the default value of `Pers
 
 ## Release Note
 
+- **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 9 (not compatible with v.3.0.0 Preview 8 or before.)
 - **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
 - **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
 - **v.3.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)

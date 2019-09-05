@@ -50,9 +50,9 @@
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
-    async Task OnChangeCurrentLang(UIChangeEventArgs args)
+    async Task OnChangeCurrentLang(ChangeEventArgs args)
     {
-        Console.WriteLine($"OnChange: {args.Type}, {args.Value}");
+        Console.WriteLine($"OnChange: {args.Value}");
         CurrentLang = args.Value as string;
         await I18nText.SetCurrentLanguageAsync(CurrentLang);
     }
