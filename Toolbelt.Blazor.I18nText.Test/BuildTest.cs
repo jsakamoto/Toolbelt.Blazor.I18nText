@@ -83,7 +83,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         public static IEnumerable<object[]> Projects = new[] {
             new object[]{ "Client", "netstandard2.0", "Client"},
-            new object[]{ "Server", "netcoreapp3.0", "Client"},
+            new object[]{ "Host", "netcoreapp3.0", "Client"},
             // TODO: Currently Server Side Blazor doesn't support Blazor library feature.
             // new object[]{"ServerSideApp", "ServerSideApp.Server", "netcoreapp2.1",  "ServerSideApp.App"},
         };
@@ -138,7 +138,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             var staticWebAssetDir = Path.Combine(
-                startupProjDir == "Server" ? wwwrootContentDir : distContentDir,
+                startupProjDir == "Host" ? wwwrootContentDir : distContentDir,
                 "Toolbelt.Blazor.I18nText");
             Exists(staticWebAssetDir, "script.js").IsTrue();
 
