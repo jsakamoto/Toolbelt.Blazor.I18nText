@@ -123,7 +123,9 @@ namespace Toolbelt.Blazor.I18nText.Test
         {
             var dirs = GetDirectories(startupProjDir, clientProjDir);
             var clientProjName = Path.GetFileNameWithoutExtension(Directory.GetFiles(dirs.ClientProj, "*.csproj").First());
-            var distContentDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/publish/{clientProjName}/dist/_content".Split('/')));
+            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/publish/".Split('/')));
+            var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
+            var distContentDir = Path.Combine(publishDir, Path.Combine($"{clientProjName}/dist/_content".Split('/')));
             var i18nDistDir = Path.Combine(distContentDir, "i18ntext");
 
             Delete(dirs.Bin);
@@ -135,7 +137,10 @@ namespace Toolbelt.Blazor.I18nText.Test
                 .ExitCode.Is(0);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
-            Exists(Path.Combine(distContentDir, "Toolbelt.Blazor.I18nText"), "script.js").IsTrue();
+            var staticWebAssetDir = Path.Combine(
+                startupProjDir == "Server" ? wwwrootContentDir : distContentDir,
+                "Toolbelt.Blazor.I18nText");
+            Exists(staticWebAssetDir, "script.js").IsTrue();
 
             var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.*")
                 .Select(path => Path.GetFileName(path))

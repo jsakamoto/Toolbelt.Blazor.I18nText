@@ -115,4 +115,18 @@
     </ItemGroup>
   </Target>
 
+  <!-- FOR PUBLISHING - SUPPORT CLIENT JAVASCRIPT FILE -->
+  <Target Name="BlazorI18nTextStaticWebAsstesGetCopyToPublishDirectoryItems"
+        BeforeTargets="GetCopyToPublishDirectoryItems"
+        Condition="'$(OutputType.ToLowerInvariant())'=='exe' AND '$(BlazorPublishDistDir)' != ''">
+    <ItemGroup>
+      <StaticWebAsset Remove="$(MSBuildThisFileDirectory)..\staticwebassets\**" />
+      <_ToolbeltBlazorI18nTextStaticWebAssets Include="$(MSBuildThisFileDirectory)..\staticwebassets\**" />
+      <ContentWithTargetPath Include="@(_ToolbeltBlazorI18nTextStaticWebAssets)">
+        <TargetPath>$(BlazorPublishDistDir)_content\Toolbelt.Blazor.I18nText\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+  </Target>
+
 </Project>
