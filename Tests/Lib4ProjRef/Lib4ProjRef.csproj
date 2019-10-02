@@ -5,12 +5,12 @@
     <LangVersion>7.3</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>7.0.0.2</Version>
+    <Version>7.0.0.5</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.0.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.0.5" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="i18ntext\Text.en.csv" />

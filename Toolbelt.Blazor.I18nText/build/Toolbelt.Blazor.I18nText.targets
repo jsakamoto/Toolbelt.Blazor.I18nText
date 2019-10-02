@@ -86,6 +86,13 @@
   <Target Name="_IncludeBlazorI18nTextResourceJsonsForPack" DependsOnTargets="CompileI18nText" >
     <ItemGroup>
 
+      <!-- 
+      [WORK AROUND] Avoid to nested packages which contains "Microsoft.AspNetCore.StaticWebAssets.props" includes "*.StaticWebAssets.xml" in that .nupkg file.
+      -->
+      <Content Update="$(IntermediateOutputPath)staticwebassets\**">
+        <Pack>false</Pack>
+      </Content>
+
       <None Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <PackagePath>i18ntext\%(filename)%(extension)</PackagePath>
         <Pack>true</Pack>
