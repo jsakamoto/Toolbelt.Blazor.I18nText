@@ -16,7 +16,6 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
         public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services, Action<I18nTextOptions> configure = null) where TStartup : class
         {
-            services.AddSingleton<BlazorPathInfoService>();
             services.AddScoped(serviceProvider =>
             {
                 var options = new I18nTextOptions

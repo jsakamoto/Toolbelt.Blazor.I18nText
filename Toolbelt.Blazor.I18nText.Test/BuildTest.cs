@@ -82,17 +82,16 @@ namespace Toolbelt.Blazor.I18nText.Test
         }
 
         public static IEnumerable<object[]> Projects = new[] {
-            new object[]{ "Client", "netstandard2.0", "Client"},
-            new object[]{ "Host", "netcoreapp3.0", "Client"},
-            // TODO: Currently Server Side Blazor doesn't support Blazor library feature.
-            // new object[]{"ServerSideApp", "ServerSideApp.Server", "netcoreapp2.1",  "ServerSideApp.App"},
+            new object[]{ "Client", "netstandard2.0", "Client", "SampleSite.Client/dist"},
+            new object[]{ "Host", "netcoreapp3.0", "Client", "SampleSite.Client/dist"},
+            new object[]{ "Server", "netcoreapp3.0", "Server",  ""},
         };
 
         [Theory(DisplayName = "Build")]
         [MemberData(nameof(Projects))]
-        public void BasicBuildTest(string startupProjDir, string platform, string clientProjDir)
+        public void BasicBuildTest(string startupProjName, string platform, string clientProjName, string distAtPublish)
         {
-            var dirs = GetDirectories(startupProjDir, clientProjDir);
+            var dirs = GetDirectories(startupProjName, clientProjName);
             var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/dist/_content/i18ntext".Split('/')));
 
             Delete(dirs.Bin);
@@ -112,20 +111,19 @@ namespace Toolbelt.Blazor.I18nText.Test
                 "Lib4PackRef.I18nText.Text.ja.json",
                 "Lib4ProjRef.I18nText.Text.en.json",
                 "Lib4ProjRef.I18nText.Text.ja.json",
-                "SampleSite.Client.I18nText.Text.en.json",
-                "SampleSite.Client.I18nText.Text.ja.json"
+                $"SampleSite.{clientProjName}.I18nText.Text.en.json",
+                $"SampleSite.{clientProjName}.I18nText.Text.ja.json"
             );
         }
 
         [Theory(DisplayName = "Publish")]
         [MemberData(nameof(Projects))]
-        public void PublishTest(string startupProjDir, string platform, string clientProjDir)
+        public void PublishTest(string startupProjName, string platform, string clientProjName, string distAtPublish)
         {
-            var dirs = GetDirectories(startupProjDir, clientProjDir);
-            var clientProjName = Path.GetFileNameWithoutExtension(Directory.GetFiles(dirs.ClientProj, "*.csproj").First());
+            var dirs = GetDirectories(startupProjName, clientProjName);
             var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
-            var distContentDir = Path.Combine(publishDir, Path.Combine($"{clientProjName}/dist/_content".Split('/')));
+            var distContentDir = Path.Combine(publishDir, Path.Combine($"{distAtPublish}/_content".Split('/', StringSplitOptions.RemoveEmptyEntries)));
             var i18nDistDir = Path.Combine(distContentDir, "i18ntext");
 
             Delete(dirs.Bin);
@@ -138,7 +136,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             var staticWebAssetDir = Path.Combine(
-                startupProjDir == "Host" ? wwwrootContentDir : distContentDir,
+                startupProjName == "Client" ? distContentDir : wwwrootContentDir,
                 "Toolbelt.Blazor.I18nText");
             Exists(staticWebAssetDir, "script.js").IsTrue();
 
@@ -151,8 +149,8 @@ namespace Toolbelt.Blazor.I18nText.Test
                 "Lib4PackRef.I18nText.Text.ja.json",
                 "Lib4ProjRef.I18nText.Text.en.json",
                 "Lib4ProjRef.I18nText.Text.ja.json",
-                "SampleSite.Client.I18nText.Text.en.json",
-                "SampleSite.Client.I18nText.Text.ja.json"
+                $"SampleSite.{clientProjName}.I18nText.Text.en.json",
+                $"SampleSite.{clientProjName}.I18nText.Text.ja.json"
             );
         }
 
