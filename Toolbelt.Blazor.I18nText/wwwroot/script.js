@@ -1,3 +1,4 @@
+"use strict";
 var Toolbelt;
 (function (Toolbelt) {
     var Blazor;
@@ -8,15 +9,15 @@ var Toolbelt;
                 currentLanguage: 'Toolbelt.Blazor.I18nText.CurrentLanguage'
             };
             function initLang(persistanceLevel) {
-                const key = I18nText.storageKyes.currentLanguage;
-                let lang = (persistanceLevel >= 1 ? sessionStorage.getItem(key) : null) || (persistanceLevel >= 2 ? localStorage.getItem(key) : null);
-                const langs = (lang !== null ? [lang] : (navigator.languages || [navigator.browserLanguage]));
+                var key = I18nText.storageKyes.currentLanguage;
+                var lang = (persistanceLevel >= 1 ? sessionStorage.getItem(key) : null) || (persistanceLevel >= 2 ? localStorage.getItem(key) : null);
+                var langs = (lang !== null ? [lang] : (navigator.languages || [navigator.browserLanguage]));
                 lang = langs[0] || 'en';
                 return lang;
             }
             I18nText.initLang = initLang;
             function setCurrentLang(lang, persistanceLevel) {
-                const key = I18nText.storageKyes.currentLanguage;
+                var key = I18nText.storageKyes.currentLanguage;
                 if (persistanceLevel >= 1)
                     sessionStorage.setItem(key, lang);
                 if (persistanceLevel >= 2)
@@ -26,4 +27,3 @@ var Toolbelt;
         })(I18nText = Blazor.I18nText || (Blazor.I18nText = {}));
     })(Blazor = Toolbelt.Blazor || (Toolbelt.Blazor = {}));
 })(Toolbelt || (Toolbelt = {}));
-//# sourceMappingURL=script.js.map

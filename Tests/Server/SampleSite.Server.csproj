@@ -2,16 +2,27 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.0.0-preview8.19405.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview8.19405.7" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.0.17" />
+    <PackageReference Include="Lib4PackRef" Version="7.0.0.17" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\SampleSite.Client.csproj" />
+    <Watch Remove="i18ntext\Text.en.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="i18ntext\Text.en.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="i18ntext\%40types\" />
   </ItemGroup>
 
 </Project>

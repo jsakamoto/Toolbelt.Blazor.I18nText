@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -15,15 +15,13 @@ using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {
+    internal delegate ValueTask<Dictionary<string, string>> ReadJsonAsTextMapAsync(string jsonUrl);
+
     public class I18nText
     {
         private readonly I18nTextOptions Options;
 
-        private readonly bool RunningOnClientSide;
-
         private readonly HttpClient HttpClient;
-
-        private readonly BlazorPathInfo BlazorPathInfo;
 
         private string _CurrentLanguage = "en";
 
@@ -35,15 +33,19 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly IServiceProvider ServiceProvider;
 
+        private ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
+
         internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            this.RunningOnClientSide = RuntimeInformation.OSDescription == "web";
-            if (this.RunningOnClientSide)
+            var runningOnWasm = RuntimeInformation.OSDescription == "web";
+            if (runningOnWasm)
+            {
                 this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
+                this.ReadJsonAsTextMapAsync = this.ReadJsonAsTextMapWasmAsync;
+            }
             else
             {
-                var blazorPathInfoService = serviceProvider.GetService(typeof(BlazorPathInfoService)) as BlazorPathInfoService;
-                this.BlazorPathInfo = blazorPathInfoService.GetPathInfo(typeOfStartUp);
+                this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapServerAsync();
             }
 
             this.ServiceProvider = serviceProvider;
@@ -51,19 +53,35 @@ namespace Toolbelt.Blazor.I18nText
 
             this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
                 .AsTask()
-                .ContinueWith(t => { _CurrentLanguage = t.IsCompleted ? t.Result : "en"; });
+                .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
         }
 
-        internal static ValueTask<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
+        private static async ValueTask<IJSRuntime> GetJSRuntimeAsync(IServiceProvider serviceProvider, I18nTextOptions options)
         {
             var jsRuntime = serviceProvider.GetService(typeof(IJSRuntime)) as IJSRuntime;
-            return jsRuntime.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
+            if (!options._ScriptLoaded)
+            {
+                try
+                {
+                    const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.js";
+                    await jsRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${{s}}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
+                    options._ScriptLoaded = true;
+                }
+                catch (Exception) { }
+            }
+            return jsRuntime;
         }
 
-        internal static ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
+        internal static async ValueTask<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            var jsRuntime = serviceProvider.GetService(typeof(IJSRuntime)) as IJSRuntime;
-            return jsRuntime.InvokeVoidAsync("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
+            var jsRuntime = await GetJSRuntimeAsync(serviceProvider, options);
+            return await jsRuntime.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
+        }
+
+        internal static async ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
+        {
+            var jsRuntime = await GetJSRuntimeAsync(serviceProvider, options);
+            await jsRuntime.InvokeVoidAsync("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }
 
         public async Task<string> GetCurrentLanguageAsync()
@@ -125,12 +143,12 @@ namespace Toolbelt.Blazor.I18nText
 
             var fallbackLanguage = (Activator.CreateInstance<T>() as I18nTextFallbackLanguage).FallBackLanguage;
 
-            string[] splitLangCode(string lang)
+            static string[] splitLangCode(string lang)
             {
                 var splitedLang = lang.Split('-');
                 return splitedLang.Length == 1 ? new[] { lang } : new[] { lang, splitedLang[0] };
             }
-            void appendLangCode(List<string> target, string[] source) { foreach (var item in source) if (!target.Contains(item)) target.Add(item); }
+            static void appendLangCode(List<string> target, string[] source) { foreach (var item in source) if (!target.Contains(item)) target.Add(item); }
 
             var langs = new List<string>(capacity: 4);
             appendLangCode(langs, splitLangCode(this._CurrentLanguage));
@@ -139,7 +157,6 @@ namespace Toolbelt.Blazor.I18nText
             var jsonUrls = new List<string>(langs.Count * 2);
             foreach (var lang in langs)
             {
-                jsonUrls.Add("content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
                 jsonUrls.Add("_content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
             }
 
@@ -148,25 +165,8 @@ namespace Toolbelt.Blazor.I18nText
             {
                 try
                 {
-                    if (this.RunningOnClientSide)
-                    {
-                        var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
-                        textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-                        break;
-                    }
-                    else
-                    {
-                        if (this.BlazorPathInfo == null) break;
-
-                        var baseUri = jsonUrl.StartsWith("_") ? this.BlazorPathInfo.DistUri : this.BlazorPathInfo.WebRootUri;
-                        var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
-                        if (File.Exists(jsonLocalPath))
-                        {
-                            var jsonText = File.ReadAllText(jsonLocalPath);
-                            textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-                            break;
-                        }
-                    }
+                    textMap = await this.ReadJsonAsTextMapAsync(jsonUrl);
+                    if (textMap != null) break;
                 }
                 catch (JsonException) { }
                 catch (HttpRequestException e) when (e.Message.Split(' ').Contains("404")) { }
@@ -183,6 +183,34 @@ namespace Toolbelt.Blazor.I18nText
             else foreach (var field in fields) field.SetValue(table, field.Name);
 
             return table;
+        }
+
+        private async ValueTask<Dictionary<string, string>> ReadJsonAsTextMapWasmAsync(string jsonUrl)
+        {
+            var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
+        }
+
+        private ReadJsonAsTextMapAsync GetReadJsonAsTextMapServerAsync()
+        {
+            var appDomainBaseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDir1 = Path.Combine(appDomainBaseDir, "dist", "_content", "i18ntext");
+            var baseDir2 = Path.Combine(appDomainBaseDir, "_content", "i18ntext");
+            var baseDir = Directory.Exists(baseDir1) ? Path.Combine(appDomainBaseDir, "dist") : appDomainBaseDir;
+            var baseUri = new Uri(baseDir + Path.DirectorySeparatorChar);
+            return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
+        }
+
+        private ValueTask<Dictionary<string, string>> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
+        {
+            var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
+            if (File.Exists(jsonLocalPath))
+            {
+                var jsonText = File.ReadAllText(jsonLocalPath);
+                var textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
+                return new ValueTask<Dictionary<string, string>>(textMap);
+            }
+            return new ValueTask<Dictionary<string, string>>(default(Dictionary<string, string>));
         }
 
         private async Task EnsureInitialLangAsync()
