@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -52,7 +53,7 @@ namespace Toolbelt.Blazor.I18nText
 
             this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
                 .AsTask()
-                .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? "en" : t.Result; });
+                .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
         }
 
         private static async ValueTask<IJSRuntime> GetJSRuntimeAsync(IServiceProvider serviceProvider, I18nTextOptions options)

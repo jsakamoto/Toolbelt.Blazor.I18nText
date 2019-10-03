@@ -15,7 +15,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
-    <Version>7.0.0.12</Version>
+    <Version>7.0.0.17</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
     <PackageTags>blazor,localize,i18n</PackageTags>
