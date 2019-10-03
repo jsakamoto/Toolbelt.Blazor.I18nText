@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20B
 	ProjectSection(SolutionItems) = preProject
 		API-REFERENCE.md = API-REFERENCE.md
 		README.md = README.md
+		RELEASE-NOTE.md = RELEASE-NOTE.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.Test", "Toolbelt.Blazor.I18nText.Test\Toolbelt.Blazor.I18nText.Test.csproj", "{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}"
