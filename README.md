@@ -1,8 +1,8 @@
-# Blazor Internationalization(I18n) Text [![NuGet Package](https://img.shields.io/nuget/v/Toolbelt.Blazor.I18nText.svg)](https://www.nuget.org/packages/Toolbelt.Blazor.I18nText/)
+# Blazor Internationalization(I18n) Text [![NuGet Package](https://j.mp/2nZUe7M)](https://j.mp/2nbtArW)
 
 ## Summary
 
-This is a NuGet package that allows you to localize texts in your Blazor app.
+This package allows you to localize texts in your Blazor app.
 
 ![movie.1](https://j.mp/2kwwHth)
 
@@ -20,14 +20,14 @@ This is a NuGet package that allows you to localize texts in your Blazor app.
 
 ### Supported Blazor versions
 
-"Blazor Internationalization (I18n) Text" ver.7.x supports following Blazor versions:
+"Blazor I18n Text" ver.7.x supports following Blazor versions:
 
-- server-side Blazor Server App versions **3.0.0**
-- client-side Blazor WebAssembly App versions **3.0.0 preview 9.**
+- server-side Blazor Server App **v.3.0.0**
+- client-side Blazor WebAssembly App **v.3.0.0 preview 9**
 
 ## Quick Start
 
-### Step.1 - Add "Toolbelt.Blazor.I18nText" Package
+### Step.1 - Add Package
 
 Add `Toolbelt.Blazor.I18nText` NuGet package to your Blazor app project.
 
@@ -45,7 +45,7 @@ PM> Install-Package Toolbelt.Blazor.I18nText
 
 ### Step.2 - Create localized text source files as JSON or CSV
 
-Add localized text source files for each language in an `i18ntext` folder under your Blazor app project folder.
+Add localized text source files for each language in an `i18ntext` folder under the project folder.
 
 The localized text source files must be simple key-value only JSON file like a bellow example,
 
@@ -97,11 +97,7 @@ After entry this dotnet CLI command, dotnet CLI stay in execution state and watc
 
 ### Step.4 - Configure your app to use I18nText service
 
-Open the C# source file of the "Startup" class of your Blazor app in your editor, and add `using` clause for opening `Toolbelt.Blazor.Extensions.DependencyInjection` namespace, and add the following code in `ConfigureServices()` method of the startup class.
-
-```csharp
-services.AddI18nText<Startup>();
-```
+Edit the "Startup" class in your Blazor app to register "I18nText" service, like this.
 
 ![fig.3](https://j.mp/2k0lv7R)
 
@@ -119,8 +115,7 @@ Open your Blazor component file (.razor) in your editor, and do this:
 
 ```csharp
 @code {
-
-    I18nText.MyText MyText = new I18nText.MyText();
+  I18nText.MyText MyText = new I18nText.MyText();
 ```
 
 **NOTE** - The namespace of the Text Table class is `<default namespace of your Blazor project>` + `"I18nText"`.
@@ -169,27 +164,21 @@ I recommend enabling "Request Localization" middleware on the server-side Blazor
 
 ```csharp
 ...
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.DependencyInjection;
-...
 public class Startup
 {
   ...
   public void ConfigureServices(IServiceCollection services)
   {
-    ...
     services.Configure<RequestLocalizationOptions>(options => {
       var supportedCultures = new[] { "en", "ja" };
       options.DefaultRequestCulture = new RequestCulture("en");
       options.AddSupportedCultures(supportedCultures);
       options.AddSupportedUICultures(supportedCultures);
     });
-  }
+    ...
 
   public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
   {
-    ...
     app.UseRequestLocalization();
     ...
 ```
@@ -234,13 +223,7 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 
 ## Release Note
 
-- **v.7.0.0** - BREAKING CHANGE: Support server-side Blazor server app v.3.0.0 (not compatible with v.3.0.0 Preview 8 or before.)
-- **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 9 (not compatible with v.3.0.0 Preview 8 or before.)
-- **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
-- **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
-- **v.3.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
-- **v.2.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
-- **v.1.0.0** - 1st release.
+Release note is [here.](http://j.mp/2oSB9UP)
 
 ## License
 
