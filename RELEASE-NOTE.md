@@ -1,5 +1,6 @@
 ## Release Note
 
+- **v.7.0.1** - Fix: Problem with new lines in localized text source JSON files
 - **v.7.0.0** - BREAKING CHANGE: Support server-side Blazor server app v.3.0.0 (not compatible with v.3.0.0 Preview 8 or before.)
 - **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 9 (not compatible with v.3.0.0 Preview 8 or before.)
 - **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
