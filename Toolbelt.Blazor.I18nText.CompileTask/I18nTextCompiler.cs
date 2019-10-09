@@ -173,7 +173,7 @@ namespace Toolbelt.Blazor.I18nText
                 foreach (var textKey in arg.type.Value.TextKeys)
                 {
                     if (!is1stLine) typeCode.Add("");
-                    typeCode.Add($"        /// <summary>\"{SecurityElement.Escape(textTable[textKey])}\"</summary>");
+                    typeCode.Add($"        /// <summary>\"{EscapeForXMLDocSummary(textTable[textKey])}\"</summary>");
                     typeCode.Add($"        public string {textKey};");
                     is1stLine = false;
                 }
@@ -189,6 +189,11 @@ namespace Toolbelt.Blazor.I18nText
 
                 if (!skipOutput) File.WriteAllLines(arg.typeFilePath, typeCode);
             });
+        }
+
+        private static string EscapeForXMLDocSummary(string text)
+        {
+            return SecurityElement.Escape(text).Replace("\r", "").Replace("\n", "<br/>");
         }
 
         private void OutputI18nTextJsonFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc)

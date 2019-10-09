@@ -1,4 +1,5 @@
 {
   "HelloWorld": "Hello World!",
-  "Exit": "Exit"
+  "Exit": "Exit",
+  "MultiLine": "Multi\nLine"
 }

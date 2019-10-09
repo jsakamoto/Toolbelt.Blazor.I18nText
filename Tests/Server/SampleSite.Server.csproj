@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.0.17" />
-    <PackageReference Include="Lib4PackRef" Version="7.0.0.17" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.1.1" />
+    <PackageReference Include="Lib4PackRef" Version="7.0.1.1" />
   </ItemGroup>
 
   <ItemGroup>
