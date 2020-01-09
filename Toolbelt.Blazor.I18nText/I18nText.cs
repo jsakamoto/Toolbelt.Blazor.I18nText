@@ -41,7 +41,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
-        internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider)
+        internal I18nText(IServiceProvider serviceProvider)
         {
             var runningOnWasm = RuntimeInformation.OSDescription == "web";
             if (runningOnWasm)

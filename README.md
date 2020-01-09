@@ -99,7 +99,18 @@ After entry this dotnet CLI command, dotnet CLI stay in execution state and watc
 
 Edit the "Startup" class in your Blazor app to register "I18nText" service, like this.
 
-![fig.3](https://j.mp/2k0lv7R)
+```csharp
+// in your Startup.cs
+using Toolbelt.Blazor.Extensions.DependencyInjection; // <- Add this line, and...
+...
+public class Startup
+{
+  ...
+  public void ConfigureServices(IServiceCollection services)
+  {
+    services.AddI18nText(); // <- Add this line.
+    ...
+```
 
 ### Step.5 - Get the "Text Table" object in your Blazor component
 
