@@ -22,8 +22,8 @@ This package allows you to localize texts in your Blazor app.
 
 "Blazor I18n Text" ver.7.x supports following Blazor versions:
 
-- server-side Blazor Server App **v.3.0.0 ~ 3.1.0 preview 3**
-- client-side Blazor WebAssembly App **v.3.0.0 preview 9 ~ 3.1.0 preview 3**
+- server-side Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
+- client-side Blazor WebAssembly App **v.3.0.0 preview 9 ~ 3.1.0 preview 4**
 
 ## Quick Start
 
@@ -31,13 +31,13 @@ This package allows you to localize texts in your Blazor app.
 
 Add `Toolbelt.Blazor.I18nText` NuGet package to your Blazor app project.
 
-If you are using dotnet CLI, you can do it by command line as bellow.
+dotnet CLI:
 
 ```
 $ dotnet add package Toolbelt.Blazor.I18nText
 ```
 
-You can also do it in Package Manager Console of Visual Studio, if you are using Visual Studio on Windows OS.
+Package Manager Console:
 
 ```
 PM> Install-Package Toolbelt.Blazor.I18nText
