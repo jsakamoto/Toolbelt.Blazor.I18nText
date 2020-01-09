@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Components;
 
-namespace SampleSite.Client
+namespace SampleSite.Components
 {
     public static class Extensions
     {

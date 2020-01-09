@@ -1,6 +1,6 @@
 using System;
 
-namespace SampleSite.Server.Data
+namespace SampleSite.Components.Services
 {
     public class WeatherForecast
     {

@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>7.0.1.2</Version>
+    <Version>7.1.0.1</Version>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0-preview3.19555.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0-preview3.19555.2" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.0.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="7.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="i18ntext\Text.en.csv" />

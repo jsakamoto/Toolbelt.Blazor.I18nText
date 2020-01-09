@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using SampleSite.Client.Services;
+using SampleSite.Components;
+using SampleSite.Components.Services;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace SampleSite.Client
@@ -8,7 +11,8 @@ namespace SampleSite.Client
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddI18nText<Startup>();
+            services.AddI18nText();
+            services.AddSingleton<IWeatherForecastService, WeatherForecastService>();
         }
 
         public void Configure(IComponentsApplicationBuilder app)
