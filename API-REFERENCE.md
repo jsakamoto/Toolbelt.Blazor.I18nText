@@ -39,7 +39,7 @@ In the default configuration, the language code that passed to the argument of t
 
 The language code that was stored by this method will be read at launching the Blazor app, and used to initialize the `I18nText` service instance.
 
-If you want to change this storing behavior, you can configure it at service registration (see also: `AddI18nText<T>(...)` extension method.).
+If you want to change this storing behavior, you can configure it at service registration (see also: `AddI18nText(...)` extension method.).
 
 ### GetTextTableAsync method
 
@@ -71,7 +71,7 @@ Toolbelt.Blazor.Extensions.DependencyInjection
 #### Syntax
 
 ```csharp
-public static IServiceCollection AddI18nText<TStartup>(
+public static IServiceCollection AddI18nText(
   this IServiceCollection services,
   Action<I18nTextOptions> configure = null);
 ```

@@ -15,11 +15,16 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
-    <Version>7.0.1.1</Version>
+    <Version>7.1.0.0</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
     <PackageTags>blazor,localize,i18n</PackageTags>
-    <PackageReleaseNotes>v.7.0.1
+    <PackageReleaseNotes>v.7.1.0
+- Fix: auto loading JavaScript file is failed sometimes.
+- Minify JavaScript file.
+- Remove type parameter from "AddI18nText()" because no longer used it.
+- Change "// Auto generated..." mark comment to "// &amp;lt;auto-generated .../&amp;gt;" tag for avoid Stylecop warning.
+v.7.0.1
 - Fix: Problem with new lines in localized text source JSON files
 v.7.0.0
 - BREAKING CHANGE: Support server-side Blazor server app v.3.0.0 (not compatible with v.3.0.0 Preview 8 or before.)
@@ -53,9 +58,7 @@ v.1.0.0
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Properties\launchSettings.json" />
-    <None Include="Properties\launchSettings.json" />
-    <Content Update="tsconfig.json">
+    <Content Update="**\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Pack>false</Pack>
     </Content>
@@ -86,10 +89,6 @@ v.1.0.0
       <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
       <Pack>true</Pack>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <Target Name="BuildI18nTextCompileTask" BeforeTargets="PreBuildEvent">
