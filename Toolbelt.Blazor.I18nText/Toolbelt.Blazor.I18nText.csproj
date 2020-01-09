@@ -47,6 +47,9 @@ v.1.0.0
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.435">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +86,10 @@ v.1.0.0
       <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
       <Pack>true</Pack>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <Target Name="BuildI18nTextCompileTask" BeforeTargets="PreBuildEvent">

@@ -63,7 +63,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 try
                 {
-                    const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.js";
+                    const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.min.js";
                     await jsRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${{s}}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
                     options._ScriptLoaded = true;
                 }
