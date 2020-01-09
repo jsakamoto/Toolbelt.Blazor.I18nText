@@ -14,7 +14,5 @@ namespace Toolbelt.Blazor.I18nText
         public PersistCurrentLanguageAsync PersistCurrentLanguageAsync;
 
         public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
-
-        internal bool _ScriptLoaded = false;
     }
 }

@@ -7,9 +7,11 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -19,7 +21,7 @@ namespace Toolbelt.Blazor.I18nText
 
     public class I18nText
     {
-        private readonly I18nTextOptions Options;
+        internal readonly I18nTextOptions Options = new I18nTextOptions();
 
         private readonly HttpClient HttpClient;
 
@@ -33,9 +35,13 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly IServiceProvider ServiceProvider;
 
+        private readonly IJSRuntime JSRuntime;
+
+        private bool ScriptLoaded = false;
+
         private ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
-        internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider, I18nTextOptions options)
+        internal I18nText(Type typeOfStartUp, IServiceProvider serviceProvider)
         {
             var runningOnWasm = RuntimeInformation.OSDescription == "web";
             if (runningOnWasm)
@@ -49,38 +55,49 @@ namespace Toolbelt.Blazor.I18nText
             }
 
             this.ServiceProvider = serviceProvider;
-            this.Options = options;
+            this.JSRuntime = serviceProvider.GetService<IJSRuntime>();
+            this.Options.GetInitialLanguageAsync = GetInitialLanguageAsync;
+            this.Options.PersistCurrentLanguageAsync = PersistCurrentLanguageAsync;
+        }
 
+        internal void InitializeCurrentLanguage()
+        {
             this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
                 .AsTask()
                 .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
         }
 
-        private static async ValueTask<IJSRuntime> GetJSRuntimeAsync(IServiceProvider serviceProvider, I18nTextOptions options)
+        private readonly SemaphoreSlim Syncer = new SemaphoreSlim(1, 1);
+
+        private async ValueTask<IJSRuntime> GetJSRuntimeAsync()
         {
-            var jsRuntime = serviceProvider.GetService(typeof(IJSRuntime)) as IJSRuntime;
-            if (!options._ScriptLoaded)
+            if (!this.ScriptLoaded)
             {
+                await Syncer.WaitAsync();
                 try
                 {
-                    const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.min.js";
-                    await jsRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${{s}}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
-                    options._ScriptLoaded = true;
+                    if (!this.ScriptLoaded)
+                    {
+                        const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.min.js";
+                        await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${{s}}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
+                        this.ScriptLoaded = true;
+                    }
                 }
                 catch (Exception) { }
+                finally { Syncer.Release(); }
             }
-            return jsRuntime;
+            return this.JSRuntime;
         }
 
-        internal static async ValueTask<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
+        private async ValueTask<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            var jsRuntime = await GetJSRuntimeAsync(serviceProvider, options);
+            var jsRuntime = await GetJSRuntimeAsync();
             return await jsRuntime.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
         }
 
-        internal static async ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
+        private async ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
         {
-            var jsRuntime = await GetJSRuntimeAsync(serviceProvider, options);
+            var jsRuntime = await GetJSRuntimeAsync();
             await jsRuntime.InvokeVoidAsync("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }
 

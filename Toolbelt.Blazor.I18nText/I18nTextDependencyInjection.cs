@@ -18,13 +18,10 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         {
             services.AddScoped(serviceProvider =>
             {
-                var options = new I18nTextOptions
-                {
-                    GetInitialLanguageAsync = I18nText.I18nText.GetInitialLanguageAsync,
-                    PersistCurrentLanguageAsync = I18nText.I18nText.PersistCurrentLanguageAsync,
-                };
-                configure?.Invoke(options);
-                return new I18nText.I18nText(typeof(TStartup), serviceProvider, options);
+                var i18ntext = new I18nText.I18nText(typeof(TStartup), serviceProvider);
+                configure?.Invoke(i18ntext.Options);
+                i18ntext.InitializeCurrentLanguage();
+                return i18ntext;
             });
             return services;
         }
