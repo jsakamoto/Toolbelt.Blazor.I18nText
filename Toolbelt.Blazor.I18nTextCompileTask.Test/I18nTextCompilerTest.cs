@@ -38,25 +38,43 @@ namespace Toolbelt.Blazor.I18nText.Test
         }
 
         [Theory(DisplayName = "Compile - I18n Text Typed Class was generated")]
-        [InlineData("en")]
-        [InlineData("en-us")]
-        [InlineData("ja")]
-        [InlineData("ja-jp")]
-        public void Compile_I18nTextTypedClassWasGenerated_Test(string langCode)
+        [InlineData("en", true)]
+        [InlineData("en-us", false)]
+        [InlineData("ja", false)]
+        [InlineData("ja-jp", true)]
+        public void Compile_I18nTextTypedClassWasGenerated_Test(string langCode, bool disableSubNameSpace)
         {
             var srcFiles = "*.json;*.csv".Split(';')
                 .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
-            var options = new I18nTextCompilerOptions { FallBackLanguage = langCode, OutDirectory = _TextResJsonsDir };
+            var options = new I18nTextCompilerOptions
+            {
+                FallBackLanguage = langCode,
+                OutDirectory = _TextResJsonsDir,
+                DisableSubNameSpace = disableSubNameSpace
+            };
             var compiler = new I18nTextCompiler();
             var success = compiler.Compile(srcFiles, options);
             success.IsTrue();
 
             // Compiled an i18n text type file should exist.
-            var csFileName = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.cs";
+            const string nameSpace = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.";
+            var fooBarClass = nameSpace + "Foo.Bar";
+            var fizzBuzzClass = nameSpace + (disableSubNameSpace ? "Buzz" : "Fizz.Buzz");
+            var csFileNames = new[] { fooBarClass + ".cs", fizzBuzzClass + ".cs" }.OrderBy(n => n);
             Directory.Exists(_TypesDir).IsTrue();
-            Directory.GetFiles(_TypesDir).Select(path => Path.GetFileName(path)).Is(csFileName);
+            Directory.GetFiles(_TypesDir)
+                .Select(path => Path.GetFileName(path))
+                .OrderBy(n => n)
+                .Is(csFileNames);
 
+            // the i18n text type file should be valid C# code.
+            ValidateGeneratedCSharpCode(langCode, fooBarClass + ".cs", fooBarClass, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
+            ValidateGeneratedCSharpCode(langCode, fizzBuzzClass + ".cs", fizzBuzzClass, new[] { "Text1", "Text2" });
+        }
+
+        private void ValidateGeneratedCSharpCode(string langCode, string csFileName, string generatedClassName, string[] generatedFieldNames)
+        {
             // the i18n text type file should be valid C# code.
             var typeCode = File.ReadAllText(Path.Combine(_TypesDir, csFileName));
             var syntaxTree = CSharpSyntaxTree.ParseText(typeCode);
@@ -81,7 +99,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
                 ms.Seek(0, SeekOrigin.Begin);
                 var assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
-                compiledType = assembly.GetType("Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar");
+                compiledType = assembly.GetType(generatedClassName);
             }
 
             // the i18n text type file should contain the i18n text typed public class.
@@ -91,23 +109,33 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             // the i18n text typed class has fileds that are combined all languages files.
             var fields = compiledType.GetFields(BindingFlags.Instance | BindingFlags.Public);
-            fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "HelloWorld").IsTrue();
-            fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "Exit").IsTrue();
-            fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == "GreetingOfJA").IsTrue();
+            foreach (var generatedFieldName in generatedFieldNames)
+            {
+                fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == generatedFieldName).IsTrue();
+            }
 
             var textTableObj = Activator.CreateInstance(compiledType);
             textTableObj.IsNotNull();
             (textTableObj as I18nTextFallbackLanguage).FallBackLanguage.Is(langCode);
-            (textTableObj as I18nTextLateBinding)["HelloWorld"].Is("HelloWorld");
+            foreach (var generatedFieldName in generatedFieldNames)
+            {
+                (textTableObj as I18nTextLateBinding)[generatedFieldName].Is(generatedFieldName);
+            }
         }
 
-        [Fact(DisplayName = "Compile - I18n Text JSON files were generated")]
-        public void Compile_I18nTextJsonFilesWereGenerated_Test()
+        [Theory(DisplayName = "Compile - I18n Text JSON files were generated")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Compile_I18nTextJsonFilesWereGenerated_Test(bool disableSubNameSpace)
         {
             var srcFiles = "*.json;*.csv".Split(';')
                 .SelectMany(pattern => Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), pattern, SearchOption.AllDirectories))
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
-            var options = new I18nTextCompilerOptions { OutDirectory = _TextResJsonsDir };
+            var options = new I18nTextCompilerOptions
+            {
+                OutDirectory = _TextResJsonsDir,
+                DisableSubNameSpace = disableSubNameSpace
+            };
             var compiler = new I18nTextCompiler();
             var success = compiler.Compile(srcFiles, options);
             success.IsTrue();
@@ -117,8 +145,11 @@ namespace Toolbelt.Blazor.I18nText.Test
             Directory.GetFiles(_TextResJsonsDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name)
-                .Is("Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json",
-                    "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json");
+                .Is(new[]{
+                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.en.json",
+                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.ja.json",
+                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json",
+                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json" }.OrderBy(n => n));
 
             var enJsonText = File.ReadAllText(Path.Combine(_TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
             var enTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(enJsonText);
@@ -150,18 +181,21 @@ namespace Toolbelt.Blazor.I18nText.Test
         {
             var srcFiles = Directory.GetFiles(Path.Combine(Environment.CurrentDirectory, "i18ntext"), "*.json", SearchOption.AllDirectories)
                 .Select(path => new I18nTextSourceFile(path, Encoding.UTF8));
-            var logErr = new List<string>();
+            var logErrors = new List<string>();
             var options = new I18nTextCompilerOptions
             {
                 FallBackLanguage = "fr",
-                LogError = msg => logErr.Add(msg),
+                LogError = msg => logErrors.Add(msg),
                 OutDirectory = _TextResJsonsDir
             };
             var compiler = new I18nTextCompiler();
             var suceess = compiler.Compile(srcFiles, options);
 
             suceess.IsFalse();
-            logErr.Is("IN1001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar'.");
+            logErrors.Count.Is(1);
+            logErrors.First()
+                .StartsWith("IN1001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.")
+                .IsTrue();
         }
 
         [Fact(DisplayName = "Compile - sweep type files")]

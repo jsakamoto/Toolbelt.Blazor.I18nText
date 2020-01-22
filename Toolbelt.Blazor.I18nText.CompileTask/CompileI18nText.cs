@@ -13,11 +13,15 @@ namespace Toolbelt.Blazor.I18nText
 
         public string BaseDir { get; set; }
 
+        public string I18nTextSourceDirectory { get; set; }
+
         public string TypesDirectory { get; set; }
 
         public string OutDirectory { get; set; }
 
         public string NameSpace { get; set; }
+
+        public bool DisableSubNameSpace { get; set; }
 
         [Required]
         public string FallBackLanguage { get; set; }
@@ -35,13 +39,16 @@ namespace Toolbelt.Blazor.I18nText
                 var baseDir = this.BaseDir ?? Path.GetDirectoryName(this.BuildEngine.ProjectFileOfTaskNode);
 
                 var options = new I18nTextCompilerOptions(baseDir);
+                options.I18nTextSourceDirectory = Path.Combine(baseDir, this.I18nTextSourceDirectory) ?? options.I18nTextSourceDirectory;
                 options.TypesDirectory = this.TypesDirectory ?? options.TypesDirectory;
                 options.OutDirectory = this.OutDirectory ?? options.OutDirectory;
                 options.NameSpace = string.IsNullOrEmpty(this.NameSpace) ? options.NameSpace : this.NameSpace;
+                options.DisableSubNameSpace = this.DisableSubNameSpace;
                 options.LogMessage = msg => Log.LogMessage(msg);
                 options.LogError = msg => Log.LogError(msg);
                 options.FallBackLanguage = this.FallBackLanguage ?? options.FallBackLanguage;
 
+                Log.LogMessage($"I18nTextSourceDirectory: [{options.I18nTextSourceDirectory}]");
                 Log.LogMessage($"TypesDirectory: [{options.TypesDirectory}]");
                 Log.LogMessage($"OutDirectory  : [{options.OutDirectory}]");
                 Log.LogMessage($"NameSpace     : [{options.NameSpace}]");

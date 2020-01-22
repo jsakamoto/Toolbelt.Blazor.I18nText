@@ -1,5 +1,5 @@
 ## Release Note
-
+- **v.8.0.0** - Add sub-namespace to Typed Text Table class from the relative location where localized text source files are.
 - **v.7.1.0**
     - Fix: auto loading JavaScript file is failed sometimes.
     - Minify JavaScript file.

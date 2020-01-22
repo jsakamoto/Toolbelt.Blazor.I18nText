@@ -36,16 +36,35 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
+        private delegate string ConvertPath(string srcPath);
+
         private static I18nTextSource ParseSourceFiles(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
             var i18textSrc = new I18nTextSource();
             if (!srcFiles.Any()) return i18textSrc;
 
+            var i18nSrcDir = options.I18nTextSourceDirectory;
+            if (!i18nSrcDir.EndsWith(Path.DirectorySeparatorChar.ToString())) i18nSrcDir += Path.DirectorySeparatorChar;
+
+            ConvertPath convertPath;
+            if (options.DisableSubNameSpace)
+            {
+                convertPath = delegate (string srcPath) { return Path.GetFileName(srcPath); };
+            }
+            else
+            {
+                convertPath = delegate (string srcPath)
+                {
+                    return srcPath.StartsWith(i18nSrcDir) ? srcPath.Substring(i18nSrcDir.Length) : Path.GetFileName(srcPath);
+                };
+            }
+
             Parallel.ForEach(srcFiles, srcFile =>
             {
-                var fnameParts = Path.GetFileNameWithoutExtension(srcFile.Path).Split('.');
-                var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 1));
-                var langCode = fnameParts.Last();
+                var srcName = convertPath(srcFile.Path);
+                var fnameParts = srcName.Split('.', Path.DirectorySeparatorChar);
+                var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 2));
+                var langCode = fnameParts[fnameParts.Length - 2];
                 var srcText = File.ReadAllText(srcFile.Path, srcFile.Encoding);
                 var textTable = DeserializeSrcText(srcText, Path.GetExtension(srcFile.Path).ToLower());
 

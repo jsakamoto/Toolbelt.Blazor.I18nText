@@ -9,9 +9,11 @@
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <PropertyGroup>
-    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">i18ntext\**\*.json;i18ntext\**\*.csv</I18nTextFilePattern>
+    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">i18ntext</I18nTextSourceDirectory>
+    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceDirectory)\**\*.json;$(I18nTextSourceDirectory)\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
+    <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
   </PropertyGroup>
 
@@ -38,9 +40,11 @@
     </ItemGroup>
 
     <CompileI18nText Include="@(I18nText)"
+                     I18nTextSourceDirectory="$(I18nTextSourceDirectory)"
                      OutDirectory="$(IntermediateOutputPath)dist\_content\i18ntext"
                      BaseDir="$(ProjectDir)"
                      Namespace="$(I18nTextNamespace)"
+                     DisableSubNameSpace="$(I18nTextDisableSubNameSpace)"
                      FallBackLanguage="$(I18nTextFallBackLanguage)"/>
 
     <ItemGroup>

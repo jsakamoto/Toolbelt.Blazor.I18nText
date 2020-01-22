@@ -15,11 +15,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
-    <Version>7.1.0.0</Version>
+    <Version>8.0.0.0</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
     <PackageTags>blazor,localize,i18n</PackageTags>
-    <PackageReleaseNotes>v.7.1.0
+    <PackageReleaseNotes>v.8.0.0
+- Add sub-namespace to Typed Text Table class from the relative location where localized text source files are.
+v.7.1.0
 - Fix: auto loading JavaScript file is failed sometimes.
 - Minify JavaScript file.
 - Remove type parameter from "AddI18nText()" because no longer used it.
@@ -41,7 +43,7 @@ v.2.0.0
 v.1.0.0
 - 1st release.
 </PackageReleaseNotes>
-    <Copyright>Copyright © 2019 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Copyright>Copyright © 2019-2020 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 
