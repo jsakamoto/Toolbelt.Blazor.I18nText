@@ -27,6 +27,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
         public static IServiceCollection AddI18nText(this IServiceCollection services, Action<I18nTextOptions> configure = null)
         {
+            services.AddSingleton(serviceProvider => new I18nTextRepository(serviceProvider));
             services.AddScoped(serviceProvider =>
             {
                 var i18ntext = new I18nText.I18nText(serviceProvider);

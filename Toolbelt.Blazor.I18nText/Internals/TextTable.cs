@@ -4,36 +4,37 @@ using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText.Internals
 {
-    internal delegate ValueTask FetchTextTableAsync(object table);
+    internal delegate ValueTask FetchTextTableAsync(string langCode, object table);
 
     internal class TextTable
     {
-        public readonly Type TableType;
-
-        private readonly ValueTask InitialFetchTask;
-
         private readonly FetchTextTableAsync FetchTextTableAsync;
 
-        public object TableObject;
+        internal ValueTask FetchTask;
 
-        public TextTable(Type tableType, FetchTextTableAsync fetchTextTableAsync)
+        internal readonly object TableObject;
+
+        public TextTable(Type tableType, string langCode, FetchTextTableAsync fetchTextTableAsync)
         {
-            TableType = tableType;
             this.TableObject = Activator.CreateInstance(tableType);
             this.FetchTextTableAsync = fetchTextTableAsync;
-            this.InitialFetchTask = fetchTextTableAsync(this.TableObject);
+            this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);
         }
 
         public async Task<T> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
         {
-            await this.InitialFetchTask;
+            var fetchTask = this.FetchTask;
+            await fetchTask;
             return this.TableObject as T;
         }
 
-        public async Task RefreshTableAsync()
+        public async Task RefreshTableAsync(string langCode)
         {
-            await this.InitialFetchTask;
-            await this.FetchTextTableAsync(this.TableObject);
+            var fetchTask = this.FetchTask;
+            await fetchTask;
+            fetchTask = this.FetchTextTableAsync(langCode, this.TableObject);
+            this.FetchTask = fetchTask;
+            await fetchTask;
         }
     }
 }
