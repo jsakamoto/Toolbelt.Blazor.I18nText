@@ -140,10 +140,21 @@ namespace Toolbelt.Blazor.I18nText
             var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
             if (fetchedTextTable == null)
             {
-                fetchedTextTable = new TextTable(typeof(T), t => FetchTextTableAsync<T>(t as T));
+                fetchedTextTable = new TextTable(typeof(T), tableObject => FetchTextTableAsync(tableObject));
                 this.TextTables.Add(fetchedTextTable);
             }
             return fetchedTextTable.GetTableAsync<T>();
+        }
+
+        public I18nTextLateBinding GetLazyTextTable(Type textTableType)
+        {
+            var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == textTableType);
+            if (fetchedTextTable == null)
+            {
+                fetchedTextTable = new TextTable(textTableType, tableObject => FetchTextTableAsync(tableObject));
+                this.TextTables.Add(fetchedTextTable);
+            }
+            return fetchedTextTable.TableObject as I18nTextLateBinding;
         }
 
         private void SweepGarbageCollectedComponents()
@@ -154,11 +165,12 @@ namespace Toolbelt.Blazor.I18nText
             // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
-        private async Task<object> FetchTextTableAsync<T>(T table) where T : class, I18nTextFallbackLanguage, new()
+        private async ValueTask FetchTextTableAsync(object targetTableObject) //where TTextTableObject : class, I18nTextFallbackLanguage, new()
         {
             await EnsureInitialLangAsync();
 
-            var fallbackLanguage = (Activator.CreateInstance<T>() as I18nTextFallbackLanguage).FallBackLanguage;
+            var fallbackLanguage = (targetTableObject as I18nTextFallbackLanguage)?.FallBackLanguage ?? "en";
+            var typeofTextTableObject = targetTableObject.GetType();
 
             static string[] splitLangCode(string lang)
             {
@@ -174,7 +186,7 @@ namespace Toolbelt.Blazor.I18nText
             var jsonUrls = new List<string>(langs.Count * 2);
             foreach (var lang in langs)
             {
-                jsonUrls.Add("_content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
+                jsonUrls.Add("_content/i18ntext/" + typeofTextTableObject.FullName + "." + lang + ".json");
             }
 
             var textMap = default(Dictionary<string, string>);
@@ -189,17 +201,15 @@ namespace Toolbelt.Blazor.I18nText
                 catch (HttpRequestException e) when (e.Message.Split(' ').Contains("404")) { }
             }
 
-            var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.FieldType == typeof(string));
+            var fields = typeofTextTableObject.GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.FieldType == typeof(string));
             if (textMap != null)
             {
                 foreach (var field in fields)
                 {
-                    field.SetValue(table, textMap.TryGetValue(field.Name, out var text) ? text : field.Name);
+                    field.SetValue(targetTableObject, textMap.TryGetValue(field.Name, out var text) ? text : field.Name);
                 }
             }
-            else foreach (var field in fields) field.SetValue(table, field.Name);
-
-            return table;
+            else foreach (var field in fields) field.SetValue(targetTableObject, field.Name);
         }
 
         private async ValueTask<Dictionary<string, string>> ReadJsonAsTextMapWasmAsync(string jsonUrl)
