@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Toolbelt.Blazor.I18nText;
 
 namespace Toolbelt.Blazor.Extensions.DependencyInjection
@@ -27,8 +28,8 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
         public static IServiceCollection AddI18nText(this IServiceCollection services, Action<I18nTextOptions> configure = null)
         {
-            services.AddSingleton(serviceProvider => new I18nTextRepository(serviceProvider));
-            services.AddScoped(serviceProvider =>
+            services.TryAddSingleton(serviceProvider => new I18nTextRepository(serviceProvider));
+            services.TryAddScoped(serviceProvider =>
             {
                 var i18ntext = new I18nText.I18nText(serviceProvider);
                 configure?.Invoke(i18ntext.Options);
