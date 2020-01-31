@@ -8,8 +8,8 @@ This package allows you to localize texts in your Blazor app.
 
 ### Features
 
-- It works with both server-side Blazor Server app and client-side Blazor WebAssembly app.
-- On the client-side Blazor WebAssembly app, it works without Server-Side runtime (requires only static contents HTTP server).
+- It works with both Blazor Server app and Blazor WebAssembly app.
+- On the Blazor WebAssembly app, it works without Server-Side runtime (requires only static contents HTTP server).
 - You can develop with only plain text editor - No require .resx
 - Static Typing - IntelliSense, Code Hint...
 - It also works well on Blazor components libraries, and you can package and redistribute the library that is localized with "Blazor I18nText" as a NuGet package.
@@ -18,12 +18,12 @@ This package allows you to localize texts in your Blazor app.
 
 - [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://j.mp/2lFlwyp)
 
-### Supported Blazor versions
+### Supported versions
 
 "Blazor I18n Text" ver.7.x supports following Blazor versions:
 
-- server-side Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
-- client-side Blazor WebAssembly App **v.3.0.0 preview 9 ~ 3.1.0 preview 4**
+- Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
+- Blazor WebAssembly App **v.3.0.0 preview 9 ~ 3.2.0 preview 1**
 
 ## Quick Start
 
@@ -91,25 +91,36 @@ And also, **"Localized Text Resource JSON" files** will be generated in the outp
 $ dotnet watch msbuild -t:CompileI18nText
 ```
 
-After entry this dotnet CLI command, dotnet CLI stay in execution state and watch the changing of localized text source files. If it detects the changing of localized text source files, then the dotnet CLI re-compile localized text source files into **"Typed Text Table class"** files and **"Localized Text Resource JSON" files**.
+After entry this dotnet CLI command, the command stay in execution and watch the changing of localized text source files. If it detects the changing of localized text source files, then the dotnet CLI re-compile localized text source files into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
 
 ![fig.2-2](https://j.mp/2lYJC7z)
 
 ### Step.4 - Configure your app to use I18nText service
 
-Edit the "Startup" class in your Blazor app to register "I18nText" service, like this.
+Edit the "Startup" class to register "I18nText" service, like this.
 
 ```csharp
 // in your Startup.cs
-using Toolbelt.Blazor.Extensions.DependencyInjection; // <- Add this line, and...
+using Toolbelt.Blazor.Extensions.DependencyInjection; // <- Add this, and...
 ...
-public class Startup
-{
-  ...
   public void ConfigureServices(IServiceCollection services)
   {
-    services.AddI18nText(); // <- Add this line.
+    services.AddI18nText(); // <- Add this.
     ...
+```
+
+Your project is Blazor WebAssembly v.3.2+, you should edit "Program" class to do this.
+
+```csharp
+// in your Program.cs
+using Toolbelt.Blazor.Extensions.DependencyInjection; // <- Add this, and...
+...
+public static async Task Main(string[] args)
+{
+  var builder = WebAssemblyHostBuilder.CreateDefault(args);
+  ...
+  builder.Services.AddI18nText(); // <- Add this.
+  ...
 ```
 
 ### Step.5 - Get the "Text Table" object in your Blazor component
@@ -131,7 +142,7 @@ Open your Blazor component file (.razor) in your editor, and do this:
 
 **NOTE** - The namespace of the Text Table class is `<default namespace of your Blazor project>` + `"I18nText"`.
 
-3. Override `OnInitAsync()` method of the Blazor component, and assign a Text Table object that's a return value of `GetTextTableAsync<T>()` method of `I18nText` service instance to the Text Table field.
+3. Override `OnInitiallizedAsync()` method of the Blazor component, and assign a Text Table object that's a return value of `GetTextTableAsync<T>()` method of `I18nText` service instance to the Text Table field.
 
 ```csharp
 protected override async Task OnInitializedAsync()
@@ -155,11 +166,7 @@ If you are using Visual Studio in Windows OS and Blazor extensions is installed 
 <h1>@MyText["HelloWorld"]</h1>
 ```
 
-This way is sometimes called "late binding".
-
-This feature is very useful in some cases.  
-However, if you make some mistakes that typo of key string, these mistakes will not be found at compile time. 
-In this case, it will just return the key string as is without any runtime exceptions.
+If you make some mistakes that typo of key string, it will just return the key string as is without any runtime exceptions.
 
 ### Step.7 - Run it!
 
@@ -169,29 +176,27 @@ The I18nText service detects the language settings of the Web browser, and reads
 
 ![fig.5](https://j.mp/2lAfCia)
 
-### More information for in case of server-side Blazor server app
+### More information for in case of Blazor server app
 
-I recommend enabling "Request Localization" middleware on the server-side Blazor server app, by like the following code.
+I recommend enabling "Request Localization" middleware on the Blazor server app, by like the following code.
 
 ```csharp
+// in the Startup class
 ...
-public class Startup
+public void ConfigureServices(IServiceCollection services)
 {
+  services.Configure<RequestLocalizationOptions>(options => {
+    var supportedCultures = new[] { "en", "ja" };
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.AddSupportedCultures(supportedCultures);
+    options.AddSupportedUICultures(supportedCultures);
+  });
   ...
-  public void ConfigureServices(IServiceCollection services)
-  {
-    services.Configure<RequestLocalizationOptions>(options => {
-      var supportedCultures = new[] { "en", "ja" };
-      options.DefaultRequestCulture = new RequestCulture("en");
-      options.AddSupportedCultures(supportedCultures);
-      options.AddSupportedUICultures(supportedCultures);
-    });
-    ...
 
-  public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-  {
-    app.UseRequestLocalization();
-    ...
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+  app.UseRequestLocalization();
+  ...
 ```
 
 This code makes the result of server-side pre-rendering to be suitable for "Accept-Language" header value in a request from clients.
@@ -203,7 +208,7 @@ The following features are not supported in this version of `I18Text` library.
 - Integration with ASP.NET Core localization (`IStringLocalizer<T>` support)
 - Localize validation message
 - Plural form support
-- Text formatting by place holder. (You can use `System.String.Format(...)` instead.)
+- Text formatting by place holder.
 - Integration with `System.Globalization.Culture.CurrentUICulture`.
 
 The following features will not be supported forever, because these features are not the scope of this library, I think.
@@ -218,13 +223,13 @@ Fallback language is determined at compile time.
 
 The default fallback language is `en`.
 
-If you want to change the fallback language, edit your project file (.csproj) to add `<I18nTextFallBackLanguage>` MSBuild property with the language code what you want.
+If you want to change the fallback language, define `<I18nTextFallBackLanguage>` MSBuild property in your project file (.csproj) with the language code what you want.
 
 ![fig.6](https://j.mp/2k0kTz5)
 
 ### The namespace of the Text Table class
 
-If you want to change the namespace of the Text Table classes that will be generated by the building process, edit your project file (.csproj) to add `<I18nTextNamespace>` MSBuild property with the namespace what you want.
+If you want to change the namespace of the Text Table classes, define `<I18nTextNamespace>` MSBuild property in your project file (.csproj) with the namespace what you want.
 
 ![fig.7](https://j.mp/2ktvqmH)
 
