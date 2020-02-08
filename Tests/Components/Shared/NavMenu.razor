@@ -28,18 +28,18 @@
 </div>
 
 @code {
-    bool collapseNavMenu = true;
+    private bool collapseNavMenu = true;
 
-    string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    Text Text = new Text();
+    private Text Text = new Text();
 
     protected override async Task OnInitializedAsync()
     {
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
-    void ToggleNavMenu()
+    private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }

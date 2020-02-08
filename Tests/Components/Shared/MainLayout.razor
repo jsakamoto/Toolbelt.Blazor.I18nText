@@ -31,9 +31,9 @@
 
 @code {
 
-    string CurrentLang;
+    private string CurrentLang;
 
-    Text Text = new Text();
+    private Text Text = new Text();
 
     protected override async Task OnInitializedAsync()
     {
@@ -50,7 +50,7 @@
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
-    async Task OnChangeCurrentLang(ChangeEventArgs args)
+    private async Task OnChangeCurrentLang(ChangeEventArgs args)
     {
         Console.WriteLine($"OnChange: {args.Value}");
         CurrentLang = args.Value as string;

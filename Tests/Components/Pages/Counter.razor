@@ -8,16 +8,16 @@
 <button class="btn btn-primary" @onclick="IncrementCount">@Text.ClickMe</button>
 
 @code {
-    Text Text = new Text();
+    private Text Text = new Text();
 
-    int currentCount = 0;
+    private int currentCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
         Text = await I18nText.GetTextTableAsync<Text>(this);
     }
 
-    void IncrementCount()
+    private void IncrementCount()
     {
         currentCount++;
     }
