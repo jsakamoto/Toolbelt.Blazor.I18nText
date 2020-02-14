@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Interfaces;
+using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {
@@ -18,7 +16,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private string _CurrentLanguage = "en";
 
-        private List<WeakReference<ComponentBase>> Components = new List<WeakReference<ComponentBase>>();
+        private readonly WeakRefCollection<ComponentBase> Components = new WeakRefCollection<ComponentBase>();
 
         private Task InitLangTask;
 
@@ -101,33 +99,14 @@ namespace Toolbelt.Blazor.I18nText
             this._CurrentLanguage = langCode;
             await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
 
-            SweepGarbageCollectedComponents();
-            var stateHasChangedMethod = typeof(ComponentBase).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var cref in this.Components)
-            {
-                if (cref.TryGetTarget(out var component))
-                {
-                    stateHasChangedMethod.Invoke(component, new object[] { });
-                }
-            }
+            this.Components.InvokeStateHasChanged();
         }
 
         public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
         {
             await EnsureInitialLangAsync();
-
-            SweepGarbageCollectedComponents();
-            if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
-                this.Components.Add(new WeakReference<ComponentBase>(component));
+            this.Components.Add(component);
             return await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
-        }
-
-        private void SweepGarbageCollectedComponents()
-        {
-            // DEBUG: var beforeCount = this.Components.Count;
-            this.Components = this.Components.Where(cref => cref.TryGetTarget(out var _)).ToList();
-            // DEBUG: var afterCount = this.Components.Count;
-            // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
         }
 
         private async Task EnsureInitialLangAsync()

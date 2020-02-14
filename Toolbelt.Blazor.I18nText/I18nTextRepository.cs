@@ -26,6 +26,8 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
+        public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
+
         internal I18nTextRepository(IServiceProvider serviceProvider)
         {
             var runningOnWasm = RuntimeInformation.OSDescription == "web";
@@ -49,6 +51,8 @@ namespace Toolbelt.Blazor.I18nText
 
         internal TextTable GetLazyTextTable(Guid scopeId, string langCode, Type typeofTextTable, bool singleLangInAScope)
         {
+            if (typeofTextTable == null) return null;
+
             var langs = this.ScopeToLangs.GetOrAdd(scopeId, new LangToTextTable());
             var typeToTables = langs.GetOrAdd(singleLangInAScope ? "" : langCode, new TypeToTextTable());
             var textTable = typeToTables.GetOrAdd(typeofTextTable, typeofTextTable => CreateTextTable(typeofTextTable, langCode));
@@ -57,6 +61,8 @@ namespace Toolbelt.Blazor.I18nText
 
         internal async ValueTask ChangeLanguageAsync(Guid scopeId, string newLangCode)
         {
+            this.ChangeLanguage?.Invoke(this, new I18nTextChangeLanguageEventArgs(newLangCode));
+
             var langs = this.ScopeToLangs.GetOrAdd(scopeId, new LangToTextTable());
             if (!langs.TryGetValue("", out var typeToTables)) return;
             var textTables = typeToTables.Values.ToArray();
@@ -81,7 +87,8 @@ namespace Toolbelt.Blazor.I18nText
             var baseDir1 = Path.Combine(appDomainBaseDir, "dist", "_content", "i18ntext");
             var baseDir2 = Path.Combine(appDomainBaseDir, "_content", "i18ntext");
             var baseDir = Directory.Exists(baseDir1) ? Path.Combine(appDomainBaseDir, "dist") : appDomainBaseDir;
-            var baseUri = new Uri(baseDir + Path.DirectorySeparatorChar);
+            if (baseDir[baseDir.Length - 1] != Path.DirectorySeparatorChar) baseDir += Path.DirectorySeparatorChar;
+            var baseUri = new Uri(baseDir);
             return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
         }
 
