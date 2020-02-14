@@ -4,12 +4,12 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>8.0.0.3</Version>
+    <Version>8.0.0.4</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.1" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="8.0.0.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="8.0.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="i18ntext\Text.en.csv" />
