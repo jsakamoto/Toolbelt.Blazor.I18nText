@@ -7,7 +7,12 @@ namespace Toolbelt.Blazor.I18nText
     {
         public static string GetFieldValue<T>(this T value, string key) where T : I18nTextLateBinding
         {
-            return typeof(T).GetField(key, BindingFlags.Public | BindingFlags.Instance)?.GetValue(value) as string ?? key;
+            return value.GetFieldValueWithNoFallback(key) ?? key;
+        }
+
+        public static string GetFieldValueWithNoFallback<T>(this T value, string key) where T : I18nTextLateBinding
+        {
+            return value.GetType().GetField(key, BindingFlags.Public | BindingFlags.Instance)?.GetValue(value) as string;
         }
     }
 }

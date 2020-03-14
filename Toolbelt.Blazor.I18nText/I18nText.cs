@@ -1,35 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {
-    internal delegate ValueTask<Dictionary<string, string>> ReadJsonAsTextMapAsync(string jsonUrl);
-
-    public class I18nText
+    public class I18nText : IDisposable
     {
         internal readonly I18nTextOptions Options = new I18nTextOptions();
 
-        private readonly HttpClient HttpClient;
-
         private string _CurrentLanguage = "en";
 
-        private readonly List<TextTable> TextTables = new List<TextTable>();
-
-        private List<WeakReference<ComponentBase>> Components = new List<WeakReference<ComponentBase>>();
+        private readonly WeakRefCollection<ComponentBase> Components = new WeakRefCollection<ComponentBase>();
 
         private Task InitLangTask;
 
@@ -39,20 +26,13 @@ namespace Toolbelt.Blazor.I18nText
 
         private bool ScriptLoaded = false;
 
-        private ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
+        private readonly I18nTextRepository I18nTextRepository;
+
+        private readonly Guid ScopeId = Guid.NewGuid();
 
         internal I18nText(IServiceProvider serviceProvider)
         {
-            var runningOnWasm = RuntimeInformation.OSDescription == "web";
-            if (runningOnWasm)
-            {
-                this.HttpClient = serviceProvider.GetService(typeof(HttpClient)) as HttpClient;
-                this.ReadJsonAsTextMapAsync = this.ReadJsonAsTextMapWasmAsync;
-            }
-            else
-            {
-                this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapServerAsync();
-            }
+            this.I18nTextRepository = serviceProvider.GetService<I18nTextRepository>();
 
             this.ServiceProvider = serviceProvider;
             this.JSRuntime = serviceProvider.GetService<IJSRuntime>();
@@ -117,117 +97,16 @@ namespace Toolbelt.Blazor.I18nText
             }
 
             this._CurrentLanguage = langCode;
-            var allRefreshTasks = this.TextTables.Select(tt => tt.RefreshTableAsync());
-            await Task.WhenAll(allRefreshTasks);
+            await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
 
-            SweepGarbageCollectedComponents();
-            var stateHasChangedMethod = typeof(ComponentBase).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var cref in this.Components)
-            {
-                if (cref.TryGetTarget(out var component))
-                {
-                    stateHasChangedMethod.Invoke(component, new object[] { });
-                }
-            }
+            this.Components.InvokeStateHasChanged();
         }
 
-        public Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
-        {
-            SweepGarbageCollectedComponents();
-            if (!this.Components.Exists(cref => cref.TryGetTarget(out var c) && c == component))
-                this.Components.Add(new WeakReference<ComponentBase>(component));
-
-            var fetchedTextTable = this.TextTables.FirstOrDefault(tt => tt.TableType == typeof(T));
-            if (fetchedTextTable == null)
-            {
-                fetchedTextTable = new TextTable(typeof(T), t => FetchTextTableAsync<T>(t as T));
-                this.TextTables.Add(fetchedTextTable);
-            }
-            return fetchedTextTable.GetTableAsync<T>();
-        }
-
-        private void SweepGarbageCollectedComponents()
-        {
-            // DEBUG: var beforeCount = this.Components.Count;
-            this.Components = this.Components.Where(cref => cref.TryGetTarget(out var _)).ToList();
-            // DEBUG: var afterCount = this.Components.Count;
-            // DEBUG: Console.WriteLine($"SweepGarbageCollectedComponents - {(beforeCount - afterCount)} objects are sweeped. ({this.Components.Count} objects are stay.)");
-        }
-
-        private async Task<object> FetchTextTableAsync<T>(T table) where T : class, I18nTextFallbackLanguage, new()
+        public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
         {
             await EnsureInitialLangAsync();
-
-            var fallbackLanguage = (Activator.CreateInstance<T>() as I18nTextFallbackLanguage).FallBackLanguage;
-
-            static string[] splitLangCode(string lang)
-            {
-                var splitedLang = lang.Split('-');
-                return splitedLang.Length == 1 ? new[] { lang } : new[] { lang, splitedLang[0] };
-            }
-            static void appendLangCode(List<string> target, string[] source) { foreach (var item in source) if (!target.Contains(item)) target.Add(item); }
-
-            var langs = new List<string>(capacity: 4);
-            appendLangCode(langs, splitLangCode(this._CurrentLanguage));
-            appendLangCode(langs, splitLangCode(fallbackLanguage));
-
-            var jsonUrls = new List<string>(langs.Count * 2);
-            foreach (var lang in langs)
-            {
-                jsonUrls.Add("_content/i18ntext/" + typeof(T).FullName + "." + lang + ".json");
-            }
-
-            var textMap = default(Dictionary<string, string>);
-            foreach (var jsonUrl in jsonUrls)
-            {
-                try
-                {
-                    textMap = await this.ReadJsonAsTextMapAsync(jsonUrl);
-                    if (textMap != null) break;
-                }
-                catch (JsonException) { }
-                catch (HttpRequestException e) when (e.Message.Split(' ').Contains("404")) { }
-            }
-
-            var fields = typeof(T).GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.FieldType == typeof(string));
-            if (textMap != null)
-            {
-                foreach (var field in fields)
-                {
-                    field.SetValue(table, textMap.TryGetValue(field.Name, out var text) ? text : field.Name);
-                }
-            }
-            else foreach (var field in fields) field.SetValue(table, field.Name);
-
-            return table;
-        }
-
-        private async ValueTask<Dictionary<string, string>> ReadJsonAsTextMapWasmAsync(string jsonUrl)
-        {
-            var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-        }
-
-        private ReadJsonAsTextMapAsync GetReadJsonAsTextMapServerAsync()
-        {
-            var appDomainBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var baseDir1 = Path.Combine(appDomainBaseDir, "dist", "_content", "i18ntext");
-            var baseDir2 = Path.Combine(appDomainBaseDir, "_content", "i18ntext");
-            var baseDir = Directory.Exists(baseDir1) ? Path.Combine(appDomainBaseDir, "dist") : appDomainBaseDir;
-            var baseUri = new Uri(baseDir + Path.DirectorySeparatorChar);
-            return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
-        }
-
-        private ValueTask<Dictionary<string, string>> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
-        {
-            var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
-            if (File.Exists(jsonLocalPath))
-            {
-                var jsonText = File.ReadAllText(jsonLocalPath);
-                var textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-                return new ValueTask<Dictionary<string, string>>(textMap);
-            }
-            return new ValueTask<Dictionary<string, string>>(default(Dictionary<string, string>));
+            this.Components.Add(component);
+            return await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
         }
 
         private async Task EnsureInitialLangAsync()
@@ -239,6 +118,11 @@ namespace Toolbelt.Blazor.I18nText
                 await initLangTask;
                 lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
             }
+        }
+
+        public void Dispose()
+        {
+            this.I18nTextRepository.RemoveScope(this.ScopeId);
         }
     }
 }
