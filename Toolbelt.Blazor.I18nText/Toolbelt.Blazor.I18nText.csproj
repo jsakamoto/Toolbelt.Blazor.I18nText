@@ -15,11 +15,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
-    <Version>8.0.0.2-beta</Version>
+    <Version>9.0.0.3</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
     <PackageTags>blazor,localize,i18n</PackageTags>
-    <PackageReleaseNotes>v.8.0.0
+    <PackageReleaseNotes>v.9.0.0
+- BREAKING CHANGE: Support Blazor v.3.2.0 Preview 2 (not compatible with v.3.2.0 Preview 1 or before.)
+v.8.0.0
 - Add sub-namespace to Typed Text Table class from the relative location where localized text source files are.
 v.7.1.0
 - Fix: auto loading JavaScript file is failed sometimes.

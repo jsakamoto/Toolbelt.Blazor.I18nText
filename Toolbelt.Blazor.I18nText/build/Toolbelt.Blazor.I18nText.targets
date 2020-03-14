@@ -57,8 +57,8 @@
       </ContentWithTargetPath>
       <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-        <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
         <Visible>false</Visible>
         <Pack>false</Pack>
       </ContentWithTargetPath>
@@ -66,6 +66,7 @@
 
   </Target>
 
+  <!-- FOR PROJECT-REFERENCED LIBRARIES -->
   <ItemGroup>
     <_IntermediateBlazorI18nTextResourceJsons Remove="$(IntermediateOutputPath)dist\_content\i18ntext\*.json">
     </_IntermediateBlazorI18nTextResourceJsons>
@@ -77,11 +78,12 @@
     <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+      <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       <Visible>false</Visible>
       <Pack>false</Pack>
     </ContentWithTargetPath>
   </ItemGroup>
+
 
   <!-- FOR CREATE PACKAGE -->
   <PropertyGroup>
@@ -89,13 +91,6 @@
   </PropertyGroup>
   <Target Name="_IncludeBlazorI18nTextResourceJsonsForPack" DependsOnTargets="CompileI18nText" >
     <ItemGroup>
-
-      <!-- 
-      [WORK AROUND] Avoid to nested packages which contains "Microsoft.AspNetCore.StaticWebAssets.props" includes "*.StaticWebAssets.xml" in that .nupkg file.
-      -->
-      <Content Update="$(IntermediateOutputPath)staticwebassets\**">
-        <Pack>false</Pack>
-      </Content>
 
       <None Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <PackagePath>i18ntext\%(filename)%(extension)</PackagePath>
@@ -109,34 +104,6 @@
         <Visible>false</Visible>
       </None>
 
-    </ItemGroup>
-  </Target>
-
-  <!-- FOR PUBLISHING -->
-  <Target Name="BlazorI18nTextGetCopyToPublishDirectoryItems"
-          BeforeTargets="GetCopyToPublishDirectoryItems"
-          Condition="'$(OutputType.ToLowerInvariant())'=='exe'">
-    <ItemGroup>
-      <_BlazorI18nTextResourceJsons Include="$(TargetDir)\dist\_content\i18ntext\*.json">
-      </_BlazorI18nTextResourceJsons>
-      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
-        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ContentWithTargetPath>
-    </ItemGroup>
-  </Target>
-
-  <!-- FOR PUBLISHING - SUPPORT CLIENT JAVASCRIPT FILE -->
-  <Target Name="BlazorI18nTextStaticWebAsstesGetCopyToPublishDirectoryItems"
-        BeforeTargets="GetCopyToPublishDirectoryItems"
-        Condition="'$(OutputType.ToLowerInvariant())'=='exe' AND '$(BlazorPublishDistDir)' != ''">
-    <ItemGroup>
-      <StaticWebAsset Remove="$(MSBuildThisFileDirectory)..\staticwebassets\**" />
-      <_ToolbeltBlazorI18nTextStaticWebAssets Include="$(MSBuildThisFileDirectory)..\staticwebassets\**" />
-      <ContentWithTargetPath Include="@(_ToolbeltBlazorI18nTextStaticWebAssets)">
-        <TargetPath>$(BlazorPublishDistDir)_content\Toolbelt.Blazor.I18nText\%(RecursiveDir)%(FileName)%(Extension)</TargetPath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ContentWithTargetPath>
     </ItemGroup>
   </Target>
 

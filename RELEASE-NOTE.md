@@ -1,4 +1,5 @@
 ## Release Note
+- **v.9.0.0** - BREAKING CHANGE: Support Blazor v.3.2.0 Preview 2 (not compatible with v.3.2.0 Preview 1 or before.)
 - **v.8.0.0** - Add sub-namespace to Typed Text Table class from the relative location where localized text source files are.
 - **v.7.1.0**
     - Fix: auto loading JavaScript file is failed sometimes.

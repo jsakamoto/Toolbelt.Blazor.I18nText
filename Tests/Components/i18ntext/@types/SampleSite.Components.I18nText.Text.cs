@@ -37,7 +37,7 @@ namespace SampleSite.Components.I18nText
         /// <summary>"Freezing"</summary>
         public string Freezing;
 
-        /// <summary>"Hello, world!!"</summary>
+        /// <summary>"Hello, world!"</summary>
         public string HelloWorld;
 
         /// <summary>"Home"</summary>

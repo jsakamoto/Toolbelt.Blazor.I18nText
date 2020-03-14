@@ -97,18 +97,26 @@ namespace Toolbelt.Blazor.I18nText.Test
                 Obj: objDir);
         }
 
+        private static string GetPlatform(string startupProjDir)
+        {
+            var projPath = Directory.GetFiles(startupProjDir, "*.csproj").First();
+            return XDocument.Load(projPath).Descendants("TargetFramework").First().Value;
+        }
+
         public static IEnumerable<object[]> Projects = new[] {
-            new object[]{ "Client", "netstandard2.1", "SampleSite.Client/dist"},
-            new object[]{ "Host", "netcoreapp3.1", "SampleSite.Client/dist"},
-            new object[]{ "Server", "netcoreapp3.1",  ""},
+            // startupProjName
+            new object[]{ "Client" },
+            new object[]{ "Host" },
+            new object[]{ "Server" },
         };
 
         [Theory(DisplayName = "Build")]
         [MemberData(nameof(Projects))]
-        public void BasicBuildTest(string startupProjName, string platform, string _)
+        public void BasicBuildTest(string startupProjName)
         {
             var dirs = GetDirectories(startupProjName);
-            var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/dist/_content/i18ntext".Split('/')));
+            var platform = GetPlatform(dirs.StartupProj);
+            var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
 
             Delete(dirs.Bin);
             Delete(dirs.Obj);
@@ -131,13 +139,14 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Theory(DisplayName = "Publish")]
         [MemberData(nameof(Projects))]
-        public void PublishTest(string startupProjName, string platform, string distAtPublish)
+        public void PublishTest(string startupProjName)
         {
             var dirs = GetDirectories(startupProjName);
+            var platform = GetPlatform(dirs.StartupProj);
             var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
-            var distContentDir = Path.Combine(publishDir, Path.Combine($"{distAtPublish}/_content".Split('/', StringSplitOptions.RemoveEmptyEntries)));
-            var i18nDistDir = Path.Combine(distContentDir, "i18ntext");
+            var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
+            var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
 
             Delete(dirs.Bin);
             Delete(dirs.Obj);
@@ -145,9 +154,6 @@ namespace Toolbelt.Blazor.I18nText.Test
             Run(dirs.StartupProj, "dotnet", "publish").ExitCode.Is(0);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
-            var staticWebAssetDir = Path.Combine(
-                startupProjName == "Client" ? distContentDir : wwwrootContentDir,
-                "Toolbelt.Blazor.I18nText");
             Exists(staticWebAssetDir, "script.min.js").IsTrue();
 
             var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.*")

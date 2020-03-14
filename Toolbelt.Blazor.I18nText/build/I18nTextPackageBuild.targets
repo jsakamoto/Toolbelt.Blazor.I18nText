@@ -11,24 +11,11 @@
     -->
     <ContentWithTargetPath Include="$(MSBuildThisFileDirectory)..\i18ntext\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Visible>false</Visible>
-      <TargetPath>dist\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+      <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       <Pack>false</Pack>
     </ContentWithTargetPath>
   </ItemGroup>
-
-  <Target Name="BlazorI18nTextGetCopyToPublishDirectoryItems"
-          BeforeTargets="GetCopyToPublishDirectoryItems"
-          Condition="'$(OutputType.ToLowerInvariant())'=='exe'">
-    <ItemGroup>
-      <_BlazorI18nTextResourceJsons Include="$(TargetDir)dist\_content\i18ntext\*.json">
-      </_BlazorI18nTextResourceJsons>
-      <ContentWithTargetPath Include="@(_BlazorI18nTextResourceJsons)">
-        <TargetPath>$(BlazorPublishDistDir)_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </ContentWithTargetPath>
-    </ItemGroup>
-  </Target>
 
 </Project>

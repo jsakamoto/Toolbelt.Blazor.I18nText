@@ -84,9 +84,7 @@ namespace Toolbelt.Blazor.I18nText
         private ReadJsonAsTextMapAsync GetReadJsonAsTextMapServerAsync()
         {
             var appDomainBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var baseDir1 = Path.Combine(appDomainBaseDir, "dist", "_content", "i18ntext");
-            var baseDir2 = Path.Combine(appDomainBaseDir, "_content", "i18ntext");
-            var baseDir = Directory.Exists(baseDir1) ? Path.Combine(appDomainBaseDir, "dist") : appDomainBaseDir;
+            var baseDir = Path.Combine(appDomainBaseDir, "wwwroot");
             if (baseDir[baseDir.Length - 1] != Path.DirectorySeparatorChar) baseDir += Path.DirectorySeparatorChar;
             var baseUri = new Uri(baseDir);
             return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
