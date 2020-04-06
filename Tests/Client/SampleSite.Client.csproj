@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0-preview2.20160.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0-preview2.20160.5" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview2.20160.5" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.0.0.3" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>

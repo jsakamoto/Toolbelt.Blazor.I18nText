@@ -77,7 +77,7 @@
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       <Visible>false</Visible>
       <Pack>false</Pack>
