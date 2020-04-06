@@ -23,7 +23,7 @@ This package allows you to localize texts in your Blazor app.
 "Blazor I18n Text" ver.9.x supports following Blazor versions:
 
 - Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
-- Blazor WebAssembly App **v.3.2.0 preview 2**
+- Blazor WebAssembly App **v.3.2.0 preview 2~3**
 
 ## Quick Start
 
