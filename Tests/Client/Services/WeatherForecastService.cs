@@ -1,6 +1,6 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
 using SampleSite.Components.Services;
 
 namespace SampleSite.Client.Services
@@ -16,7 +16,7 @@ namespace SampleSite.Client.Services
 
         public Task<WeatherForecast[]> GetForecastAsync()
         {
-            return this.HttpClient.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+            return this.HttpClient.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
         }
     }
 }
