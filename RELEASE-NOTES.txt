@@ -1,3 +1,6 @@
+v.9.0.1.1
+- Just added package icon.
+
 v.9.0.1
 - Fix: Localized Resource JSON files aren't published.
 
