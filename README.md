@@ -2,45 +2,43 @@
 
 ## Summary
 
-This package allows you to localize texts in your Blazor app.
+This package is an another way to localize text in your Blazor Web App!
 
 ![movie.1](https://j.mp/2kwwHth)
 
+- [Live Demo is here!](https://j.mp/2lFlwyp)
+
 ### Features
 
-- It works with both Blazor Server app and Blazor WebAssembly app.
-- On the Blazor WebAssembly app, it works without Server-Side runtime (requires only static contents HTTP server).
-- You can develop with only plain text editor - No require .resx
+- It works on both Blazor Server and Blazor WebAssembly.
+- In Blazor WebAssembly, it works without the Server-Side process (requires only static contents HTTP server).
+- You can develop with an only plain text editor - No require .resx
 - Static Typing - IntelliSense, Code Hint...
-- It also works well on Blazor components libraries, and you can package and redistribute the library that is localized with "Blazor I18nText" as a NuGet package.
+- It also works well on Blazor components libraries. You can package the library that's localized with "Blazor I18nText" as a NuGet package.
 
-### Live Demo
+### Notice
 
-- [https://jsakamoto.github.io/Toolbelt.Blazor.I18nText/](https://j.mp/2lFlwyp)
+Now, Blazor WebAssembly has been started the localization support officially since v.3.2 preview 4. It is based on .NET Standard `IStringLocalizer` and satellite assemblies with `.resx`.
+
+However, I will continue to develop and maintain this package, because this package still has some advantages against .NET standard way.
+
+![pros/cons](https://j.mp/2Yd2Rv4)
 
 ### Supported versions
 
 "Blazor I18n Text" ver.9.x supports following Blazor versions:
 
 - Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
-- Blazor WebAssembly App **v.3.2.0 preview 2~3**
+- Blazor WebAssembly App **v.3.2.0 preview 2~5**
 
 ## Quick Start
 
 ### Step.1 - Add Package
 
-Add `Toolbelt.Blazor.I18nText` NuGet package to your Blazor app project.
-
-dotnet CLI:
+Add `Toolbelt.Blazor.I18nText` NuGet package to your Blazor app project, like this.
 
 ```
 $ dotnet add package Toolbelt.Blazor.I18nText
-```
-
-Package Manager Console:
-
-```
-PM> Install-Package Toolbelt.Blazor.I18nText
 ```
 
 ### Step.2 - Create localized text source files as JSON or CSV
@@ -217,21 +215,8 @@ The following features will not be supported forever, because these features are
 
 ## Configuration
 
-### Fallback language
-
-Fallback language is determined at compile time.
-
-The default fallback language is `en`.
-
-If you want to change the fallback language, define `<I18nTextFallBackLanguage>` MSBuild property in your project file (.csproj) with the language code what you want.
-
-![fig.6](https://j.mp/2k0kTz5)
-
-### The namespace of the Text Table class
-
-If you want to change the namespace of the Text Table classes, define `<I18nTextNamespace>` MSBuild property in your project file (.csproj) with the namespace what you want.
-
-![fig.7](https://j.mp/2ktvqmH)
+- [Fallback language](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/README-CONFIGURATION.md#fallback-language)
+- [The namespace of the Text Table class](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/README-CONFIGURATION.md#the-namespace-of-the-text-table-class)
 
 ## API Reference
 

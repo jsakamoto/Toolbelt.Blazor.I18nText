@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20B
 	ProjectSection(SolutionItems) = preProject
 		API-REFERENCE.md = API-REFERENCE.md
 		README.md = README.md
+		README-CONFIGURATION.md = README-CONFIGURATION.md
 		RELEASE-NOTE.md = RELEASE-NOTE.md
 	EndProjectSection
 EndProject
