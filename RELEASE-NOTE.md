@@ -1,16 +1,1 @@
-## Release Note
-- **v.9.0.1** - Fix: Localized Resource JSON files aren't published.
-- **v.9.0.0** - BREAKING CHANGE: Support Blazor v.3.2.0 Preview 2 (not compatible with v.3.2.0 Preview 1 or before.)
-- **v.8.0.0** - Add sub-namespace to Typed Text Table class from the relative location where localized text source files are.
-- **v.7.1.0**
-    - Fix: auto loading JavaScript file is failed sometimes.
-    - Minify JavaScript file.
-    - Remove type parameter from "AddI18nText()" because no longer used it.
-    - Change "// Auto generated..." mark comment to "// &lt;auto-generated .../&gt;" tag for avoid Stylecop warning.
-- **v.7.0.0** - BREAKING CHANGE: Support server-side Blazor server app v.3.0.0 (not compatible with v.3.0.0 Preview 8 or before.)
-- **v.6.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 9 (not compatible with v.3.0.0 Preview 8 or before.)
-- **v.5.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 8 (not compatible with v.3.0.0 Preview 7 or before.)
-- **v.4.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 7 (not compatible with v.3.0.0 Preview 6 or before.)
-- **v.3.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 6 (not compatible with v.3.0.0 Preview 5 or before.)
-- **v.2.0.0** - BREAKING CHANGE: Support Blazor v.3.0.0 Preview 4 (not compatible with v.0.9.0 or before.)
-- **v.1.0.0** - 1st release.
+The release notes has been moved to [here](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/RELEASE-NOTES.txt).

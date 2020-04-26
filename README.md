@@ -222,9 +222,9 @@ The following features will not be supported forever, because these features are
 
 Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 
-## Release Note
+## Release Notes
 
-Release note is [here.](http://j.mp/2oSB9UP)
+Release notes is [here.](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/RELEASE-NOTES.txt)
 
 ## License
 
