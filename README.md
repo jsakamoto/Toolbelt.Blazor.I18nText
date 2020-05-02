@@ -62,7 +62,7 @@ Key1,Localized text 1
 Key2,Localized text 2
 ```
 
-**NOTICE** - The encoding of the CSV file must be **UTF-8**.
+**NOTICE** - The encoding of the CSV and JSON file must be **UTF-8**.
 
 
 And, the naming rule of localized text source files must be bellow.
