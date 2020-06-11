@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Globalization;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -12,7 +10,7 @@ namespace Toolbelt.Blazor.I18nText
 {
     public class I18nText : IDisposable
     {
-        internal readonly I18nTextOptions Options = new I18nTextOptions();
+        internal readonly I18nTextOptions Options;
 
         private string _CurrentLanguage = "en";
 
@@ -22,22 +20,15 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly IServiceProvider ServiceProvider;
 
-        private readonly IJSRuntime JSRuntime;
-
-        private bool ScriptLoaded = false;
-
         private readonly I18nTextRepository I18nTextRepository;
 
         private readonly Guid ScopeId = Guid.NewGuid();
 
-        internal I18nText(IServiceProvider serviceProvider)
+        internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            this.I18nTextRepository = serviceProvider.GetService<I18nTextRepository>();
-
             this.ServiceProvider = serviceProvider;
-            this.JSRuntime = serviceProvider.GetService<IJSRuntime>();
-            this.Options.GetInitialLanguageAsync = GetInitialLanguageAsync;
-            this.Options.PersistCurrentLanguageAsync = PersistCurrentLanguageAsync;
+            this.I18nTextRepository = serviceProvider.GetRequiredService<I18nTextRepository>();
+            this.Options = options;
         }
 
         internal void InitializeCurrentLanguage()
@@ -45,40 +36,6 @@ namespace Toolbelt.Blazor.I18nText
             this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
                 .AsTask()
                 .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
-        }
-
-        private readonly SemaphoreSlim Syncer = new SemaphoreSlim(1, 1);
-
-        private async ValueTask<IJSRuntime> GetJSRuntimeAsync()
-        {
-            if (!this.ScriptLoaded)
-            {
-                await Syncer.WaitAsync();
-                try
-                {
-                    if (!this.ScriptLoaded)
-                    {
-                        const string scriptPath = "_content/Toolbelt.Blazor.I18nText/script.min.js";
-                        await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[src=\"${{s}}\"]`)?r():(e=>(e.src=s,e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "'))");
-                        this.ScriptLoaded = true;
-                    }
-                }
-                catch (Exception) { }
-                finally { Syncer.Release(); }
-            }
-            return this.JSRuntime;
-        }
-
-        private async ValueTask<string> GetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
-        {
-            var jsRuntime = await GetJSRuntimeAsync();
-            return await jsRuntime.InvokeAsync<string>("Toolbelt.Blazor.I18nText.initLang", options.PersistanceLevel);
-        }
-
-        private async ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options)
-        {
-            var jsRuntime = await GetJSRuntimeAsync();
-            await jsRuntime.InvokeVoidAsync("Toolbelt.Blazor.I18nText.setCurrentLang", langCode, options.PersistanceLevel);
         }
 
         public async Task<string> GetCurrentLanguageAsync()

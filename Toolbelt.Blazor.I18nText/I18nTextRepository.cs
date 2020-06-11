@@ -28,12 +28,12 @@ namespace Toolbelt.Blazor.I18nText
 
         public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
 
-        internal I18nTextRepository(IServiceProvider serviceProvider)
+        internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            var runningOnWasm = RuntimeInformation.OSDescription == "web";
-            if (runningOnWasm)
+            if (HostingModel.IsWasm)
             {
-                this.HttpClient = serviceProvider.GetService<HttpClient>();
+                var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+                this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName);
                 this.ReadJsonAsTextMapAsync = this.ReadJsonAsTextMapWasmAsync;
             }
             else

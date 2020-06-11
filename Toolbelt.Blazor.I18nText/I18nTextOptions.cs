@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Toolbelt.Blazor.I18nText
@@ -7,6 +8,8 @@ namespace Toolbelt.Blazor.I18nText
 
     public delegate ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options);
 
+    public delegate void ConfigureHttpClient(IServiceProvider serviceProvider, HttpClient client);
+
     public class I18nTextOptions
     {
         public GetInitialLanguage GetInitialLanguageAsync;
@@ -14,5 +17,9 @@ namespace Toolbelt.Blazor.I18nText
         public PersistCurrentLanguageAsync PersistCurrentLanguageAsync;
 
         public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
+
+        public string HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
+
+        public ConfigureHttpClient ConfigureHttpClient = null;
     }
 }
