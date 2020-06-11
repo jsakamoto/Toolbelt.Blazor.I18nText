@@ -1,0 +1,18 @@
+﻿@page "/"
+@inject I18nText I18nText
+
+<h1>@Text.HelloWorld</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+
+    private Text Text = new Text();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Text = await I18nText.GetTextTableAsync<Text>(this);
+    }
+}
