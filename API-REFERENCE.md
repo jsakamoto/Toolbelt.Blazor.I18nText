@@ -1,13 +1,15 @@
 ﻿# API Reference
 
-## I18nText service class
+----
+
+## `I18nText` service class
 
 ### namespace
 
-Toolbelt.Blazor.I18nText
+`Toolbelt.Blazor.I18nText`
 
 
-### GetCurrentLanguageAsync method
+### `GetCurrentLanguageAsync()` method
 
 #### Syntax
 
@@ -23,7 +25,7 @@ That language code is what detected from the Web browser settings, or specified 
 
 `GetTextTableAsync<T>(...)` method uses the language code that this method returns to determine which language resource file should load.
 
-### SetCurrentLanguageAsync method
+### `SetCurrentLanguageAsync()` method
 
 #### Syntax
 
@@ -41,7 +43,7 @@ The language code that was stored by this method will be read at launching the B
 
 If you want to change this storing behavior, you can configure it at service registration (see also: `AddI18nText(...)` extension method.).
 
-### GetTextTableAsync method
+### `GetTextTableAsync()` method
 
 #### Syntax
 
@@ -60,13 +62,15 @@ The fields of "Text Table" object are initialized by Localized Resource Text JSO
 When the `SetCurrentLanguageAsync(...)` method is invoked and current language of the `I18nText` service instance is changed, `StateHasCahnged()` method of the component that is specified to the 1st argument of this method will be invoked automatically.  
 By this effect, the result of rendering Blazor component will be refreshed with the after changed language's localized text.
 
-## I18nTextDependencyInjection class
+----
+
+## `I18nTextDependencyInjection` class
 
 ### namespace
 
-Toolbelt.Blazor.Extensions.DependencyInjection
+`Toolbelt.Blazor.Extensions.DependencyInjection`
 
-### AddI18nText extension method
+### `AddI18nText()` extension method
 
 #### Syntax
 
@@ -82,13 +86,15 @@ This extension method registers `I18nText` service into .NET Core DI (Dependency
 
 You can customize the behavior of `I18nText` service in `configure` callback function.
 
-## I18nTextOptions class
+----
+
+## `I18nTextOptions` class
 
 ### namespace
 
-Toolbelt.Blazor.I18nText
+`Toolbelt.Blazor.I18nText`
 
-### GetInitialLanguageAsync field
+### `GetInitialLanguageAsync` field
 
 #### Syntax
 
@@ -109,7 +115,7 @@ public delegate Task<string> GetInitialLanguage(I18nTextOptions options);
 By the default configuration, this field points to the static method that implements default behavior.  
 The default implements will return the language code from the web browser's local or session storage that would be stored by `SetCurrentLanguageAsync(...)` method, or web browser's language settings if the storage is empty.
 
-### PersistCurrentLanguageAsync field
+### `PersistCurrentLanguageAsync` field
 
 ### Syntax
 
@@ -132,13 +138,17 @@ public delegate Task PersistCurrentLanguageAsync(
 By the default configuration, this field points to the static method that will or will not store the language code that is specified for the argument of the delegate.  
 The behavior of the default implements rely on what value is specified in the`PersistanceLevel` filed of the `option` argument.
 
-### PersistanceLevel field
+### `PersistanceLevel` field
 
 #### Syntax
 
 ```csharp
 public PersistanceLevel PersistanceLevel;
 ```
+
+#### Default Value
+
+`PersistanceLevel.Session`
 
 #### Description
 
@@ -162,3 +172,57 @@ These enumerated values ​​have the following meanings.
 - **SessionAndLocal** ... the language code will persist into web borwser's session storage and local storage.
 
 This field value is used by the static method that is the default value of `PersistCurrentLanguageAsync` field.
+
+### `HttpClientName` field
+
+#### Syntax
+
+```csharp
+public string HttpClientName;
+```
+
+#### Default Value
+
+`"Toolbelt.Blazor.I18nText.HttpClient"`
+
+#### Description
+
+This string field is effective only on a Blazor WebAssembly app, with no effects on a Blazor Server app.
+
+The `I18nText` service running on Blazor WebAssembly app fetches localized resource text JSON files by using a named `HttpClient` object which is created from `IHttpClientFactory` service.
+
+This field specifies the name of `HttpClient` for fetching those JSON files.
+
+The `I18nText` uses this name for registering the named  `HttpClient` to DI and also uses it for creating a named `HttpClient` object.
+
+### `ConfigureHttpClient` field
+
+#### Syntax
+
+```csharp
+public ConfigureHttpClient ConfigureHttpClient;
+```
+
+#### Description
+
+This delegate field is effective only on a Blazor WebAssembly app, with no effects on a Blazor Server app.
+
+The type of this filed is a delegate that has following syntax.
+
+```csharp
+public delegate void ConfigureHttpClient(
+  IServiceProvider serviceProvider, 
+  HttpClient client);
+```
+
+The `I18nText` service running on Blazor WebAssembly app fetches localized resource text JSON files by using a named `HttpClient` object which is created from `IHttpClientFactory` service.
+
+The delegate in this field is invoked to configure the named `HttpClient` object that is created by `IHttpClientFactory`.
+
+If you want to configure a `HttpClient` object that is used for `I18nText` service your self, you should set your implementation to this field.
+
+If you set `null` value to this field, `I18nText` service will not register the named `HttpClinet` to DI.
+
+#### Default Value
+
+The default delegate value in this field is implementation as just configure `BaseAddress` property of a `HttpClient` object.
