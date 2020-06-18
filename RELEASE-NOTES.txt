@@ -1,3 +1,6 @@
+v.9.1.1
+- Fix: Visual Studio "Up-to-date Check" support didn't work.
+
 v.9.1.0
 - Improved to works fine out of the box even on an access token-based authorization enabled site.
 
