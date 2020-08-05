@@ -1,3 +1,7 @@
+v.9.2.0
+- Fix: Doesn't work on .NET 5 preview 7.
+- Improve: Wasm detection code can be pluggable.
+
 v.9.1.1
 - Fix: Visual Studio "Up-to-date Check" support didn't work.
 
