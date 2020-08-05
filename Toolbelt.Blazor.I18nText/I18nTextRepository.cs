@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +29,7 @@ namespace Toolbelt.Blazor.I18nText
 
         internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            if (HostingModel.IsWasm)
+            if (options.IsWasm())
             {
                 var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
                 this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName);

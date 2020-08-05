@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Toolbelt.Blazor.I18nText;
@@ -35,11 +36,12 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
             {
                 GetInitialLanguageAsync = HelperScript.DefaultGetInitialLanguageAsync,
                 PersistCurrentLanguageAsync = HelperScript.DefaultPersistCurrentLanguageAsync,
+                IsWasm = DefaultIsWasm,
                 ConfigureHttpClient = DefaultConfigureHttpClient
             };
             configure?.Invoke(options);
 
-            if (HostingModel.IsWasm && options.ConfigureHttpClient != null)
+            if (options.IsWasm() && options.ConfigureHttpClient != null)
             {
                 services.AddHttpClient(options.HttpClientName, (sp, client) =>
                 {
@@ -57,6 +59,10 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
             });
             return services;
         }
+
+        public static readonly bool IsWasm = RuntimeInformation.OSDescription == "web" || RuntimeInformation.OSDescription == "Browser";
+
+        private static bool DefaultIsWasm() => IsWasm;
 
         private static string BaseAddress = null;
 

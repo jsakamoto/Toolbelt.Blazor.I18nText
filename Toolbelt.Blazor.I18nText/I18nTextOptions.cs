@@ -20,6 +20,8 @@ namespace Toolbelt.Blazor.I18nText
 
         public string HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
 
+        public Func<bool> IsWasm;
+
         public ConfigureHttpClient ConfigureHttpClient = null;
     }
 }
