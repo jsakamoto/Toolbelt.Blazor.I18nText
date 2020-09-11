@@ -48,6 +48,10 @@
         }
 
         Text = await I18nText.GetTextTableAsync<Text>(this);
+        I18nText.ChangeLanguage += (s, a) =>
+        {
+            Console.WriteLine($"Language Changed: {a.LanguageCode}");
+        };
     }
 
     private async Task OnChangeCurrentLang(ChangeEventArgs args)
