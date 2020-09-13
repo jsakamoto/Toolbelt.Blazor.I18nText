@@ -43,6 +43,17 @@ The language code that was stored by this method will be read at launching the B
 
 If you want to change this storing behavior, you can configure it at service registration (see also: `AddI18nText(...)` extension method.).
 
+### `ChangeLanguage` event
+
+#### Syntax
+
+```csharp
+public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
+```
+
+#### Description
+This event will be invoked after the language is changed.  It is invoked after the language has been changed, but before the component state has changed.
+
 ### `GetTextTableAsync()` method
 
 #### Syntax
