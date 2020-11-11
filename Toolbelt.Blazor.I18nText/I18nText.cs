@@ -24,6 +24,8 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly Guid ScopeId = Guid.NewGuid();
 
+        public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
+
         internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
         {
             this.ServiceProvider = serviceProvider;
@@ -55,6 +57,7 @@ namespace Toolbelt.Blazor.I18nText
 
             this._CurrentLanguage = langCode;
             await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
+            this.ChangeLanguage?.Invoke(this, new I18nTextChangeLanguageEventArgs(langCode));
 
             this.Components.InvokeStateHasChanged();
         }

@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="5.0.0-preview.7.20365.19" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0-preview.7.20364.11" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0-preview.7.20364.11" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.2.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.3.0" />
   </ItemGroup>
 
   <ItemGroup>
