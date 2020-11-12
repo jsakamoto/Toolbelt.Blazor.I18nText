@@ -1,6 +1,6 @@
 ﻿@inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
-<div class="alert alert-secondary mt-4 survay-prompt" role="alert">
+<div class="alert alert-secondary mt-4" role="alert">
     <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
     <strong>@Title</strong>
     <span>
@@ -15,10 +15,10 @@
 
     private Text Text = new Text();
 
-    readonly string SurveyUrl = "https://go.microsoft.com/fwlink/?linkid=2127996";
+    readonly string SurveyUrl = "https://go.microsoft.com/fwlink/?linkid=2137916";
 
     protected override async Task OnInitializedAsync()
     {
         Text = await I18nText.GetTextTableAsync<Text>(this);
-    }
+}
 }

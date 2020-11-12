@@ -18,7 +18,7 @@
         background-color: transparent;
     }
 
-@media (max-width: 767.98px) {
+@media (max-width: 640.98px) {
     .footer .form-row {
         left: 0;
     }
