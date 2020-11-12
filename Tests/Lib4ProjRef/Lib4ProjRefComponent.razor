@@ -1,6 +1,4 @@
 ﻿@using Lib4ProjRef.I18nText
-@using Microsoft.JSInterop
-@inject IJSRuntime JS
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <div class="my-component">
@@ -14,14 +12,5 @@
     protected override async Task OnInitializedAsync()
     {
         this.Text = await I18nText.GetTextTableAsync<Text>(this);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            const string cssPath = "_content/Lib4ProjRef/styles.css";
-            await JS.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s)=>(h=>h.querySelector(t+`[href=\"${{s}}\"]`)?r():(e=>(e.href=s,e.rel='stylesheet',e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'link','" + cssPath + "'))");
-        }
     }
 }
