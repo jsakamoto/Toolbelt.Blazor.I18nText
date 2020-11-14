@@ -28,8 +28,8 @@ However, I will continue to develop and maintain this package, because this pack
 
 "Blazor I18n Text" ver.9.x supports following Blazor versions:
 
-- Blazor Server App **v.3.0.0 ~ 3.1.0 GA**
-- Blazor WebAssembly App **v.3.2.0 Preview 2~5, Release Candidate 1+, and 3.2.0 GA!**
+- Blazor Server App **v.3.0.0 ~ .NET 5**
+- Blazor WebAssembly App **v.3.2.0 ~ .NET 5**
 
 ## Quick Start
 

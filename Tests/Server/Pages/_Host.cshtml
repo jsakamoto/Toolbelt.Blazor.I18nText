@@ -12,14 +12,15 @@
     <title>Sample Site</title>
     <base href="~/" />
     <link href="_content/SampleSite.Components/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="_content/SampleSite.Components/css/site.css" rel="stylesheet" />
-    <link href="_content/SampleSite.Components/css/site-custom.css" rel="stylesheet" />
+    <link href="_content/SampleSite.Components/css/app.css" rel="stylesheet" />
+    <link href="_content/SampleSite.Components/css/app-custom.css" rel="stylesheet" />
+    <link href="SampleSite.Server.styles.css" rel="stylesheet" />
 </head>
 
 <body>
-    <app>
+    <div id="app">
         <component type="typeof(App)" render-mode="ServerPrerendered" />
-    </app>
+    </div>
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">

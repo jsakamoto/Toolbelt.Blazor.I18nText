@@ -16,14 +16,14 @@ namespace SampleSite.Client
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("app");
+            builder.RootComponents.Add<App>("#app");
             builder.Services
-                .AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+                .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
                 .AddI18nText(options =>
                 {
                     // options.PersistanceLevel = PersistanceLevel.Session;
                 })
-                .AddSingleton<IWeatherForecastService, WeatherForecastService>();
+                .AddScoped<IWeatherForecastService, WeatherForecastService>();
 
             await builder.Build().RunAsync();
         }

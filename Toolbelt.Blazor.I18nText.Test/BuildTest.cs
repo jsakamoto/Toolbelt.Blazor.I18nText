@@ -143,7 +143,7 @@ namespace Toolbelt.Blazor.I18nText.Test
         {
             var dirs = GetDirectories(startupProjName);
             var platform = GetPlatform(dirs.StartupProj);
-            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/publish/".Split('/')));
+            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Release/{platform}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
@@ -151,12 +151,12 @@ namespace Toolbelt.Blazor.I18nText.Test
             Delete(dirs.Bin);
             Delete(dirs.Obj);
 
-            Run(dirs.StartupProj, "dotnet", "publish").ExitCode.Is(0);
+            Run(dirs.StartupProj, "dotnet", "publish", "-c:Release").ExitCode.Is(0);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             Exists(staticWebAssetDir, "script.min.js").IsTrue();
 
-            var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.*")
+            var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.json")
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name);
 
