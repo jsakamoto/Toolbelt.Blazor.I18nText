@@ -104,19 +104,19 @@ namespace Toolbelt.Blazor.I18nText.Test
         }
 
         public static IEnumerable<object[]> Projects = new[] {
-            // startupProjName, extensionDir
-            new object[]{ "Client", "/browser-wasm" },
-            new object[]{ "Host", "" },
-            new object[]{ "Server", "" },
+            // startupProjName
+            new object[]{ "Client" },
+            new object[]{ "Host" },
+            new object[]{ "Server" },
         };
 
         [Theory(DisplayName = "Build")]
         [MemberData(nameof(Projects))]
-        public void BasicBuildTest(string startupProjName, string extensionDir)
+        public void BasicBuildTest(string startupProjName)
         {
             var dirs = GetDirectories(startupProjName);
             var platform = GetPlatform(dirs.StartupProj);
-            var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}{extensionDir}/wwwroot/_content/i18ntext".Split('/')));
+            var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
 
             Delete(dirs.Bin);
             Delete(dirs.Obj);
@@ -139,11 +139,11 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Theory(DisplayName = "Publish")]
         [MemberData(nameof(Projects))]
-        public void PublishTest(string startupProjName, string extensionDir)
+        public void PublishTest(string startupProjName)
         {
             var dirs = GetDirectories(startupProjName);
             var platform = GetPlatform(dirs.StartupProj);
-            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}{extensionDir}/publish/".Split('/')));
+            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Release/{platform}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
@@ -151,7 +151,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             Delete(dirs.Bin);
             Delete(dirs.Obj);
 
-            Run(dirs.StartupProj, "dotnet", "publish").ExitCode.Is(0);
+            Run(dirs.StartupProj, "dotnet", "publish", "-c:Release").ExitCode.Is(0);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             Exists(staticWebAssetDir, "script.min.js").IsTrue();
