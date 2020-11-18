@@ -29,5 +29,30 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
             process.WaitForExit();
             return process;
         }
+
+        public static void XcopyDir(string srcDir, string dstDir, string[] excludesDir = null)
+        {
+            if (excludesDir == null) excludesDir = new string[0];
+            var excludesDirHash = excludesDir.Select(dir => dir.ToLower()).ToHashSet();
+
+            Directory.CreateDirectory(dstDir);
+
+            var srcFileNames = Directory.GetFiles(srcDir);
+            foreach (var srcFileName in srcFileNames)
+            {
+                var dstFileName = Path.Combine(dstDir, Path.GetFileName(srcFileName));
+                File.Copy(srcFileName, dstFileName);
+            }
+
+            var srcSubDirs = Directory.GetDirectories(srcDir);
+            foreach (var srcSubDir in srcSubDirs)
+            {
+                var dirName = Path.GetFileName(srcSubDir);
+                if (excludesDirHash.Contains(dirName.ToLower())) continue;
+
+                var dstSubDir = Path.Combine(dstDir, dirName);
+                XcopyDir(srcSubDir, dstSubDir, excludesDir);
+            }
+        }
     }
 }

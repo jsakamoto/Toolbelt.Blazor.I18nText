@@ -4,34 +4,34 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Xunit;
-
+using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
 
 namespace Toolbelt.Blazor.I18nText.Test
 {
     public class BuildTest
     {
+        private static readonly HashSet<string> DirOfUpdatedProj = new HashSet<string>();
+
         public BuildTest()
-        {
-            UpdateLibraryProjects();
-            UpdatePackageRef();
-        }
-
-        private static HashSet<string> DirOfUpdatedProj = new HashSet<string>();
-
-        private static bool CheckAndMarkUpdated(string projectDir)
         {
             lock (DirOfUpdatedProj)
             {
-                if (DirOfUpdatedProj.Contains(projectDir)) return true;
-                DirOfUpdatedProj.Add(projectDir);
-                return false;
+                UpdateLibraryProjects();
+                UpdatePackageRef();
             }
+        }
+
+        private static bool CheckAndMarkUpdated(string projectDir)
+        {
+            if (DirOfUpdatedProj.Contains(projectDir)) return true;
+            DirOfUpdatedProj.Add(projectDir);
+            return false;
         }
 
         private static void UpdateLibraryProjects()
         {
-            var testDir = GetTestDir();
+            var testDir = WorkSpace.GetTestDir();
             foreach (var libName in new[] { "Lib4PackRef", "Lib4ProjRef" })
             {
                 var libDir = Path.Combine(testDir, libName);
@@ -60,7 +60,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         private static void UpdatePackageRef()
         {
-            var testDir = GetTestDir();
+            var testDir = WorkSpace.GetTestDir();
             var projectNames = new[] { "Components", "Client", "Server" };
             foreach (var projectName in projectNames)
             {
@@ -74,27 +74,6 @@ namespace Toolbelt.Blazor.I18nText.Test
                     }
                 }
             }
-        }
-
-        private static string GetTestDir()
-        {
-            var testDir = AppDomain.CurrentDomain.BaseDirectory;
-            do { testDir = Path.GetDirectoryName(testDir); } while (!Exists(testDir, "*.sln"));
-            testDir = Path.Combine(testDir, "Tests");
-            return testDir;
-        }
-
-        private static (string StartupProj, string Bin, string Obj) GetDirectories(string startupProjDir)
-        {
-            var testDir = GetTestDir();
-            startupProjDir = Path.Combine(testDir, startupProjDir);
-            var binDir = Path.Combine(startupProjDir, "bin");
-            var objDir = Path.Combine(startupProjDir, "obj");
-
-            return (
-                StartupProj: startupProjDir,
-                Bin: binDir,
-                Obj: objDir);
         }
 
         private static string GetPlatform(string startupProjDir)
@@ -114,14 +93,11 @@ namespace Toolbelt.Blazor.I18nText.Test
         [MemberData(nameof(Projects))]
         public void BasicBuildTest(string startupProjName)
         {
-            var dirs = GetDirectories(startupProjName);
-            var platform = GetPlatform(dirs.StartupProj);
-            var distDir = Path.Combine(dirs.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
+            using var workSpace = WorkSpace.Create(startupProjName);
+            var platform = GetPlatform(workSpace.StartupProj);
+            var distDir = Path.Combine(workSpace.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
 
-            Delete(dirs.Bin);
-            Delete(dirs.Obj);
-
-            Run(dirs.StartupProj, "dotnet", "build").ExitCode.Is(0);
+            Run(workSpace.StartupProj, "dotnet", "build").ExitCode.Is(0);
 
             var textResJsonFileNames = Directory.GetFiles(distDir, "*.*")
                 .Select(path => Path.GetFileName(path))
@@ -141,17 +117,14 @@ namespace Toolbelt.Blazor.I18nText.Test
         [MemberData(nameof(Projects))]
         public void PublishTest(string startupProjName)
         {
-            var dirs = GetDirectories(startupProjName);
-            var platform = GetPlatform(dirs.StartupProj);
-            var publishDir = Path.Combine(dirs.Bin, Path.Combine($"Release/{platform}/publish/".Split('/')));
+            using var workSpace = WorkSpace.Create(startupProjName);
+            var platform = GetPlatform(workSpace.StartupProj);
+            var publishDir = Path.Combine(workSpace.Bin, Path.Combine($"Release/{platform}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
 
-            Delete(dirs.Bin);
-            Delete(dirs.Obj);
-
-            Run(dirs.StartupProj, "dotnet", "publish", "-c:Release").ExitCode.Is(0);
+            Run(workSpace.StartupProj, "dotnet", "publish", "-c:Release").ExitCode.Is(0);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             Exists(staticWebAssetDir, "script.min.js").IsTrue();
