@@ -21,7 +21,7 @@ namespace Toolbelt.Blazor.I18nText.Internals
             this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);
         }
 
-        public async Task<T> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
+        public async Task<T?> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
         {
             var fetchTask = this.FetchTask;
             await fetchTask;

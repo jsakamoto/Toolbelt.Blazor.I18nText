@@ -1,5 +1,4 @@
-﻿#nullable enable
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +9,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -31,7 +31,8 @@ namespace Toolbelt.Blazor.I18nText
 
         internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            if (options.IsWasm())
+            var isWasm = options.IsWasm?.Invoke() ?? I18nTextDependencyInjection.IsWasm;
+            if (isWasm)
             {
                 var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
                 this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName);

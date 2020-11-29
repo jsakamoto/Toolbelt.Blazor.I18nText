@@ -12,16 +12,16 @@ namespace Toolbelt.Blazor.I18nText
 
     public class I18nTextOptions
     {
-        public GetInitialLanguage GetInitialLanguageAsync;
+        public GetInitialLanguage? GetInitialLanguageAsync;
 
-        public PersistCurrentLanguageAsync PersistCurrentLanguageAsync;
+        public PersistCurrentLanguageAsync? PersistCurrentLanguageAsync;
 
         public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
 
-        public string HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
+        public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
 
-        public Func<bool> IsWasm;
+        public Func<bool>? IsWasm;
 
-        public ConfigureHttpClient ConfigureHttpClient = null;
+        public ConfigureHttpClient? ConfigureHttpClient = null;
     }
 }

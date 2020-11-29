@@ -16,7 +16,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly WeakRefCollection<ComponentBase> Components = new WeakRefCollection<ComponentBase>();
 
-        private Task InitLangTask;
+        private Task? InitLangTask;
 
         private readonly IServiceProvider ServiceProvider;
 
@@ -24,7 +24,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly Guid ScopeId = Guid.NewGuid();
 
-        public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
+        public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
         internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
         {
@@ -35,7 +35,8 @@ namespace Toolbelt.Blazor.I18nText
 
         internal void InitializeCurrentLanguage()
         {
-            this.InitLangTask = this.Options.GetInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
+            var getInitialLanguageAsync = this.Options.GetInitialLanguageAsync ?? HelperScript.DefaultGetInitialLanguageAsync;
+            this.InitLangTask = getInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
                 .AsTask()
                 .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
         }
@@ -66,7 +67,8 @@ namespace Toolbelt.Blazor.I18nText
         {
             await EnsureInitialLangAsync();
             this.Components.Add(component);
-            return await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
+            var textTable = await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
+            return textTable ?? new T();
         }
 
         private async Task EnsureInitialLangAsync()

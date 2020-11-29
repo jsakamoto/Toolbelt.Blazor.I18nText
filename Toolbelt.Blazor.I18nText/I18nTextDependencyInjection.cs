@@ -19,9 +19,10 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         ///  Please use AddI18nText() (non generic/without type parameter version) instead.
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
+        /// <param name="configure"></param>
         [Obsolete("Please use AddI18nText() (non generic/without type parameter version) instead.")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services, Action<I18nTextOptions> configure = null) where TStartup : class
+        public static IServiceCollection AddI18nText<TStartup>(this IServiceCollection services, Action<I18nTextOptions>? configure = null) where TStartup : class
         {
             return services.AddI18nText(configure);
         }
@@ -30,7 +31,8 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         ///  Adds a I18n Text service to the specified Microsoft.Extensions.DependencyInjection.IServiceCollection.
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
-        public static IServiceCollection AddI18nText(this IServiceCollection services, Action<I18nTextOptions> configure = null)
+        /// <param name="configure"></param>
+        public static IServiceCollection AddI18nText(this IServiceCollection services, Action<I18nTextOptions>? configure = null)
         {
             var options = new I18nTextOptions
             {
@@ -64,7 +66,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
 
         private static bool DefaultIsWasm() => IsWasm;
 
-        private static string BaseAddress = null;
+        private static string? BaseAddress = null;
 
         private static void DefaultConfigureHttpClient(IServiceProvider serviceProvider, HttpClient client)
         {
