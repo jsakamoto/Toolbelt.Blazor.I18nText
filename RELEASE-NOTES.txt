@@ -1,3 +1,6 @@
+v.9.3.1
+- Fix: Loading Localized Resource JSON files is failed sometimes.
+
 v.9.3.0
 - Exposed "ChangeLanguage" as a public event.
 

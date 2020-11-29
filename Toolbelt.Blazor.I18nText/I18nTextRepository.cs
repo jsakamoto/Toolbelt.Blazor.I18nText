@@ -1,8 +1,10 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
@@ -21,11 +23,11 @@ namespace Toolbelt.Blazor.I18nText
     {
         private readonly ScopeToLang ScopeToLangs = new ScopeToLang();
 
-        private readonly HttpClient HttpClient;
+        private readonly HttpClient? HttpClient;
 
         private readonly ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
-        public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
+        public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
         internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
@@ -41,14 +43,15 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        internal async ValueTask<T> GetTextTableAsync<T>(Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
+        internal async ValueTask<T?> GetTextTableAsync<T>(Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
         {
             var textTable = GetLazyTextTable(scopeId, langCode, typeof(T), singleLangInAScope);
+            if (textTable == null) return null;
             await textTable.FetchTask;
             return textTable.TableObject as T;
         }
 
-        internal TextTable GetLazyTextTable(Guid scopeId, string langCode, Type typeofTextTable, bool singleLangInAScope)
+        internal TextTable? GetLazyTextTable(Guid scopeId, string langCode, Type typeofTextTable, bool singleLangInAScope)
         {
             if (typeofTextTable == null) return null;
 
@@ -74,10 +77,13 @@ namespace Toolbelt.Blazor.I18nText
             this.ScopeToLangs.TryRemove(scopeId, out var _);
         }
 
-        private async ValueTask<Dictionary<string, string>> ReadJsonAsTextMapWasmAsync(string jsonUrl)
+        private async ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapWasmAsync(string jsonUrl)
         {
-            var jsonText = await this.HttpClient.GetStringAsync(jsonUrl);
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
+            if (this.HttpClient == null) throw new NullReferenceException($"{nameof(I18nTextRepository)}.{nameof(HttpClient)} is null.");
+            var httpRes = await this.HttpClient.GetAsync(jsonUrl);
+            if (httpRes.StatusCode == HttpStatusCode.NotFound) return null;
+            var contentBytes = await httpRes.Content.ReadAsByteArrayAsync();
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(contentBytes);
         }
 
         private ReadJsonAsTextMapAsync GetReadJsonAsTextMapServerAsync()
@@ -89,16 +95,16 @@ namespace Toolbelt.Blazor.I18nText
             return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
         }
 
-        private ValueTask<Dictionary<string, string>> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
+        private ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
         {
             var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
             if (File.Exists(jsonLocalPath))
             {
                 var jsonText = File.ReadAllText(jsonLocalPath);
                 var textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-                return new ValueTask<Dictionary<string, string>>(textMap);
+                return new ValueTask<Dictionary<string, string>?>(textMap);
             }
-            return new ValueTask<Dictionary<string, string>>(default(Dictionary<string, string>));
+            return new ValueTask<Dictionary<string, string>?>(default(Dictionary<string, string>));
         }
 
 
