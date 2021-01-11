@@ -16,23 +16,39 @@
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
+    <!--
     <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
+    -->
   </PropertyGroup>
 
   <ItemGroup>
+    <!--
     <I18nText Include="$(I18nTextFilePattern)" />
-    <Content Remove="@(I18nText)" />
-    <None Remove="@(I18nText)" />
-    <None Include="@(I18nText)" />
+    -->
+    <Content Remove="$(I18nTextFilePattern)" />
+    <None Remove="$(I18nTextFilePattern)" />
+    <None Include="$(I18nTextFilePattern)" />
+    <!--
     <Watch Remove="@(I18nText)" />
     <Watch Include="@(I18nText)" />
+    -->
 
-    <UpToDateCheckInput Include="@(I18nText)" Set="I18nTextUpToDateCheck" />
+    <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
     <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
+    <Watch Remove="$(I18nTextFilePattern)" />
+    <Watch Include="$(I18nTextFilePattern)" />
   </ItemGroup>
 
   <!-- Watch command: "dotnet watch msbuild -nologo -t:CompileI18nText -v:n" -->
   <Target Name="CompileI18nText" BeforeTargets="PreBuildEvent">
+
+    <ItemGroup>
+      <I18nText Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+
     <MakeDir Directories="$(I18nTextIntermediateDir)" />
 
     <CompileI18nText Include="@(I18nText)"
