@@ -9,7 +9,7 @@
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <PropertyGroup>
-    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(ProjectDir)i18ntext</I18nTextSourceDirectory>
+    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">i18ntext</I18nTextSourceDirectory>
     <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceDirectory)\**\*.json;$(I18nTextSourceDirectory)\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
@@ -32,11 +32,17 @@
     <Watch Remove="@(I18nText)" />
     <Watch Include="@(I18nText)" />
     -->
-
-    <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
-    <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
   </ItemGroup>
 
+  <!-- FOR FAST UP-TO-DATE CHECK -->
+  <Target Name="CollectUpToDateCheckI18nText" BeforeTargets="CollectUpToDateCheckInputDesignTime;CollectUpToDateCheckBuiltDesignTime">
+    <ItemGroup>
+      <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
+      <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
+    </ItemGroup>
+  </Target>
+
+  <!-- FOR DOTNET WATCH -->
   <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
     <Watch Remove="$(I18nTextFilePattern)" />
     <Watch Include="$(I18nTextFilePattern)" />
@@ -60,13 +66,10 @@
                      FallBackLanguage="$(I18nTextFallBackLanguage)"/>
 
     <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json">
-      </_IntermediateBlazorI18nTextResourceJsons>
-      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json">
-      </_IntermediateBlazorI18nTextResourceJsons>
+      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json" />
+      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
 
-      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)">
-      </ContentWithTargetPath>
+      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
       <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -75,6 +78,9 @@
         <Pack>false</Pack>
       </ContentWithTargetPath>
     </ItemGroup>
+
+    <MakeDir Directories="$(TargetDir)wwwroot\_content\i18ntext" />
+    <Copy SourceFiles="@(_IntermediateBlazorI18nTextResourceJsons)" DestinationFolder="$(TargetDir)wwwroot\_content\i18ntext" SkipUnchangedFiles="true"/>
 
     <Touch Files="$(I18nTextUpToDateMarker)" AlwaysCreate="true" />
 
