@@ -34,6 +34,9 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
             WorkSpaceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Guid.NewGuid().ToString("N"));
             XcopyDir(testDir, WorkSpaceDir, excludesDir: new[] { ".vs", "bin", "obj" });
 
+            var nugetConfigPath = Path.Combine(WorkSpaceDir, "nuget.config");
+            if (File.Exists(nugetConfigPath)) File.Delete(nugetConfigPath);
+
             StartupProj = Path.Combine(WorkSpaceDir, startupProjDir);
             Bin = Path.Combine(StartupProj, "bin");
             Obj = Path.Combine(StartupProj, "obj");
