@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using System.Threading;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
 
 namespace Toolbelt.Blazor.I18nText.Test.Internals
@@ -34,6 +35,9 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
             WorkSpaceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Guid.NewGuid().ToString("N"));
             XcopyDir(testDir, WorkSpaceDir, excludesDir: new[] { ".vs", "bin", "obj" });
 
+            var nugetConfigPath = Path.Combine(WorkSpaceDir, "nuget.config");
+            if (File.Exists(nugetConfigPath)) File.Delete(nugetConfigPath);
+
             StartupProj = Path.Combine(WorkSpaceDir, startupProjDir);
             Bin = Path.Combine(StartupProj, "bin");
             Obj = Path.Combine(StartupProj, "obj");
@@ -41,7 +45,15 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
 
         public void Dispose()
         {
-            Delete(WorkSpaceDir);
+            for (var i = 0; i < 5; i++)
+            {
+                try
+                {
+                    if (Directory.Exists(WorkSpaceDir)) Delete(WorkSpaceDir);
+                    break;
+                }
+                catch (Exception) { Thread.Sleep(200); }
+            }
         }
     }
 }

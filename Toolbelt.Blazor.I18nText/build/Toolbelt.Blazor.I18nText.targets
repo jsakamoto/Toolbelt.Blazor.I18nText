@@ -9,30 +9,47 @@
   <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText"  AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <PropertyGroup>
-    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(ProjectDir)i18ntext</I18nTextSourceDirectory>
+    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">i18ntext</I18nTextSourceDirectory>
     <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceDirectory)\**\*.json;$(I18nTextSourceDirectory)\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
-    <I18nText Include="$(I18nTextFilePattern)" />
-    <Content Remove="@(I18nText)" />
-    <None Remove="@(I18nText)" />
-    <None Include="@(I18nText)" />
-    <Watch Remove="@(I18nText)" />
-    <Watch Include="@(I18nText)" />
+    <Content Remove="$(I18nTextFilePattern)" />
+    <None Remove="$(I18nTextFilePattern)" />
+    <None Include="$(I18nTextFilePattern)" />
+  </ItemGroup>
 
-    <UpToDateCheckInput Include="@(I18nText)" Set="I18nTextUpToDateCheck" />
-    <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
+  <!-- FOR FAST UP-TO-DATE CHECK -->
+  <Target Name="CollectUpToDateCheckI18nText" BeforeTargets="CollectUpToDateCheckInputDesignTime;CollectUpToDateCheckBuiltDesignTime">
+    <ItemGroup>
+      <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
+      <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
+    </ItemGroup>
+  </Target>
+
+  <!-- FOR DOTNET WATCH -->
+  <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
+    <Watch Remove="$(I18nTextFilePattern)" />
+    <Watch Include="$(I18nTextFilePattern)" />
   </ItemGroup>
 
   <!-- Watch command: "dotnet watch msbuild -nologo -t:CompileI18nText -v:n" -->
-  <Target Name="CompileI18nText" BeforeTargets="PreBuildEvent">
+  <Target Name="CompileI18nText" DependsOnTargets="_CompileI18nText">
+    <MakeDir Directories="$(TargetDir)wwwroot\_content\i18ntext" />
+    <Copy SourceFiles="@(_IntermediateBlazorI18nTextResourceJsons)" DestinationFolder="$(TargetDir)wwwroot\_content\i18ntext" SkipUnchangedFiles="true"/>
+  </Target>
+
+  <Target Name="_CompileI18nText" BeforeTargets="PreBuildEvent">
+
+    <ItemGroup>
+      <I18nText Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+
     <MakeDir Directories="$(I18nTextIntermediateDir)" />
 
     <CompileI18nText Include="@(I18nText)"
@@ -44,13 +61,10 @@
                      FallBackLanguage="$(I18nTextFallBackLanguage)"/>
 
     <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json">
-      </_IntermediateBlazorI18nTextResourceJsons>
-      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json">
-      </_IntermediateBlazorI18nTextResourceJsons>
+      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json" />
+      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
 
-      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)">
-      </ContentWithTargetPath>
+      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
       <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
