@@ -16,22 +16,12 @@
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
-    <!--
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(I18nTextFilePattern)</DefaultItemExcludes>
-    -->
   </PropertyGroup>
 
   <ItemGroup>
-    <!--
-    <I18nText Include="$(I18nTextFilePattern)" />
-    -->
     <Content Remove="$(I18nTextFilePattern)" />
     <None Remove="$(I18nTextFilePattern)" />
     <None Include="$(I18nTextFilePattern)" />
-    <!--
-    <Watch Remove="@(I18nText)" />
-    <Watch Include="@(I18nText)" />
-    -->
   </ItemGroup>
 
   <!-- FOR FAST UP-TO-DATE CHECK -->
@@ -49,7 +39,12 @@
   </ItemGroup>
 
   <!-- Watch command: "dotnet watch msbuild -nologo -t:CompileI18nText -v:n" -->
-  <Target Name="CompileI18nText" BeforeTargets="PreBuildEvent">
+  <Target Name="CompileI18nText" DependsOnTargets="_CompileI18nText">
+    <MakeDir Directories="$(TargetDir)wwwroot\_content\i18ntext" />
+    <Copy SourceFiles="@(_IntermediateBlazorI18nTextResourceJsons)" DestinationFolder="$(TargetDir)wwwroot\_content\i18ntext" SkipUnchangedFiles="true"/>
+  </Target>
+
+  <Target Name="_CompileI18nText" BeforeTargets="PreBuildEvent">
 
     <ItemGroup>
       <I18nText Include="$(I18nTextFilePattern)" />
@@ -78,9 +73,6 @@
         <Pack>false</Pack>
       </ContentWithTargetPath>
     </ItemGroup>
-
-    <MakeDir Directories="$(TargetDir)wwwroot\_content\i18ntext" />
-    <Copy SourceFiles="@(_IntermediateBlazorI18nTextResourceJsons)" DestinationFolder="$(TargetDir)wwwroot\_content\i18ntext" SkipUnchangedFiles="true"/>
 
     <Touch Files="$(I18nTextUpToDateMarker)" AlwaysCreate="true" />
 

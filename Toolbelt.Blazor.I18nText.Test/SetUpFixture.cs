@@ -8,6 +8,8 @@ using System.Xml.XPath;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
+using static Toolbelt.Blazor.I18nText.Test.Internals.ProcessZ;
+using System.Threading.Tasks;
 
 namespace Toolbelt.Blazor.I18nText.Test
 {
@@ -15,11 +17,11 @@ namespace Toolbelt.Blazor.I18nText.Test
     public class SetUpFixture
     {
         [OneTimeSetUp]
-        public void Setup()
+        public async Task SetupAsync()
         {
             var latestI18nTextVersion = GetLatestI18nTextPackageVersion();
-            var versionOfLibProjects = UpdateLibraryProjects("Toolbelt.Blazor.I18nText", latestI18nTextVersion);
-            UpdatePackageRef(latestI18nTextVersion, versionOfLibProjects);
+            var versionOfLibProjects = await UpdateLibraryProjectsAsync("Toolbelt.Blazor.I18nText", latestI18nTextVersion);
+            await UpdatePackageRefAsync(latestI18nTextVersion, versionOfLibProjects);
         }
 
         private static string GetLatestI18nTextPackageVersion()
@@ -38,26 +40,26 @@ namespace Toolbelt.Blazor.I18nText.Test
             return latestI18nTextVersion;
         }
 
-        private static IReadOnlyDictionary<string, string> UpdateLibraryProjects(string packageName, string latestPackageVersion)
+        private static Task<IReadOnlyDictionary<string, string>> UpdateLibraryProjectsAsync(string packageName, string latestPackageVersion)
         {
             var projectNames = new[] {
                 Path.Combine("Lib4PackRef","Lib4PackRef"),
                 Path.Combine("Lib4ProjRef", "Lib4ProjRef")};
-            return UpdateReferencedPackageVersion(packageName, latestPackageVersion, projectNames, buildIfChanges: true);
+            return UpdateReferencedPackageVersionAsync(packageName, latestPackageVersion, projectNames, buildIfChanges: true);
         }
 
-        private static void UpdatePackageRef(string latestI18nTextVersion, IReadOnlyDictionary<string, string> versionOfLibProjects)
+        private static async Task UpdatePackageRefAsync(string latestI18nTextVersion, IReadOnlyDictionary<string, string> versionOfLibProjects)
         {
             var projectNames = new[] {
                 Path.Combine("Components", "SampleSite.Components"),
                 Path.Combine("Client", "SampleSite.Client"),
                 Path.Combine("Server", "SampleSite.Server")};
-            UpdateReferencedPackageVersion("Toolbelt.Blazor.I18nText", latestI18nTextVersion, projectNames, buildIfChanges: false);
+            await UpdateReferencedPackageVersionAsync("Toolbelt.Blazor.I18nText", latestI18nTextVersion, projectNames, buildIfChanges: false);
 
-            UpdateReferencedPackageVersion("Lib4PackRef", versionOfLibProjects["Lib4PackRef"], projectNames.Where(n => n.StartsWith("Components")), buildIfChanges: false);
+            await UpdateReferencedPackageVersionAsync("Lib4PackRef", versionOfLibProjects["Lib4PackRef"], projectNames.Where(n => n.StartsWith("Components")), buildIfChanges: false);
         }
 
-        private static IReadOnlyDictionary<string, string> UpdateReferencedPackageVersion(string packageName, string latestPackageVersion, IEnumerable<string> projectNames, bool buildIfChanges)
+        private static async Task<IReadOnlyDictionary<string, string>> UpdateReferencedPackageVersionAsync(string packageName, string latestPackageVersion, IEnumerable<string> projectNames, bool buildIfChanges)
         {
             var versionOfProjects = new Dictionary<string, string>();
 
@@ -76,18 +78,26 @@ namespace Toolbelt.Blazor.I18nText.Test
                 var packageRef = projectXDoc.XPathSelectElement($"//PackageReference[@Include='{packageName}']");
                 var referencedVersion = packageRef.Attribute("Version").Value;
 
-                if (referencedVersion == latestPackageVersion) continue;
+                if (referencedVersion != latestPackageVersion)
+                {
+                    packageRef.SetAttributeValue("Version", latestPackageVersion);
 
-                packageRef.SetAttributeValue("Version", latestPackageVersion);
+                    var baseVer = Version.Parse(projectCurrentVersion);
+                    var projectNextVersion = $"{baseVer.ToString(3)}.{baseVer.Revision + 1}";
+                    if (projectVersionNode != null) projectVersionNode.Value = projectNextVersion;
+                    versionOfProjects[projectName] = projectNextVersion;
 
-                var baseVer = Version.Parse(projectCurrentVersion);
-                var projectNextVersion = $"{baseVer.ToString(3)}.{baseVer.Revision + 1}";
-                if (projectVersionNode != null) projectVersionNode.Value = projectNextVersion;
-                versionOfProjects[projectName] = projectNextVersion;
+                    projectXDoc.Save(projectPath);
+                }
 
-                projectXDoc.Save(projectPath);
+                await using var restoreProcess = await Start("dotnet", "restore", projectDir).WaitForExitAsync();
+                restoreProcess.ExitCode.Is(0, message: restoreProcess.Output);
 
-                if (buildIfChanges) Run(projectDir, "dotnet", "build").ExitCode.Is(0);
+                if (referencedVersion != latestPackageVersion && buildIfChanges)
+                {
+                    await using var buildProcess = await Start("dotnet", "build", projectDir).WaitForExitAsync();
+                    buildProcess.ExitCode.Is(0, message: buildProcess.Output);
+                }
             }
 
             return versionOfProjects;

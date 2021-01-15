@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
+using static Toolbelt.Blazor.I18nText.Test.Internals.ProcessZ;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
 
 namespace Toolbelt.Blazor.I18nText.Test
@@ -26,13 +28,14 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Test]
         [TestCaseSource(nameof(Projects))]
-        public void BasicBuildTest(string startupProjName)
+        public async Task BasicBuildTest(string startupProjName)
         {
             using var workSpace = WorkSpace.Create(startupProjName);
             var platform = GetPlatform(workSpace.StartupProj);
             var distDir = Path.Combine(workSpace.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
 
-            Run(workSpace.StartupProj, "dotnet", "build").ExitCode.Is(0);
+            await using var buildProcess = await Start("dotnet", "build", workSpace.StartupProj).WaitForExitAsync();
+            buildProcess.ExitCode.Is(0, message: buildProcess.Output);
 
             var textResJsonFileNames = Directory.GetFiles(distDir, "*.*")
                 .Select(path => Path.GetFileName(path))
@@ -50,7 +53,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         [Test]
         [TestCaseSource(nameof(Projects))]
-        public void PublishTest(string startupProjName)
+        public async Task PublishTest(string startupProjName)
         {
             using var workSpace = WorkSpace.Create(startupProjName);
             var platform = GetPlatform(workSpace.StartupProj);
@@ -59,7 +62,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
 
-            Run(workSpace.StartupProj, "dotnet", "publish", "-c:Release").ExitCode.Is(0);
+            await using var publishProcess = await Start("dotnet", "publish -c:Release", workSpace.StartupProj).WaitForExitAsync();
+            publishProcess.ExitCode.Is(0, message: publishProcess.Output);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
             Exists(staticWebAssetDir, "script.min.js").IsTrue();

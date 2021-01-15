@@ -6,8 +6,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.3.5" />
-    <PackageReference Include="Lib4PackRef" Version="10.0.0.3" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.0" />
+    <PackageReference Include="Lib4PackRef" Version="10.0.0.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />

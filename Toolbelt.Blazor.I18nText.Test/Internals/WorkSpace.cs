@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using System.Threading;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
 
 namespace Toolbelt.Blazor.I18nText.Test.Internals
@@ -44,7 +45,15 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
 
         public void Dispose()
         {
-            Delete(WorkSpaceDir);
+            for (var i = 0; i < 5; i++)
+            {
+                try
+                {
+                    if (Directory.Exists(WorkSpaceDir)) Delete(WorkSpaceDir);
+                    break;
+                }
+                catch (Exception) { Thread.Sleep(200); }
+            }
         }
     }
 }
