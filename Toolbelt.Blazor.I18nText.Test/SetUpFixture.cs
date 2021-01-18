@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
-using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
-using static Toolbelt.Blazor.I18nText.Test.Internals.ProcessZ;
-using System.Threading.Tasks;
+using static Toolbelt.Diagnostics.XProcess;
 
 namespace Toolbelt.Blazor.I18nText.Test
 {
@@ -90,12 +89,12 @@ namespace Toolbelt.Blazor.I18nText.Test
                     projectXDoc.Save(projectPath);
                 }
 
-                await using var restoreProcess = await Start("dotnet", "restore", projectDir).WaitForExitAsync();
+                using var restoreProcess = await Start("dotnet", "restore", projectDir).WaitForExitAsync();
                 restoreProcess.ExitCode.Is(0, message: restoreProcess.Output);
 
                 if (referencedVersion != latestPackageVersion && buildIfChanges)
                 {
-                    await using var buildProcess = await Start("dotnet", "build", projectDir).WaitForExitAsync();
+                    using var buildProcess = await Start("dotnet", "build", projectDir).WaitForExitAsync();
                     buildProcess.ExitCode.Is(0, message: buildProcess.Output);
                 }
             }

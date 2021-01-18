@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
-using static Toolbelt.Blazor.I18nText.Test.Internals.ProcessZ;
+using static Toolbelt.Diagnostics.XProcess;
 
 namespace Toolbelt.Blazor.I18nText.Test
 {
@@ -16,7 +16,7 @@ namespace Toolbelt.Blazor.I18nText.Test
         {
             using var workSpace = WorkSpace.Create("Components");
 
-            await using var restoreProcess = await Start("dotnet", "restore", workSpace.StartupProj).WaitForExitAsync();
+            using var restoreProcess = await Start("dotnet", "restore", workSpace.StartupProj).WaitForExitAsync();
             restoreProcess.ExitCode.Is(0, message: restoreProcess.Output);
 
             // 1st. Given
@@ -24,10 +24,10 @@ namespace Toolbelt.Blazor.I18nText.Test
             File.Exists(dstTextEnJsonPath).IsFalse();
 
             // 1st. When
-            await using var watchProcess = Start("dotnet", "watch msbuild -nologo -t:CompileI18nText -v:q", workSpace.StartupProj);
+            using var watchProcess = Start("dotnet", "watch msbuild -nologo -t:CompileI18nText -v:q", workSpace.StartupProj);
 
             await watchProcess.WaitForOutput(output => output == "watch : Waiting for a file to change before restarting dotnet...", millsecondsTimeout: 10000);
-            watchProcess.ReadCurrentOutput().Any(output => output.Contains("ERROR")).IsFalse();
+            watchProcess.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();
 
             // 1st. Then
             File.Exists(dstTextEnJsonPath).IsTrue();
@@ -41,7 +41,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             File.WriteAllText(srcTextEnJsonPath, JsonSerializer.Serialize(srcTextEn));
 
             await watchProcess.WaitForOutput(output => output == "watch : Waiting for a file to change before restarting dotnet...", millsecondsTimeout: 10000);
-            watchProcess.ReadCurrentOutput().Any(output => output.Contains("ERROR")).IsFalse();
+            watchProcess.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();
 
             // 2nd. Then
             dstTextEn = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(dstTextEnJsonPath));

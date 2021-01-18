@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
-using static Toolbelt.Blazor.I18nText.Test.Internals.ProcessZ;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
+using static Toolbelt.Diagnostics.XProcess;
 
 namespace Toolbelt.Blazor.I18nText.Test
 {
@@ -34,7 +34,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             var platform = GetPlatform(workSpace.StartupProj);
             var distDir = Path.Combine(workSpace.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
 
-            await using var buildProcess = await Start("dotnet", "build", workSpace.StartupProj).WaitForExitAsync();
+            using var buildProcess = await Start("dotnet", "build", workSpace.StartupProj).WaitForExitAsync();
             buildProcess.ExitCode.Is(0, message: buildProcess.Output);
 
             var textResJsonFileNames = Directory.GetFiles(distDir, "*.*")
@@ -62,7 +62,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
 
-            await using var publishProcess = await Start("dotnet", "publish -c:Release", workSpace.StartupProj).WaitForExitAsync();
+            using var publishProcess = await Start("dotnet", "publish -c:Release", workSpace.StartupProj).WaitForExitAsync();
             publishProcess.ExitCode.Is(0, message: publishProcess.Output);
 
             // Support client JavaScript file should be published into "_content/{PackageId}" folder.
