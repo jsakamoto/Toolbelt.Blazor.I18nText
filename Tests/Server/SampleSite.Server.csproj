@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1-preview.1.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1-preview.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Components\SampleSite.Components.csproj" />

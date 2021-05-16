@@ -1,5 +1,7 @@
 v.9.4.1
-- Improved the internal implementation for broadcasting "StateHasChanged" when the current language is changed.
+- The internal implementations as below were changed to doesn't use reflection API.
+  - Broadcasting "StateHasChanged" when the current language is changed.
+  - Determine the base address of HttpClient.
 
 v.9.4.0
 - Fix: "dotnet watch msbuild -t:CompileI18nText" command didn't work expectedly.
