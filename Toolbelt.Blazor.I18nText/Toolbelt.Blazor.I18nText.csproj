@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>9.4.1-preview.1.2</Version>
+    <Version>9.4.1-preview.1.3</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
@@ -22,6 +22,7 @@
     <PackageTags>blazor,localize,i18n</PackageTags>
     <PackageReleaseNotes>(Please write the package release notes in "../RELEASE-NOTES.txt")</PackageReleaseNotes>
     <PackageIcon>nupkg-icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>../_dist</PackageOutputPath>
     <Copyright>Copyright © 2019-2021 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
@@ -64,18 +65,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="build\Toolbelt.Blazor.I18nText.targets">
+    <None Update="build\Toolbelt.Blazor.I18nText.targets" Pack="true" >
       <PackagePath>build\Toolbelt.Blazor.I18nText.targets</PackagePath>
-      <Pack>true</Pack>
     </None>
-    <None Update="build\I18nTextPackageBuild.targets">
+    <None Update="build\I18nTextPackageBuild.targets" Pack="true">
       <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
-      <Pack>true</Pack>
     </None>
-    <None Include="..\.assets\nupkg-icon.png" Visible="false">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="/" />
+    <None Include="..\README.md" Visible="false" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <Target Name="BuildI18nTextCompileTask" BeforeTargets="PreBuildEvent">
