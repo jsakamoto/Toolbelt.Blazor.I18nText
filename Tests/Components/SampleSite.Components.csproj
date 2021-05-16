@@ -4,10 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.0" />
-    <PackageReference Include="Lib4PackRef" Version="10.0.0.8" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1-preview.1.1" />
+    <PackageReference Include="Lib4PackRef" Version="10.0.0.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />

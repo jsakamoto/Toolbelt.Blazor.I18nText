@@ -1,3 +1,6 @@
+v.9.4.1
+- Improved the internal implementation for broadcasting "StateHasChanged" when the current language is changed.
+
 v.9.4.0
 - Fix: "dotnet watch msbuild -t:CompileI18nText" command didn't work expectedly.
 - Fix: Visual Studio changes a project file unexpectedly when a developer adding a localized text source file.

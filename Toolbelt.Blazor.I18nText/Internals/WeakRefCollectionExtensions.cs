@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace Toolbelt.Blazor.I18nText.Internals
 {
@@ -7,10 +6,10 @@ namespace Toolbelt.Blazor.I18nText.Internals
     {
         public static void InvokeStateHasChanged(this WeakRefCollection<ComponentBase> components)
         {
-            var stateHasChangedMethod = typeof(ComponentBase).GetMethod("StateHasChanged", BindingFlags.NonPublic | BindingFlags.Instance);
             components.ForEach(component =>
             {
-                stateHasChangedMethod.Invoke(component, new object[] { });
+                var handleEvent = component as IHandleEvent;
+                handleEvent?.HandleEventAsync(EventCallbackWorkItem.Empty, null);
             });
         }
     }
