@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>10.0.0.12</Version>
+    <Version>10.0.0.13</Version>
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1-preview.1.3" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1" />
   </ItemGroup>
 </Project>
