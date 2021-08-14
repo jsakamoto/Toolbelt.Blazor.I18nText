@@ -30,11 +30,14 @@ namespace Toolbelt.Blazor.I18nText.Test
             var nugetConfigXdoc = XDocument.Load(nugetConfigPath);
             var distDir = nugetConfigXdoc.XPathSelectElement("//packageSources/add[@key='I18nText']").Attribute("value").Value;
             var packageFiles = Directory.GetFiles(Path.Combine(testDir, distDir), "*.nupkg");
+
+            static Version VerOf(Match m, string name) => Version.TryParse(m.Groups[name].Value, out var v) ? v : new Version(0, 0);
+
             var latestI18nTextVersion = packageFiles
-                .Select(path => Regex.Match(path, @"Toolbelt\.Blazor\.I18nText\.(?<ver>[\d\.]+).nupkg$"))
+                .Select(path => Regex.Match(path, @"Toolbelt\.Blazor\.I18nText\.(?<verText>(?<ver>[\d\.]+)(-preview\.(?<pre-ver>[\d\.]+))?).nupkg$"))
                 .Where(m => m.Success)
-                .Select(m => m.Groups["ver"].Value)
-                .OrderBy(v => Version.Parse(v))
+                .OrderBy(m => VerOf(m, "ver")).ThenBy(m => VerOf(m, "pre-ver"))
+                .Select(m => m.Groups["verText"].Value)
                 .Last();
             return latestI18nTextVersion;
         }

@@ -24,7 +24,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             File.Exists(dstTextEnJsonPath).IsFalse();
 
             // 1st. When
-            using var watchProcess = Start("dotnet", "watch msbuild -nologo -t:CompileI18nText -v:q", workSpace.StartupProj);
+            using var watchProcess = Start("dotnet", "watch -q msbuild -t:CompileI18nText --nologo", workSpace.StartupProj);
 
             await watchProcess.WaitForOutput(output => output == "watch : Waiting for a file to change before restarting dotnet...", millsecondsTimeout: 10000);
             watchProcess.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();

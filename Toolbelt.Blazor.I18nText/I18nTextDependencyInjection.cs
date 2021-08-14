@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Net.Http;
-using System.Reflection;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Toolbelt.Blazor.I18nText;
@@ -72,17 +72,11 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
         {
             if (BaseAddress == null)
             {
-                var IWebAssemblyHostEnvironment = Type.GetType("Microsoft.AspNetCore.Components.WebAssembly.Hosting.IWebAssemblyHostEnvironment, Microsoft.AspNetCore.Components.WebAssembly");
-                if (IWebAssemblyHostEnvironment != null)
+                var navigationManager = serviceProvider.GetService<NavigationManager>();
+                if (navigationManager != null)
                 {
-                    var wasmHostEnv = serviceProvider.GetService(IWebAssemblyHostEnvironment);
-                    if (wasmHostEnv != null)
-                    {
-                        var baseAddressProp = IWebAssemblyHostEnvironment.GetProperty("BaseAddress", BindingFlags.Public | BindingFlags.Instance);
-                        BaseAddress = baseAddressProp?.GetValue(wasmHostEnv) as string;
-                    }
+                    BaseAddress = navigationManager.BaseUri;
                 }
-
                 if (BaseAddress == null) BaseAddress = "";
             }
 
