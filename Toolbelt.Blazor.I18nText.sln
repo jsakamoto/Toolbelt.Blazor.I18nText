@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29209.152
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
 EndProject
@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "README", "README", "{D8B20BA4-E0AC-482A-8561-1FEA406BF42B}"
 	ProjectSection(SolutionItems) = preProject
 		API-REFERENCE.md = API-REFERENCE.md
+		NET6-SUPPORT-INF.md = NET6-SUPPORT-INF.md
 		README-CONFIGURATION.md = README-CONFIGURATION.md
 		README.md = README.md
 		RELEASE-NOTES.txt = RELEASE-NOTES.txt
