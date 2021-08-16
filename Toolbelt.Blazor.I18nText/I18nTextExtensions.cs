@@ -12,6 +12,7 @@ namespace Toolbelt.Blazor.I18nText
 
         public static string? GetFieldValueWithNoFallback<T>(this T value, string? key) where T : I18nTextLateBinding
         {
+            if (string.IsNullOrEmpty(key)) return "";
             return value.GetType().GetField(key, BindingFlags.Public | BindingFlags.Instance)?.GetValue(value) as string;
         }
     }

@@ -16,7 +16,9 @@ namespace Toolbelt.Blazor.I18nText.Internals
 
         public TextTable(Type tableType, string langCode, FetchTextTableAsync fetchTextTableAsync)
         {
-            this.TableObject = Activator.CreateInstance(tableType);
+            var tableObject = Activator.CreateInstance(tableType);
+            if (tableObject == null) throw new Exception($"Creating the instance of {tableType.FullName} was failed.");
+            this.TableObject = tableObject;
             this.FetchTextTableAsync = fetchTextTableAsync;
             this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);
         }
