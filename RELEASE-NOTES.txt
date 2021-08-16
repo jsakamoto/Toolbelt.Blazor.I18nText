@@ -1,3 +1,6 @@
+v.10.0.0
+- Improve: load the helper JavaScript by Blazor JavaScript isolation feature (ES2015 module system) instead of using "eval".
+
 v.9.4.1
 - The internal implementations as below were changed to doesn't use reflection API.
   - Broadcasting "StateHasChanged" when the current language is changed.
