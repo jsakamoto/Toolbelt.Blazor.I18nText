@@ -4,13 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>10.0.0.13</Version>
+    <Version>10.0.0.15</Version>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="10.0.0-preview.1" />
   </ItemGroup>
 </Project>
