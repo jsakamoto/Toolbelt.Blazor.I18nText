@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <LangVersion>8.0</LangVersion>
     <RazorLangVersion>3.0</RazorLangVersion>
@@ -10,6 +10,7 @@
     <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <Nullable>enable</Nullable>
+    <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard2.0' ">$(DefineConstants);ENABLE_JSMODULE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,24 +29,23 @@
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.6.3">
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="BuildBundlerMinifier" Version="3.2.435">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="**\*.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Pack>false</Pack>
-    </Content>
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.6.362" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -65,26 +65,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="build\Toolbelt.Blazor.I18nText.targets" Pack="true" >
+    <Content Update="**\*.json" Pack="false" CopyToOutputDirectory="Never" />
+    <None Include="build\Toolbelt.Blazor.I18nText.targets" Pack="true">
       <PackagePath>build\Toolbelt.Blazor.I18nText.targets</PackagePath>
     </None>
-    <None Update="build\I18nTextPackageBuild.targets" Pack="true">
+    <None Include="build\I18nTextPackageBuild.targets" Pack="true">
       <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
     </None>
     <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="/" />
     <None Include="..\README.md" Visible="false" Pack="true" PackagePath="/" />
   </ItemGroup>
 
-  <Target Name="BuildI18nTextCompileTask" BeforeTargets="PreBuildEvent">
+  <PropertyGroup>
+    <BeforePack>$(BeforePack);BuildI18nTextCompileTask;</BeforePack>
+  </PropertyGroup>
+  <Target Name="BuildI18nTextCompileTask">
     <PropertyGroup>
       <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
+      <I18nTextCompileTaskOutDir>$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\</I18nTextCompileTaskOutDir>
     </PropertyGroup>
-    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration)" />
+    <Exec Command="dotnet build -c:$(Configuration) --nologo" WorkingDirectory="$(I18nTextCompileTaskProjectDir)" />
     <ItemGroup>
-      <None Include="$(I18nTextCompileTaskProjectDir)$(OutDir)*.*">
-        <PackagePath>tools\</PackagePath>
-        <Pack>true</Pack>
-      </None>
+      <None Include="$(I18nTextCompileTaskOutDir)*.*" PackagePath="tools\" Pack="true" />
     </ItemGroup>
   </Target>
 
