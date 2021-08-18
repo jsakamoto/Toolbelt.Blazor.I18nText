@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>10.0.0.15</Version>
+    <Version>10.0.0.16</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -21,22 +21,5 @@
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="10.0.0-preview.1" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-    <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_MonkeyPatchForPackingNET50;</GenerateStaticWebAssetsPackTargetsDependsOn>
-  </PropertyGroup>
-  <Target Name="_MonkeyPatchForPackingNET50">
-    <ItemGroup>
-      <StaticWebAsset Update="*" Condition="%(SourceType) == ''">
-        <SourceType>Computed</SourceType>
-        <SourceId>$(ProjectName)</SourceId>
-        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
-        <AssetKind>All</AssetKind>
-        <AssetMode>All</AssetMode>
-        <AssetRole>Primary</AssetRole>
-      </StaticWebAsset>
-    </ItemGroup>
-    <Message Importance="high" Text="M-1: %(StaticWebAsset.Identity),%(StaticWebAsset.SourceType) "/>
-  </Target>
 
 </Project>
