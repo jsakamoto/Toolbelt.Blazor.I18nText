@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>10.0.0.14</Version>
+    <Version>10.0.0.15</Version>
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="9.4.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="10.0.0-preview.1" />
   </ItemGroup>
 </Project>

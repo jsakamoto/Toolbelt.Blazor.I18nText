@@ -214,6 +214,10 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 
 Release notes is [here.](https://j.mp/3aWxQhQ)
 
+## .NET 6 Preview support status
+
+Please see also [".NET 6 Preview Support Information"](https://j.mp/3g9zr9t).
+
 ## License
 
 [Mozilla Public License Version 2.0](https://j.mp/2lxriCv)
