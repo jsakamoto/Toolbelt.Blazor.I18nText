@@ -26,10 +26,12 @@ However, I will continue to develop and maintain this package, because this pack
 
 ### Supported versions
 
-"Blazor I18n Text" ver.9.x supports following Blazor versions:
+.NET Ver.|I18n Ver.
+-|-
+v.5.0|v.10 (preview 1), v.9
+v.3.x|v.10 (preview 1), v.9
 
-- Blazor Server App **v.3.0.0 ~ .NET 5**
-- Blazor WebAssembly App **v.3.2.0 ~ .NET 5**
+If you want to try **.NET 6**, please see also [".NET 6 Preview Support Information"](https://j.mp/3g9zr9t).
 
 ## Quick Start
 
@@ -213,10 +215,6 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 ## Release Notes
 
 Release notes is [here.](https://j.mp/3aWxQhQ)
-
-## .NET 6 Preview support status
-
-Please see also [".NET 6 Preview Support Information"](https://j.mp/3g9zr9t).
 
 ## License
 
