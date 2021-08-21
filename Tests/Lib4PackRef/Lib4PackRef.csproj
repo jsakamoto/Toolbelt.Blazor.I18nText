@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+    <Content Update="**\*.json" Pack="false" CopyToOutputDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">

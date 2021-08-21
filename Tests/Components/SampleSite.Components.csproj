@@ -10,8 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="10.0.0-preview.1" />
-    <!--<PackageReference Include="Lib4PackRef" Version="10.0.0.12" />-->
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.0.0-preview.1" />
+    <PackageReference Include="Lib4PackRef" Version="10.0.0.16" />
+    <PackageReference Include="Lib4PackRef6" Version="10.0.0.16" />
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
   </ItemGroup>
 </Project>

@@ -26,10 +26,11 @@ However, I will continue to develop and maintain this package, because this pack
 
 ### Supported versions
 
-"Blazor I18n Text" ver.9.x supports following Blazor versions:
-
-- Blazor Server App **v.3.0.0 ~ .NET 5**
-- Blazor WebAssembly App **v.3.2.0 ~ .NET 5**
+.NET Ver.|I18n Ver.
+-|-
+v.6.0|v.11
+v.5.0|v.10 (Recommended), v.9
+v.3.x|v.10 (Recommended), v.9
 
 ## Quick Start
 
