@@ -29,8 +29,8 @@ However, I will continue to develop and maintain this package, because this pack
 .NET Ver.|I18n Ver.
 -|-
 v.6.0|v.11
-v.5.0|v.10 (Recommended), v.9
-v.3.x|v.10 (Recommended), v.9
+v.5.0|v.11 (Recommended), v.10, v.9
+v.3.x|v.11 (Recommended), v.10, v.9
 
 ## Quick Start
 
@@ -214,10 +214,6 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 ## Release Notes
 
 Release notes is [here.](https://j.mp/3aWxQhQ)
-
-## .NET 6 Preview support status
-
-Please see also [".NET 6 Preview Support Information"](https://j.mp/3g9zr9t).
 
 ## License
 
