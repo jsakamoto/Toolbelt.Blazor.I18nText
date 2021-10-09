@@ -122,37 +122,16 @@
 
   <!-- FOR SUPPORT TO .NET 6 Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
-    <ResolveStaticWebAssetsInputsDependsOn>_ResolveStaticWebAssetsOfBlazorI18nTextResourceJsons;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+    <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+    <GenerateStaticWebAssetsPackTargetsDependsOn>_RemoveBlazorI18nTextStaticWebAssetsFromPackage;$(GenerateStaticWebAssetsPackTargetsDependsOn);</GenerateStaticWebAssetsPackTargetsDependsOn>
   </PropertyGroup>
-  <Target Name="_ResolveStaticWebAssetsOfBlazorI18nTextResourceJsons" Condition=" $(TargetFramework.StartsWith('net6')) ">
-    <CallTarget Targets="_GetCopyToOutputDirectoryItemsFromTransitiveProjectReferences">
-      <Output TaskParameter="TargetOutputs" ItemName="_BlazorI18nTextResourceJsonsCandidates" />
-    </CallTarget>
-    <!--<CallTarget Targets="_GetCopyToOutputDirectoryItemsFromThisProject">
-      <Output TaskParameter="TargetOutputs" ItemName="_BlazorI18nTextResourceJsonsCandidates" />
-    </CallTarget>-->
+
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" Condition=" $(TargetFramework.StartsWith('net6')) ">
     <ItemGroup>
-      <_BlazorI18nTextResourceJsons Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').StartsWith('wwwroot\_content\i18ntext\'))" />
-      <_BlazorI18nTextResourceJsons Include="@(_BlazorI18nTextResourceJsonsCandidates)" Condition="$([System.String]::Copy('%(TargetPath)').StartsWith('wwwroot\_content\i18ntext\'))" />
-
-      <StaticWebAsset Remove="@(StaticWebAsset)" Condition=" '%(SourceId)' == 'BlazorI18nTextResourceJsons' " />
-      
-      <StaticWebAsset Include="@(_BlazorI18nTextResourceJsons)">
-
-        <!-- From the semantics, the source type should be "Computed".
-             However, it has a case that causes the following error at publishing time, especially in projects that reference other projects.
-             So we will work around it by specifying "Project".
-             "error : Found conflicting definitions for the same asset ... and ..." -->
-        <!--<SourceType>Computed</SourceType>-->
-        <SourceType>Project</SourceType>
-
-        <!-- Throughout all the projects in the solution, the i18n localized json files should have the same "SourceId" value, 
-             not the "SourceId" by each project's package id.
-             Otherwise, you may get the following error at build time, especially in projects that reference other projects. 
-             "error : Found conflicting definitions for the same asset ... and ..." -->
-        <!--<SourceId>$(PackageId)</SourceId>-->
-        <SourceId>BlazorI18nTextResourceJsons</SourceId>
-
+      <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
+      <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
+        <SourceType>Computed</SourceType>
+        <SourceId>$(PackageId)</SourceId>
         <ContentRoot>%(RelativeDir)</ContentRoot>
         <BasePath>/</BasePath>
         <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
@@ -160,14 +139,14 @@
         <AssetKind>All</AssetKind>
         <AssetMode>All</AssetMode>
         <AssetRole>Primary</AssetRole>
-
-        <!-- If the "CopyToPublishDirectory" is omitted, it has a case that causes the following error at publishing time, 
-             especially in projects that reference other projects.
-             "error : Found conflicting definitions for the same asset ... and ..." -->
-        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
       </StaticWebAsset>
     </ItemGroup>
-
+  </Target>
+	
+  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <ItemGroup>
+      <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
+    </ItemGroup>
   </Target>
 
 </Project>
