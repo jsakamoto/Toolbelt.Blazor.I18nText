@@ -2,18 +2,18 @@
 
 ## Current Status
 
-### [Update] Blazor I18n Text v.11 preview 1 was released! 🎉
+### [Update] Blazor I18n Text v.11 preview 2 now supports .NET 6 RC1! 🎉
 
-**The version 11 Preview 1** of the "Blazor I18n Text" library was released.
+**The version 11 Preview 2** of the "Blazor I18n Text" library was released.
 
-- https://www.nuget.org/packages/Toolbelt.Blazor.I18nText/11.0.0-preview.1
+- https://www.nuget.org/packages/Toolbelt.Blazor.I18nText/11.0.0-preview.2
 
-This version should work fine also on **.NET 6**.
+**The version 11 Preview 2** should work fine also on **.NET 6** Preview 7 and RC 1.
 
 Check it out!
 
 
-### About v.10 and v.9 of Blazor I18n Text...
+### About v.10 and v.9 of Blazor I18n Text
 
 At this time, the "Blazor I18n Text" library **ver.10 and 9** doesn't work well in Blazor WebAssembly applications (includes ASP.NET Core hosted) development stage since .NET 6 Preview 7.
 
@@ -74,4 +74,4 @@ And also, even though the Blazor WebAssembly applications will work well if it i
 
 I plan that the future version of the "Blazor I18n Text" library will support .NET 6 well without any workaround like above.
 
-The "Blazor I18n Text" library version 11 preview 1 is one of the important milestones to the goal above.
+The "Blazor I18n Text" library version 11 preview 2 is one of the important milestones to the goal above.
