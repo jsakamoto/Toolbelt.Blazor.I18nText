@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>10.0.0.16</Version>
+    <Version>10.0.0.17</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
   </PropertyGroup>
   <ItemGroup>
