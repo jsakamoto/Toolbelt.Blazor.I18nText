@@ -13,12 +13,6 @@ namespace Toolbelt.Blazor.I18nText.Test
     [Parallelizable(ParallelScope.Children)]
     public class BuildTest
     {
-        private static string GetPlatform(string startupProjDir)
-        {
-            var projPath = Directory.GetFiles(startupProjDir, "*.csproj").First();
-            return XDocument.Load(projPath).Descendants("TargetFramework").First().Value;
-        }
-
         public static IEnumerable<object[]> Projects = new[] {
             // startupProjName
             new object[]{ "Client" },
@@ -31,8 +25,8 @@ namespace Toolbelt.Blazor.I18nText.Test
         public async Task BasicBuildTest(string startupProjName)
         {
             using var workSpace = WorkSpace.Create(startupProjName);
-            var platform = GetPlatform(workSpace.StartupProj);
-            var distDir = Path.Combine(workSpace.Bin, Path.Combine($"Debug/{platform}/wwwroot/_content/i18ntext".Split('/')));
+            var framework = workSpace.GetTargetFrameworkOfStartupProj();
+            var distDir = Path.Combine(workSpace.Bin, Path.Combine($"Debug/{framework}/wwwroot/_content/i18ntext".Split('/')));
 
             using var buildProcess = await Start("dotnet", "build", workSpace.StartupProj).WaitForExitAsync();
             buildProcess.ExitCode.Is(0, message: buildProcess.Output);
@@ -44,6 +38,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             textResJsonFileNames.Is(
                 "Lib4PackRef.I18nText.Text.en.json",
                 "Lib4PackRef.I18nText.Text.ja.json",
+                "Lib4PackRef6.I18nText.Text.en.json",
+                "Lib4PackRef6.I18nText.Text.ja.json",
                 "Lib4ProjRef.I18nText.Text.en.json",
                 "Lib4ProjRef.I18nText.Text.ja.json",
                 "SampleSite.Components.I18nText.Text.en.json",
@@ -56,8 +52,8 @@ namespace Toolbelt.Blazor.I18nText.Test
         public async Task PublishTest(string startupProjName)
         {
             using var workSpace = WorkSpace.Create(startupProjName);
-            var platform = GetPlatform(workSpace.StartupProj);
-            var publishDir = Path.Combine(workSpace.Bin, Path.Combine($"Release/{platform}/publish/".Split('/')));
+            var framewrok = workSpace.GetTargetFrameworkOfStartupProj();
+            var publishDir = Path.Combine(workSpace.Bin, Path.Combine($"Release/{framewrok}/publish/".Split('/')));
             var wwwrootContentDir = Path.Combine(publishDir, Path.Combine($"wwwroot/_content".Split('/')));
             var i18nDistDir = Path.Combine(wwwrootContentDir, "i18ntext");
             var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
@@ -75,6 +71,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             textResJsonFileNames.Is(
                 "Lib4PackRef.I18nText.Text.en.json",
                 "Lib4PackRef.I18nText.Text.ja.json",
+                "Lib4PackRef6.I18nText.Text.en.json",
+                "Lib4PackRef6.I18nText.Text.ja.json",
                 "Lib4ProjRef.I18nText.Text.en.json",
                 "Lib4ProjRef.I18nText.Text.ja.json",
                 "SampleSite.Components.I18nText.Text.en.json",

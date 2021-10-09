@@ -3,15 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0-rc.1.21452.15" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0-rc.1.21451.13" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.0.0-preview.2" />
-    <PackageReference Include="Lib4PackRef" Version="10.0.0.17" />
+    <PackageReference Include="Lib4PackRef" Version="10.0.0.18" />
     <PackageReference Include="Lib4PackRef6" Version="10.0.0.17" />
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
   </ItemGroup>

@@ -15,12 +15,13 @@ namespace Toolbelt.Blazor.I18nText.Test
         public async Task Watch_Test()
         {
             using var workSpace = WorkSpace.Create("Components");
+            var framework = workSpace.GetTargetFrameworkOfStartupProj();
 
             using var restoreProcess = await Start("dotnet", "restore", workSpace.StartupProj).WaitForExitAsync();
             restoreProcess.ExitCode.Is(0, message: restoreProcess.Output);
 
             // 1st. Given
-            var dstTextEnJsonPath = Path.Combine(workSpace.StartupProj, "bin", "Debug", "net5.0", "wwwroot", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
+            var dstTextEnJsonPath = Path.Combine(workSpace.StartupProj, "bin", "Debug", framework, "wwwroot", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
             File.Exists(dstTextEnJsonPath).IsFalse();
 
             // 1st. When
