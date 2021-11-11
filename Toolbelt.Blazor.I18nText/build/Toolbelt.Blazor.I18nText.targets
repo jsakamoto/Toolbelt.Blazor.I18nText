@@ -119,4 +119,34 @@
     </ItemGroup>
   </Target>
 
+
+  <!-- FOR SUPPORT TO .NET 6 Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+    <GenerateStaticWebAssetsPackTargetsDependsOn>_RemoveBlazorI18nTextStaticWebAssetsFromPackage;$(GenerateStaticWebAssetsPackTargetsDependsOn);</GenerateStaticWebAssetsPackTargetsDependsOn>
+  </PropertyGroup>
+
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <ItemGroup>
+      <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
+      <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
+        <SourceType>Computed</SourceType>
+        <SourceId>$(PackageId)</SourceId>
+        <ContentRoot>%(RelativeDir)</ContentRoot>
+        <BasePath>/</BasePath>
+        <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
+        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
+        <AssetKind>All</AssetKind>
+        <AssetMode>All</AssetMode>
+        <AssetRole>Primary</AssetRole>
+      </StaticWebAsset>
+    </ItemGroup>
+  </Target>
+	
+  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" Condition=" $(TargetFramework.StartsWith('net6')) ">
+    <ItemGroup>
+      <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
+    </ItemGroup>
+  </Target>
+
 </Project>

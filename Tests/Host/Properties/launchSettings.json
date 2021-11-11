@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SampleSite.Server": {
+    "SampleSite.Host": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

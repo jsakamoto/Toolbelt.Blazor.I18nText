@@ -1,0 +1,16 @@
+﻿@using Lib4PackRef6.I18nText
+@inject Toolbelt.Blazor.I18nText.I18nText I18nText
+
+<div class="my-component">
+    @Text.Message
+</div>
+
+@code {
+
+    Text Text = new Text();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.Text = await I18nText.GetTextTableAsync<Text>(this);
+    }
+}

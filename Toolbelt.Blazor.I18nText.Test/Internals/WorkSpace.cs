@@ -1,7 +1,9 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Xml.Linq;
 using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
 
 namespace Toolbelt.Blazor.I18nText.Test.Internals
@@ -41,6 +43,12 @@ namespace Toolbelt.Blazor.I18nText.Test.Internals
             StartupProj = Path.Combine(WorkSpaceDir, startupProjDir);
             Bin = Path.Combine(StartupProj, "bin");
             Obj = Path.Combine(StartupProj, "obj");
+        }
+
+        public string GetTargetFrameworkOfStartupProj()
+        {
+            var projPath = Directory.GetFiles(this.StartupProj, "*.csproj").First();
+            return XDocument.Load(projPath).Descendants("TargetFramework").First().Value;
         }
 
         public void Dispose()

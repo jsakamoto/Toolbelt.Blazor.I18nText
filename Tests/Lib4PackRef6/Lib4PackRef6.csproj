@@ -1,10 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>..\_dist\</PackageOutputPath>
     <Version>10.0.0.18</Version>
+    <NoWarn>$(NoWarn);NU5104</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
