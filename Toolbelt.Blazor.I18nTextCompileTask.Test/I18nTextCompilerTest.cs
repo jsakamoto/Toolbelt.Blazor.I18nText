@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Newtonsoft.Json;
 using Toolbelt.Blazor.I18nText.Interfaces;
+using Toolbelt.Blazor.I18nText.Internals;
 using Xunit;
 
 namespace Toolbelt.Blazor.I18nText.Test
@@ -35,6 +36,29 @@ namespace Toolbelt.Blazor.I18nText.Test
             if (Directory.Exists(_TypesDir)) Directory.Delete(_TypesDir, recursive: true);
             if (Directory.Exists(_TextResJsonsDir)) Directory.Delete(_TextResJsonsDir, recursive: true);
             Environment.CurrentDirectory = _OriginalCurrentDir;
+        }
+
+        [Fact]
+        public void GenerateHash_Test()
+        {
+            /*
+            enGreetingHello, World!HomeHomefrGreetingBonjour le monde!
+            sha256 = 660449602e0f75ed3002e1ef5e83f2e89a35b71de12aa0f569f8602993ec5915
+            base36 = ua6i0t8k6n
+             */
+            var i18ntext = new I18nTextType();
+            i18ntext.Langs.TryAdd("en", new I18nTextTable(new Dictionary<string, string>
+            {
+                {"Greeting", "Hello, World!" },
+                {"Home", "Home" }
+            }));
+            i18ntext.Langs.TryAdd("fr", new I18nTextTable(new Dictionary<string, string>
+            {
+                {"Greeting", "Bonjour le monde!" }
+            }));
+
+            var hash = I18nTextCompiler.GenerateHash(i18ntext);
+            hash.Is("ua6i0t8k6n");
         }
 
         [Theory(DisplayName = "Compile - I18n Text Typed Class was generated")]
@@ -69,11 +93,11 @@ namespace Toolbelt.Blazor.I18nText.Test
                 .Is(csFileNames);
 
             // the i18n text type file should be valid C# code.
-            ValidateGeneratedCSharpCode(langCode, fooBarClass + ".cs", fooBarClass, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
-            ValidateGeneratedCSharpCode(langCode, fizzBuzzClass + ".cs", fizzBuzzClass, new[] { "Text1", "Text2" });
+            ValidateGeneratedCSharpCode(langCode, "l47c0gpbnx", fooBarClass + ".cs", fooBarClass, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
+            ValidateGeneratedCSharpCode(langCode, "o246f7as05", fizzBuzzClass + ".cs", fizzBuzzClass, new[] { "Text1", "Text2" });
         }
 
-        private void ValidateGeneratedCSharpCode(string langCode, string csFileName, string generatedClassName, string[] generatedFieldNames)
+        private void ValidateGeneratedCSharpCode(string langCode, string hashCode, string csFileName, string generatedClassName, string[] generatedFieldNames)
         {
             // the i18n text type file should be valid C# code.
             var typeCode = File.ReadAllText(Path.Combine(_TypesDir, csFileName));
@@ -121,6 +145,9 @@ namespace Toolbelt.Blazor.I18nText.Test
             {
                 (textTableObj as I18nTextLateBinding)[generatedFieldName].Is(generatedFieldName);
             }
+
+            // the i18n text typed class has the filed that is represent its hash code.
+            (textTableObj as I18nTextTableHash).Hash.Is(hashCode);
         }
 
         [Theory(DisplayName = "Compile - I18n Text JSON files were generated")]

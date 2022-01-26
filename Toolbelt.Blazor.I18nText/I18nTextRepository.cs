@@ -118,6 +118,7 @@ namespace Toolbelt.Blazor.I18nText
         private async ValueTask FetchTextTableAsync(string langCode, object targetTableObject) //where TTextTableObject : class, I18nTextFallbackLanguage, new()
         {
             var fallbackLanguage = (targetTableObject as I18nTextFallbackLanguage)?.FallBackLanguage ?? "en";
+            var textTableHash = (targetTableObject as I18nTextTableHash)?.Hash ?? "";
             var typeofTextTableObject = targetTableObject.GetType();
 
             static string[] splitLangCode(string lang)
@@ -134,7 +135,9 @@ namespace Toolbelt.Blazor.I18nText
             var jsonUrls = new List<string>(langs.Count * 2);
             foreach (var lang in langs)
             {
-                jsonUrls.Add("_content/i18ntext/" + typeofTextTableObject.FullName + "." + lang + ".json");
+                var url = "_content/i18ntext/" + typeofTextTableObject.FullName + "." + lang + ".json";
+                if (!string.IsNullOrEmpty(textTableHash)) url += "?hash=" + textTableHash;
+                jsonUrls.Add(url);
             }
 
             var textMap = default(Dictionary<string, string>);

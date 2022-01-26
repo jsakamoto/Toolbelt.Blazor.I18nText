@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TinyCsvParser;
@@ -178,12 +180,16 @@ namespace Toolbelt.Blazor.I18nText
                 if (fallbackLang == null) throw new I18nTextCompileException($"IN1001: Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{arg.type.Key}'.");
                 var textTable = langs[fallbackLang];
 
+                var hash = GenerateHash(arg.type.Value);
+
                 var typeCode = new List<string>();
                 typeCode.Add(GeneratedMarker);
                 typeCode.Add($"namespace {arg.typeNamespace}");
                 typeCode.Add("{");
-                typeCode.Add($"    public partial class {arg.typeName} : global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextLateBinding");
+                typeCode.Add($"    public partial class {arg.typeName} : global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextLateBinding, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextTableHash");
                 typeCode.Add("    {");
+                typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextTableHash.Hash => \"{hash}\";");
+                typeCode.Add("");
                 typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage.FallBackLanguage => \"{options.FallBackLanguage}\";");
                 typeCode.Add("");
                 typeCode.Add("        public string this[string key] => global::Toolbelt.Blazor.I18nText.I18nTextExtensions.GetFieldValue(this, key);");
@@ -208,6 +214,44 @@ namespace Toolbelt.Blazor.I18nText
 
                 if (!skipOutput) File.WriteAllLines(arg.typeFilePath, typeCode);
             });
+        }
+
+        internal static string GenerateHash(I18nTextType i18nText)
+        {
+            using var hash = SHA256.Create();
+#if true
+            using var stream = new I18nTextTableStream(i18nText);
+            var hashBytes = hash.ComputeHash(stream);
+#else
+            var text = "";
+            foreach (var lang in i18nText.Langs.OrderBy(l => l.Key))
+            {
+                text += lang.Key;
+                foreach (var table in lang.Value.OrderBy(t => t.Key))
+                {
+                    text += table.Key;
+                    text += table.Value;
+                }
+            }
+            var hashBytes = hash.ComputeHash(Encoding.UTF8.GetBytes(text));
+#endif
+
+            return ToBase36(hashBytes);
+        }
+
+        private static string ToBase36(byte[] hash)
+        {
+            const string chars = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+            var result = new char[10];
+            var dividend = BigInteger.Abs(new BigInteger(hash.Take(9).ToArray()));
+            for (var i = 0; i < 10; i++)
+            {
+                dividend = BigInteger.DivRem(dividend, 36, out var remainder);
+                result[i] = chars[(int)remainder];
+            }
+
+            return new string(result);
         }
 
         private static string EscapeForXMLDocSummary(string text)
