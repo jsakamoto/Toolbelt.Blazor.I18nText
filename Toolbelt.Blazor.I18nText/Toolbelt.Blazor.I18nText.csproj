@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>11.0.0</Version>
+    <Version>11.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
@@ -25,7 +25,7 @@
     <PackageIcon>nupkg-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>../_dist</PackageOutputPath>
-    <Copyright>Copyright © 2019-2021 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Copyright>Copyright © 2019-2022 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 

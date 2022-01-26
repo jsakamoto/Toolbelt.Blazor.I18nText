@@ -1,3 +1,6 @@
+v.11.1.0
+- Imorove: explicitly control the browser cache for localized text json files.
+
 v.11.0.0
 - Add Support to .NET 6
 
