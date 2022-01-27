@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.1.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.1.1" />
     <ProjectReference Include="..\Components\SampleSite.Components.csproj" />
   </ItemGroup>
 </Project>
