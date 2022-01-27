@@ -1,3 +1,6 @@
+v.11.1.1
+- Fix: compiling localized source text files process will be failed on the .NET SDK latest preview.
+
 v.11.1.0
 - Imorove: explicitly control the browser cache for localized text json files.
 
