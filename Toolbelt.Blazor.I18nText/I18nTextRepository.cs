@@ -27,10 +27,13 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
+        private readonly HelperScript HelperScript;
+
         public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
         internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
+            this.HelperScript = serviceProvider.GetRequiredService<HelperScript>();
             var isWasm = options.IsWasm?.Invoke() ?? I18nTextDependencyInjection.IsWasm;
             if (isWasm)
             {
@@ -117,6 +120,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private async ValueTask FetchTextTableAsync(string langCode, object targetTableObject) //where TTextTableObject : class, I18nTextFallbackLanguage, new()
         {
+            var isOnline = await this.HelperScript.IsOnlineAsync();
             var fallbackLanguage = (targetTableObject as I18nTextFallbackLanguage)?.FallBackLanguage ?? "en";
             var textTableHash = (targetTableObject as I18nTextTableHash)?.Hash ?? "";
             var typeofTextTableObject = targetTableObject.GetType();
@@ -136,7 +140,7 @@ namespace Toolbelt.Blazor.I18nText
             foreach (var lang in langs)
             {
                 var url = "_content/i18ntext/" + typeofTextTableObject.FullName + "." + lang + ".json";
-                if (!string.IsNullOrEmpty(textTableHash)) url += "?hash=" + textTableHash;
+                if (isOnline && !string.IsNullOrEmpty(textTableHash)) url += "?hash=" + textTableHash;
                 jsonUrls.Add(url);
             }
 
