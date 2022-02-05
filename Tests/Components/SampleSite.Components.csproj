@@ -8,9 +8,9 @@
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.1.2" />
-    <PackageReference Include="Lib4PackRef" Version="11.1.2.0" />
-    <PackageReference Include="Lib4PackRef6" Version="11.1.2.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.1.3" />
+    <PackageReference Include="Lib4PackRef" Version="11.1.3.0" />
+    <PackageReference Include="Lib4PackRef6" Version="11.1.3.0" />
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
   </ItemGroup>
 </Project>
