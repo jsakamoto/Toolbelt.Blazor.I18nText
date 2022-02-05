@@ -43,15 +43,23 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
             };
             configure?.Invoke(options);
 
-            if (options.IsWasm() && options.ConfigureHttpClient != null)
+            // for Blazor WebAssembly apps
+            if (options.IsWasm())
             {
-                services.AddHttpClient(options.HttpClientName, (sp, client) =>
+                if (options.ConfigureHttpClient != null)
                 {
-                    options.ConfigureHttpClient.Invoke(sp, client);
-                });
+                    services.AddHttpClient(options.HttpClientName, (sp, client) => options.ConfigureHttpClient(sp, client));
+                }
+
+                services.TryAddScoped(serviceProvider => new I18nTextRepository(serviceProvider, options));
             }
 
-            services.TryAddSingleton(serviceProvider => new I18nTextRepository(serviceProvider, options));
+            // for Blazor Server apps
+            else
+            {
+                services.TryAddSingleton(serviceProvider => new I18nTextRepository(serviceProvider, options));
+            }
+
             services.TryAddScoped<HelperScript>();
             services.TryAddScoped(serviceProvider =>
             {

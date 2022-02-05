@@ -27,19 +27,17 @@ namespace Toolbelt.Blazor.I18nText
 
         private readonly ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
 
-        private readonly HelperScript HelperScript;
-
         public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
         internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
         {
-            this.HelperScript = serviceProvider.GetRequiredService<HelperScript>();
             var isWasm = options.IsWasm?.Invoke() ?? I18nTextDependencyInjection.IsWasm;
             if (isWasm)
             {
+                var helperScript = serviceProvider.GetRequiredService<HelperScript>();
                 var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
                 this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName);
-                this.ReadJsonAsTextMapAsync = this.ReadJsonAsTextMapWasmAsync;
+                this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapWasmAsync(helperScript);
             }
             else
             {
@@ -81,9 +79,18 @@ namespace Toolbelt.Blazor.I18nText
             this.ScopeToLangs.TryRemove(scopeId, out var _);
         }
 
-        private async ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapWasmAsync(string jsonUrl)
+        private ReadJsonAsTextMapAsync GetReadJsonAsTextMapWasmAsync(HelperScript helperScript)
+        {
+            return delegate (string jsonUrl, string hash) { return this.ReadJsonAsTextMapWasmAsync(helperScript, jsonUrl, hash); };
+        }
+
+        private async ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapWasmAsync(HelperScript helperScript, string jsonUrl, string hash)
         {
             if (this.HttpClient == null) throw new NullReferenceException($"{nameof(I18nTextRepository)}.{nameof(HttpClient)} is null.");
+
+            var isOnline = await helperScript.IsOnlineAsync();
+            if (isOnline && !string.IsNullOrEmpty(hash)) jsonUrl += "?hash=" + hash;
+
             var httpRes = await this.HttpClient.GetAsync(jsonUrl);
             if (httpRes.StatusCode == HttpStatusCode.NotFound) return null;
             var contentBytes = await httpRes.Content.ReadAsByteArrayAsync();
@@ -96,7 +103,7 @@ namespace Toolbelt.Blazor.I18nText
             var baseDir = Path.Combine(appDomainBaseDir, "wwwroot");
             if (baseDir[baseDir.Length - 1] != Path.DirectorySeparatorChar) baseDir += Path.DirectorySeparatorChar;
             var baseUri = new Uri(baseDir);
-            return delegate (string jsonUrl) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
+            return delegate (string jsonUrl, string hash) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
         }
 
         private ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
@@ -120,7 +127,6 @@ namespace Toolbelt.Blazor.I18nText
 
         private async ValueTask FetchTextTableAsync(string langCode, object targetTableObject) //where TTextTableObject : class, I18nTextFallbackLanguage, new()
         {
-            var isOnline = await this.HelperScript.IsOnlineAsync();
             var fallbackLanguage = (targetTableObject as I18nTextFallbackLanguage)?.FallBackLanguage ?? "en";
             var textTableHash = (targetTableObject as I18nTextTableHash)?.Hash ?? "";
             var typeofTextTableObject = targetTableObject.GetType();
@@ -140,7 +146,6 @@ namespace Toolbelt.Blazor.I18nText
             foreach (var lang in langs)
             {
                 var url = "_content/i18ntext/" + typeofTextTableObject.FullName + "." + lang + ".json";
-                if (isOnline && !string.IsNullOrEmpty(textTableHash)) url += "?hash=" + textTableHash;
                 jsonUrls.Add(url);
             }
 
@@ -149,7 +154,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 try
                 {
-                    textMap = await this.ReadJsonAsTextMapAsync(jsonUrl);
+                    textMap = await this.ReadJsonAsTextMapAsync(jsonUrl, textTableHash);
                     if (textMap != null) break;
                 }
                 catch (JsonException) { }
