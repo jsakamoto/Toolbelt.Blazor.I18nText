@@ -2,7 +2,7 @@
 
 ## Summary
 
-This package is an another way to localize text in your Blazor Web App!
+This package is another way to localize text in your Blazor Web App!
 
 ![movie.1](https://raw.githubusercontent.com/jsakamoto/assets/m/i18n/movie1.gif)
 
@@ -12,15 +12,15 @@ This package is an another way to localize text in your Blazor Web App!
 
 - Both Blazor Server and WebAssembly are supported.
 - In Blazor Wasm, it works even on a static web host. (The ASP.NET Core host isn't required)
-- Only needed plain text editor - No needed .resx
+- Only needs plain text editor - no need for .resx
 - Static Typing - IntelliSense, Code Hint...
 - It supports Blazor components libraries. You can create NuGet packages of your libraries that are localized with "Blazor I18nText".
 
 ### Notice
 
-Now, Blazor WebAssembly has been started the localization support officially since v.3.2 preview 4. It is based on .NET Standard `IStringLocalizer` and satellite assemblies with `.resx`.
+Blazor WebAssembly started localization support officially since v.3.2 preview 4. It is based on .NET Standard `IStringLocalizer` and satellite assemblies with `.resx`.
 
-However, I will continue to develop and maintain this package, because this package still has some advantages against .NET standard way.
+However, I will continue to develop and maintain this package, because this package still has some advantages over .NET standard implementation.
 
 ![pros/cons](https://raw.githubusercontent.com/jsakamoto/assets/m/i18n/pros-cons.png)
 
@@ -46,7 +46,7 @@ $ dotnet add package Toolbelt.Blazor.I18nText
 
 Add localized text source files for each language in an `i18ntext` folder under the project folder.
 
-The localized text source files must be simple key-value only JSON file like a bellow example,
+The localized text source files must be simple key-value only JSON file, like in the example below:
 
 ```json
 {
@@ -63,10 +63,10 @@ Key1,Localized text 1
 Key2,Localized text 2
 ```
 
-**NOTICE** - The encoding of the CSV and JSON file must be **UTF-8**.
+**NOTICE** - The encoding of the CSV and JSON file must be in **UTF-8**.
 
 
-And, the naming rule of localized text source files must be bellow.
+And, the naming rule of localized text source files must be the following:
 
 ```
 <Text Table Name>.<Language Code>.{json|csv}
@@ -90,7 +90,7 @@ And also, **"Localized Text Resource JSON" files** will be generated in the outp
 $ dotnet watch msbuild -t:CompileI18nText
 ```
 
-After entry this dotnet CLI command, the command stay in execution and watch the changing of localized text source files. If it detects the changing of localized text source files, then the dotnet CLI re-compile localized text source files into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
+After entering this dotnet CLI command, the command window will stay in execution mode. Watch the changing of localized text source files. If it detects the changing of localized text source files, then the dotnet CLI will recompile localized text source files into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
 
 ![fig.2-2](https://raw.githubusercontent.com/jsakamoto/assets/m/i18n/fig2b.png)
 
@@ -112,7 +112,7 @@ public static async Task Main(string[] args)
 
 ### Step.5 - Get the "Text Table" object in your Blazor component
 
-Open your Blazor component file (.razor) in your editor, and do this:
+Open your Blazor component file (.razor) inside any editor, and do the following:
 
 1. Inject `Toolbelt.Blazor.I18nText.I18nText` service into the component.
 
@@ -120,7 +120,7 @@ Open your Blazor component file (.razor) in your editor, and do this:
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 ```
 
-2. Add a filed of the Text Table class generated from localized text source files, and assign the default instance.
+2. Add a field of the Text Table class generated from localized text source files, and assign the default instance.
 
 ```csharp
 @code {
@@ -143,7 +143,7 @@ protected override async Task OnInitializedAsync()
 
 After doing these steps, you can reference a field of the Text Table object to get localized text.
 
-If you are using Visual Studio in Windows OS and Blazor extensions is installed in that Visual Studio, you can get "IntelliSense" and "Document comment" support.
+If you are using Visual Studio in Windows OS and Blazor extensions are installed in that Visual Studio, you can get "IntelliSense" and "Document comment" support.
 
 ![movie.2](https://raw.githubusercontent.com/jsakamoto/assets/m/i18n/movie2.gif)
 
@@ -163,9 +163,9 @@ The I18nText service detects the language settings of the Web browser, and reads
 
 ![fig.5](https://raw.githubusercontent.com/jsakamoto/assets/m/i18n/fig5.png)
 
-### More information for in case of Blazor server app
+### More information for Blazor server app
 
-I recommend enabling "Request Localization" middleware on the Blazor server app, by like the following code.
+I recommend enabling "Request Localization" middleware inside Blazor server app, like this:
 
 ```csharp
 // in the Startup class
@@ -195,7 +195,7 @@ The following features are not supported in this version of `I18Text` library.
 - Integration with ASP.NET Core localization (`IStringLocalizer<T>` support)
 - Localize validation message
 - Plural form support
-- Text formatting by place holder.
+- Text formatting by placeholder.
 - Integration with `System.Globalization.Culture.CurrentUICulture`.
 
 The following features will not be supported forever, because these features are not the scope of this library, I think.
@@ -213,9 +213,9 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 
 ## Release Notes
 
-Release notes is [here.](https://j.mp/3aWxQhQ)
+Release notes are [here.](https://j.mp/3aWxQhQ)
 
-## License & Third party notices
+## Licence & Third Party Notice
 
-- [Mozilla Public License Version 2.0](https://j.mp/2lxriCv)
-- [Third party notices](https://bit.ly/3H8HO0C)
+- [Mozilla Public Licence Version 2.0](https://j.mp/2lxriCv)
+- [Third party notice](https://bit.ly/3H8HO0C)
