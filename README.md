@@ -213,9 +213,9 @@ Please see also ["API Reference"](https://j.mp/2kjVssG) on GitHub.
 
 ## Release Notes
 
-Release notes is [here.](https://j.mp/3aWxQhQ)
+Release notes are [here.](https://j.mp/3aWxQhQ)
 
-## License & Third party notices
+## License & Third party notice
 
 - [Mozilla Public License Version 2.0](https://j.mp/2lxriCv)
 - [Third party notices](https://bit.ly/3H8HO0C)
