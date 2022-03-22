@@ -1,67 +1,34 @@
-﻿#nullable enable
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Xml.Linq;
-using static Toolbelt.Blazor.I18nText.Test.Internals.Shell;
+﻿namespace Toolbelt.Blazor.I18nText.Test.Internals;
 
-namespace Toolbelt.Blazor.I18nText.Test.Internals
+internal class WorkSpace : IDisposable
 {
-    public class WorkSpace : IDisposable
+    public WorkDirectory WorkSpaceDir { get; }
+
+    public string StartupProj { get; }
+
+    public string Bin { get; }
+
+    public string Obj { get; }
+
+    public string OutputDir { get; }
+
+    public string PublishDir { get; }
+
+    public static string GetTestDir() => Path.Combine(FileIO.FindContainerDirToAncestor("*.sln"), "Tests");
+
+    public WorkSpace(string startupProjDir, string framework, string configuration)
     {
-        public string WorkSpaceDir { get; }
+        this.WorkSpaceDir = WorkDirectory.CreateCopyFrom(GetTestDir(), predicate: item => item.Name is not "obj" and not "bin" and not ".vs");
 
-        public string StartupProj { get; }
+        var nugetConfigPath = Path.Combine(this.WorkSpaceDir, "nuget.config");
+        if (File.Exists(nugetConfigPath)) File.Delete(nugetConfigPath);
 
-        public string Bin { get; }
-
-        public string Obj { get; }
-
-        public static WorkSpace Create(string startupProjDir)
-        {
-            return new WorkSpace(startupProjDir);
-        }
-
-        public static string GetTestDir()
-        {
-            var testDir = AppDomain.CurrentDomain.BaseDirectory;
-            do { testDir = Path.GetDirectoryName(testDir); } while (!Exists(testDir, "*.sln"));
-            testDir = Path.Combine(testDir!, "Tests");
-            return testDir;
-        }
-
-        private WorkSpace(string startupProjDir)
-        {
-            var testDir = GetTestDir();
-            WorkSpaceDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Guid.NewGuid().ToString("N"));
-            XcopyDir(testDir, WorkSpaceDir, excludesDir: new[] { ".vs", "bin", "obj" });
-
-            var nugetConfigPath = Path.Combine(WorkSpaceDir, "nuget.config");
-            if (File.Exists(nugetConfigPath)) File.Delete(nugetConfigPath);
-
-            StartupProj = Path.Combine(WorkSpaceDir, startupProjDir);
-            Bin = Path.Combine(StartupProj, "bin");
-            Obj = Path.Combine(StartupProj, "obj");
-        }
-
-        public string GetTargetFrameworkOfStartupProj()
-        {
-            var projPath = Directory.GetFiles(this.StartupProj, "*.csproj").First();
-            return XDocument.Load(projPath).Descendants("TargetFramework").First().Value;
-        }
-
-        public void Dispose()
-        {
-            for (var i = 0; i < 5; i++)
-            {
-                try
-                {
-                    if (Directory.Exists(WorkSpaceDir)) Delete(WorkSpaceDir);
-                    break;
-                }
-                catch (Exception) { Thread.Sleep(200); }
-            }
-        }
+        this.StartupProj = Path.Combine(this.WorkSpaceDir, startupProjDir);
+        this.Bin = Path.Combine(this.StartupProj, "bin");
+        this.Obj = Path.Combine(this.StartupProj, "obj");
+        this.OutputDir = Path.Combine(this.Bin, configuration, framework);
+        this.PublishDir = Path.Combine(this.OutputDir, "publish");
     }
+
+    public void Dispose() => this.WorkSpaceDir.Dispose();
 }
