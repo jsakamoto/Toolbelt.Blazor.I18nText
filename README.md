@@ -28,7 +28,7 @@ However, I will continue to develop and maintain this package, because this pack
 
 .NET Ver.|I18n Ver.
 -|-
-v.6.0|v.11
+v.6.0, 7.0 |v.11
 v.5.0|v.11 (Recommended), v.10, v.9
 v.3.x|v.11 (Recommended), v.10, v.9
 
