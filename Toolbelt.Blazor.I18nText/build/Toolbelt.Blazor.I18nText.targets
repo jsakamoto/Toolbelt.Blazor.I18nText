@@ -16,6 +16,8 @@
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
+    <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(TargetFrameworkVersion)' == '' " >false</I18nTextNewStaticWebAssetsArchitecture>
+    <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(I18nTextNewStaticWebAssetsArchitecture)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0'))</I18nTextNewStaticWebAssetsArchitecture>
   </PropertyGroup>
 
   <ItemGroup>
@@ -120,13 +122,13 @@
   </Target>
 
 
-  <!-- FOR SUPPORT TO .NET 6 Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
-  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6')) ">
+  <!-- FOR SUPPORT TO .NET 6 or later Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
+  <PropertyGroup Condition=" $(I18nTextNewStaticWebAssetsArchitecture) ">
     <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
     <GenerateStaticWebAssetsPackTargetsDependsOn>_RemoveBlazorI18nTextStaticWebAssetsFromPackage;$(GenerateStaticWebAssetsPackTargetsDependsOn);</GenerateStaticWebAssetsPackTargetsDependsOn>
   </PropertyGroup>
 
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" Condition=" $(TargetFramework.StartsWith('net6')) ">
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" Condition=" $(I18nTextNewStaticWebAssetsArchitecture) ">
     <ItemGroup>
       <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
       <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
@@ -143,7 +145,7 @@
     </ItemGroup>
   </Target>
 	
-  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" Condition=" $(TargetFramework.StartsWith('net6')) ">
+  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" Condition=" $(I18nTextNewStaticWebAssetsArchitecture) ">
     <ItemGroup>
       <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
     </ItemGroup>
