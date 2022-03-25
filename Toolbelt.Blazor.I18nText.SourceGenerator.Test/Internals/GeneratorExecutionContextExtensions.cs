@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Concurrent;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using NUnit.Framework;
@@ -19,5 +20,11 @@ internal static class GeneratorExecutionContextExtensions
             var sourceText = (SourceText)source.ToDynamic().Text;
             yield return new GeneratedSourceText(hintName, sourceText);
         }
+    }
+
+    public static IEnumerable<Diagnostic> GetDiagnostics(this GeneratorExecutionContext context)
+    {
+        var diagnosticsBag = (ConcurrentQueue<Diagnostic>)context.ToDynamic()._diagnostics.Bag;
+        return diagnosticsBag;
     }
 }

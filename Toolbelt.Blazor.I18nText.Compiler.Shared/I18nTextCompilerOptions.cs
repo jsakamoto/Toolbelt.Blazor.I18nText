@@ -17,7 +17,7 @@ namespace Toolbelt.Blazor.I18nText
 
         public Action<string> LogMessage { get; set; }
 
-        public Action<string> LogError { get; set; }
+        public Action<Exception> LogError { get; set; }
 
         public string FallBackLanguage { get; set; }
 

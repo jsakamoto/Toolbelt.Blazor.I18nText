@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator
 {
@@ -17,7 +19,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
-            var options = CreateI18nTextCompilerOptions(context);
+            var options = this.CreateI18nTextCompilerOptions(context);
 
             var i18nTextSourceDirectory = options.I18nTextSourceDirectory.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
             var ignoreCase = StringComparison.InvariantCultureIgnoreCase;
@@ -36,7 +38,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             });
         }
 
-        private static I18nTextCompilerOptions CreateI18nTextCompilerOptions(GeneratorExecutionContext context)
+        private I18nTextCompilerOptions CreateI18nTextCompilerOptions(GeneratorExecutionContext context)
         {
             var globalOptions = context.AnalyzerConfigOptions.GlobalOptions;
             //if (!globalOptions.TryGetValue("build_property.rootnamespace", out var rootNamespace)) throw new Exception("Could not determin the root namespace.");
@@ -48,18 +50,34 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             if (!globalOptions.TryGetValue("build_property.i18ntextdisablesubnamespace", out var disableSubNameSpace)) throw new Exception("Could not determin whether disable sub-namespace or not.");
 
             var options = new I18nTextCompilerOptions(baseDir: projectDir);
-            //options.TypesDirectory = this.TypesDirectory ?? options.TypesDirectory;
             options.I18nTextSourceDirectory = Path.Combine(projectDir, i18nTextSourceDirectory);
             options.OutDirectory = i18ntextIntermediateDir;
             options.NameSpace = i18ntextNamespace;
             options.DisableSubNameSpace = bool.Parse(disableSubNameSpace);
             options.FallBackLanguage = fallbackLang;
 
-            // TODO:
-            options.LogMessage = msg => { };
-            options.LogError = msg => { };
+            options.LogMessage = this.CreateMessageReporter(context);
+            options.LogError = this.CreateErrorReporter(context);
 
             return options;
+        }
+
+        private Action<string> CreateMessageReporter(GeneratorExecutionContext context)
+        {
+            return message =>
+            {
+                lock (this._lock)
+                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.Information, Location.None, message));
+            };
+        }
+
+        private Action<Exception> CreateErrorReporter(GeneratorExecutionContext context)
+        {
+            return ex =>
+            {
+                var descriptor = (ex is I18nTextCompileException cex && DiagnosticDescriptors.TryGetByCode(cex.Code, out var d)) ? d : DiagnosticDescriptors.UnhandledException;
+                lock (this._lock) context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, ex.Message));
+            };
         }
     }
 }

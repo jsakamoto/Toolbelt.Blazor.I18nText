@@ -45,12 +45,12 @@ namespace Toolbelt.Blazor.I18nText
             }
             catch (AggregateException e) when (e.InnerException is I18nTextCompileException compileException)
             {
-                options.LogError(compileException.Message);
+                options.LogError(compileException);
                 return false;
             }
             catch (I18nTextCompileException compileException)
             {
-                options.LogError(compileException.Message);
+                options.LogError(compileException);
                 return false;
             }
         }
@@ -123,7 +123,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 case ".json": return DeserializeSrcTextFromJson(srcText);
                 case ".csv": return DeserializeSrcTextFromCsv(srcText);
-                default: throw new I18nTextCompileException($"Unknown file type ({fileNameExtension}) as an I18n Text source file.");
+                default: throw new I18nTextCompileException(code: 2, $"Unknown file type ({fileNameExtension}) as an I18n Text source file.");
             }
         }
 
@@ -189,7 +189,7 @@ namespace Toolbelt.Blazor.I18nText
                 var langParts = options.FallBackLanguage.Split('-');
                 var fallbackLangs = langParts.Length > 1 ? new[] { options.FallBackLanguage, langParts[0] } : new[] { options.FallBackLanguage };
                 var fallbackLang = fallbackLangs.FirstOrDefault(lang => langs.ContainsKey(lang));
-                if (fallbackLang == null) throw new I18nTextCompileException($"IN1001: Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{comilerItem.Type.Key}'.");
+                if (fallbackLang == null) throw new I18nTextCompileException(code: 1, $"Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{comilerItem.Type.Key}'.");
                 var textTable = langs[fallbackLang];
 
                 var hash = GenerateHash(comilerItem.Type.Value);

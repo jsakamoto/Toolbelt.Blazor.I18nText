@@ -4,8 +4,11 @@ namespace Toolbelt.Blazor.I18nText.Internals
 {
     internal class I18nTextCompileException : Exception
     {
-        public I18nTextCompileException(string message) : base(message)
+        public int Code { get; }
+
+        public I18nTextCompileException(int code, string message) : base(message)
         {
+            this.Code = code;
         }
     }
 }

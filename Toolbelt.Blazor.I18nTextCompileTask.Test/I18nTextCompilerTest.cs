@@ -24,18 +24,18 @@ namespace Toolbelt.Blazor.I18nText.Test
 
         public I18nTextCompilerTest()
         {
-            _OriginalCurrentDir = Environment.CurrentDirectory;
+            this._OriginalCurrentDir = Environment.CurrentDirectory;
             while (!Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Any())
                 Environment.CurrentDirectory = Path.GetDirectoryName(Environment.CurrentDirectory);
-            _TypesDir = Path.Combine(Environment.CurrentDirectory, "i18ntext", "@types");
-            _TextResJsonsDir = Path.Combine(Environment.CurrentDirectory, "obj", "Debug", "netstandard2.0", "dist", "_content", "i18ntext");
+            this._TypesDir = Path.Combine(Environment.CurrentDirectory, "i18ntext", "@types");
+            this._TextResJsonsDir = Path.Combine(Environment.CurrentDirectory, "obj", "Debug", "netstandard2.0", "dist", "_content", "i18ntext");
         }
 
         public void Dispose()
         {
-            if (Directory.Exists(_TypesDir)) Directory.Delete(_TypesDir, recursive: true);
-            if (Directory.Exists(_TextResJsonsDir)) Directory.Delete(_TextResJsonsDir, recursive: true);
-            Environment.CurrentDirectory = _OriginalCurrentDir;
+            if (Directory.Exists(this._TypesDir)) Directory.Delete(this._TypesDir, recursive: true);
+            if (Directory.Exists(this._TextResJsonsDir)) Directory.Delete(this._TextResJsonsDir, recursive: true);
+            Environment.CurrentDirectory = this._OriginalCurrentDir;
         }
 
         [Fact]
@@ -86,21 +86,21 @@ namespace Toolbelt.Blazor.I18nText.Test
             var fooBarClass = nameSpace + "Foo.Bar";
             var fizzBuzzClass = nameSpace + (disableSubNameSpace ? "Buzz" : "Fizz.Buzz");
             var csFileNames = new[] { fooBarClass + ".cs", fizzBuzzClass + ".cs" }.OrderBy(n => n);
-            Directory.Exists(_TypesDir).IsTrue();
-            Directory.GetFiles(_TypesDir)
+            Directory.Exists(this._TypesDir).IsTrue();
+            Directory.GetFiles(this._TypesDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(n => n)
                 .Is(csFileNames);
 
             // the i18n text type file should be valid C# code.
-            ValidateGeneratedCSharpCode(langCode, "l47c0gpbnx", fooBarClass + ".cs", fooBarClass, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
-            ValidateGeneratedCSharpCode(langCode, "o246f7as05", fizzBuzzClass + ".cs", fizzBuzzClass, new[] { "Text1", "Text2" });
+            this.ValidateGeneratedCSharpCode(langCode, "l47c0gpbnx", fooBarClass + ".cs", fooBarClass, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
+            this.ValidateGeneratedCSharpCode(langCode, "o246f7as05", fizzBuzzClass + ".cs", fizzBuzzClass, new[] { "Text1", "Text2" });
         }
 
         private void ValidateGeneratedCSharpCode(string langCode, string hashCode, string csFileName, string generatedClassName, string[] generatedFieldNames)
         {
             // the i18n text type file should be valid C# code.
-            var typeCode = File.ReadAllText(Path.Combine(_TypesDir, csFileName));
+            var typeCode = File.ReadAllText(Path.Combine(this._TypesDir, csFileName));
             var syntaxTree = CSharpSyntaxTree.ParseText(typeCode);
             var assemblyName = Path.GetRandomFileName();
             var references = new[] {
@@ -168,8 +168,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             success.IsTrue();
 
             // Compiled i18n text json files should exist.
-            Directory.Exists(_TextResJsonsDir).IsTrue();
-            Directory.GetFiles(_TextResJsonsDir)
+            Directory.Exists(this._TextResJsonsDir).IsTrue();
+            Directory.GetFiles(this._TextResJsonsDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name)
                 .Is(new[]{
@@ -178,13 +178,13 @@ namespace Toolbelt.Blazor.I18nText.Test
                     $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json",
                     $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json" }.OrderBy(n => n));
 
-            var enJsonText = File.ReadAllText(Path.Combine(_TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
+            var enJsonText = File.ReadAllText(Path.Combine(this._TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
             var enTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(enJsonText);
             enTexts["HelloWorld"].Is("Hello World!");
             enTexts["Exit"].Is("Exit");
             enTexts["GreetingOfJA"].Is("こんにちは");
 
-            var jaJsonText = File.ReadAllText(Path.Combine(_TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
+            var jaJsonText = File.ReadAllText(Path.Combine(this._TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
             var jaTexts = JsonConvert.DeserializeObject<Dictionary<string, string>>(jaJsonText);
             jaTexts["HelloWorld"].Is("こんにちは世界!");
             jaTexts["Exit"].Is("Exit");
@@ -199,8 +199,8 @@ namespace Toolbelt.Blazor.I18nText.Test
             var success = compiler.Compile(Enumerable.Empty<I18nTextSourceFile>(), options);
 
             success.IsTrue();
-            Directory.Exists(_TypesDir).IsFalse();
-            Directory.Exists(_TextResJsonsDir).IsFalse();
+            Directory.Exists(this._TypesDir).IsFalse();
+            Directory.Exists(this._TextResJsonsDir).IsFalse();
         }
 
         [Fact(DisplayName = "Compile - Error by fallback lang not exist")]
@@ -212,7 +212,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             var options = new I18nTextCompilerOptions
             {
                 FallBackLanguage = "fr",
-                LogError = msg => logErrors.Add(msg),
+                LogError = ex => logErrors.Add(ex.Message),
                 OutDirectory = _TextResJsonsDir
             };
             var compiler = new I18nTextCompiler();
@@ -221,18 +221,18 @@ namespace Toolbelt.Blazor.I18nText.Test
             suceess.IsFalse();
             logErrors.Count.Is(1);
             logErrors.First()
-                .StartsWith("IN1001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.")
+                .StartsWith("Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.")
                 .IsTrue();
         }
 
         [Fact(DisplayName = "Compile - sweep type files")]
         public void Compile_SweepTypeFiles_Test()
         {
-            if (Directory.Exists(_TypesDir)) Directory.Delete(_TypesDir, recursive: true);
-            Directory.CreateDirectory(_TypesDir);
-            File.WriteAllLines(Path.Combine(_TypesDir, "Bar.cs"), new[] { "// <auto-generated by=\"the Blazor I18n Text compiler\" />" });
-            File.WriteAllLines(Path.Combine(_TypesDir, "Bar.cs.bak"), new[] { "// <auto-generated by=\"the Blazor I18n Text compiler\" />" });
-            File.WriteAllLines(Path.Combine(_TypesDir, "Fizz.cs"), new[] { "public class Fizz {}" });
+            if (Directory.Exists(this._TypesDir)) Directory.Delete(this._TypesDir, recursive: true);
+            Directory.CreateDirectory(this._TypesDir);
+            File.WriteAllLines(Path.Combine(this._TypesDir, "Bar.cs"), new[] { "// <auto-generated by=\"the Blazor I18n Text compiler\" />" });
+            File.WriteAllLines(Path.Combine(this._TypesDir, "Bar.cs.bak"), new[] { "// <auto-generated by=\"the Blazor I18n Text compiler\" />" });
+            File.WriteAllLines(Path.Combine(this._TypesDir, "Fizz.cs"), new[] { "public class Fizz {}" });
 
             var srcPath = Path.Combine(Environment.CurrentDirectory, "i18ntext", "Foo.Bar.en.json");
             var srcFiles = new[] { new I18nTextSourceFile(srcPath, Encoding.UTF8) };
@@ -242,7 +242,7 @@ namespace Toolbelt.Blazor.I18nText.Test
 
             suceess.IsTrue();
 
-            Directory.GetFiles(_TypesDir)
+            Directory.GetFiles(this._TypesDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name)
                 .Is(
@@ -251,7 +251,7 @@ namespace Toolbelt.Blazor.I18nText.Test
                     "Fizz.cs",
                     "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.cs");
 
-            File.ReadLines(Path.Combine(_TypesDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.cs"))
+            File.ReadLines(Path.Combine(this._TypesDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.cs"))
                 .FirstOrDefault()
                 .Is("// <auto-generated by=\"the Blazor I18n Text compiler\" />");
         }
@@ -259,9 +259,9 @@ namespace Toolbelt.Blazor.I18nText.Test
         [Fact(DisplayName = "Compile - sweep I18n Text JSON files")]
         public void Compile_SweepTextJsonFiles_Test()
         {
-            if (Directory.Exists(_TextResJsonsDir)) Directory.Delete(_TextResJsonsDir, recursive: true);
-            Directory.CreateDirectory(_TextResJsonsDir);
-            File.WriteAllLines(Path.Combine(_TextResJsonsDir, "Bar.json"), new[] { "{\"Key\":\"Value\"}" });
+            if (Directory.Exists(this._TextResJsonsDir)) Directory.Delete(this._TextResJsonsDir, recursive: true);
+            Directory.CreateDirectory(this._TextResJsonsDir);
+            File.WriteAllLines(Path.Combine(this._TextResJsonsDir, "Bar.json"), new[] { "{\"Key\":\"Value\"}" });
 
             var srcPath = Path.Combine(Environment.CurrentDirectory, "i18ntext", "Foo.Bar.en.json");
             var srcFiles = new[] { new I18nTextSourceFile(srcPath, Encoding.UTF8) };
@@ -272,7 +272,7 @@ namespace Toolbelt.Blazor.I18nText.Test
             suceess.IsTrue();
 
             // "Bar.json" should be sweeped.
-            Directory.GetFiles(_TextResJsonsDir)
+            Directory.GetFiles(this._TextResJsonsDir)
                 .Select(path => Path.GetFileName(path))
                 .OrderBy(name => name)
                 .Is("Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json");

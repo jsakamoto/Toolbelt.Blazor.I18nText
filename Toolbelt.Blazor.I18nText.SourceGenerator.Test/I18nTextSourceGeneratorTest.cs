@@ -42,6 +42,9 @@ public class I18nTextSourceGeneratorTest
         // The generated i18n text type source should be a valid C# code.
         ValidateGeneratedCSharpCode(fallbackLang, "l47c0gpbnx", fooBarClassSource, fooBarClassName, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
         ValidateGeneratedCSharpCode(fallbackLang, "o246f7as05", fizzBuzzClassSource, fizzBuzzClassName, new[] { "Text1", "Text2" });
+
+        // and, there are no errors.
+        context.GetDiagnostics().Any().IsFalse();
     }
 
     /// <summary>
@@ -81,6 +84,9 @@ public class I18nTextSourceGeneratorTest
         jaTexts["HelloWorld"].Is("Ç±ÇÒÇ…ÇøÇÕê¢äE!");
         jaTexts["Exit"].Is("Exit");
         jaTexts["GreetingOfJA"].Is("Ç±ÇÒÇ…ÇøÇÕ");
+
+        // and, there are no errors.
+        context.GetDiagnostics().Any().IsFalse();
     }
 
     [Test]
@@ -124,8 +130,29 @@ public class I18nTextSourceGeneratorTest
         // Then: Nothing to be generated, and any errors never occurred.
         context.GetGeneratedSourceTexts().Any().IsFalse();
         Directory.Exists(workSpace.TextResJsonsDir).IsFalse();
+        context.GetDiagnostics().Any().IsFalse();
     }
 
+    /// <summary>
+    /// Compile - Error by fallback lang not exist
+    /// </summary>
+    [Test]
+    public void Compile_Error_FallbackLangNotExist()
+    {
+        // Given
+        using var workSpace = new WorkSpace();
+        var context = workSpace.CreateGeneratorExecutionContext(
+            fallbackLang: "fr",
+            // Make the additional files to be only "Foo.Bar.{en|ja}.{json|csv}" files to stabilize this test.
+            filterAdditionalFiles: file => Path.GetFileName(file.Path).StartsWith("Foo.Bar."));
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: It souhld be error.
+        context.GetDiagnostics().Select(d => d.ToString()).Is(
+            "error I18N001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar'.");
+    }
 
     /// <summary>
     /// Compile - sweep I18n Text JSON files
