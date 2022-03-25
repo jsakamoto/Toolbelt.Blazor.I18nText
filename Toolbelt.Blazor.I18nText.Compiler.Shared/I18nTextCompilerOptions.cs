@@ -21,6 +21,8 @@ namespace Toolbelt.Blazor.I18nText
 
         public string FallBackLanguage { get; set; }
 
+        public bool DisableOutputI18nTextJsonFiles { get; set; }
+
         public I18nTextCompilerOptions() : this(Directory.GetCurrentDirectory())
         {
         }
@@ -28,7 +30,7 @@ namespace Toolbelt.Blazor.I18nText
         public I18nTextCompilerOptions(string baseDir)
         {
             this.I18nTextSourceDirectory = Path.Combine(baseDir, "i18ntext");
-            this.TypesDirectory = Path.Combine(I18nTextSourceDirectory, "@types");
+            this.TypesDirectory = Path.Combine(this.I18nTextSourceDirectory, "@types");
             this.OutDirectory = Path.Combine(baseDir, "wwwroot", "content", "i18ntext");
             this.NameSpace = Path.GetFileName(baseDir.TrimEnd('\\')) + ".I18nText";
             this.LogMessage = _ => { };

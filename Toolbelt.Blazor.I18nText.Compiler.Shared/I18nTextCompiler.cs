@@ -19,11 +19,28 @@ namespace Toolbelt.Blazor.I18nText
 
         public bool Compile(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
+            return this.Compile(srcFiles, options, beforeCompile: SweepTypeFilesShouldBePurged, saveCode: SaveTypeCodeToTypeFiles);
+        }
+
+        public bool Compile(
+            IEnumerable<I18nTextSourceFile> srcFiles,
+            I18nTextCompilerOptions options,
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
+        {
+            return this.Compile(srcFiles, options, beforeCompile: null, saveCode);
+        }
+
+        private bool Compile(
+            IEnumerable<I18nTextSourceFile> srcFiles,
+            I18nTextCompilerOptions options,
+            Action<I18nTextCompilerOptions, IEnumerable<I18nTextCompileItem>> beforeCompile,
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
+        {
             try
             {
                 var i18textSrc = ParseSourceFiles(srcFiles, options);
-                OutputTypesFiles(options, i18textSrc);
-                OutputI18nTextJsonFiles(options, i18textSrc);
+                OutputTypesFiles(options, i18textSrc, beforeCompile, saveCode);
+                if (!options.DisableOutputI18nTextJsonFiles) this.OutputI18nTextJsonFiles(options, i18textSrc);
                 return true;
             }
             catch (AggregateException e) when (e.InnerException is I18nTextCompileException compileException)
@@ -130,8 +147,8 @@ namespace Toolbelt.Blazor.I18nText
         {
             public CsvKeyValueMapping() : base()
             {
-                MapProperty(0, x => x.Key);
-                MapProperty(1, x => x.Value);
+                this.MapProperty(0, x => x.Key);
+                this.MapProperty(1, x => x.Value);
             }
         }
 
@@ -145,48 +162,43 @@ namespace Toolbelt.Blazor.I18nText
             return new I18nTextTable(tableTextRaw);
         }
 
-        private static void OutputTypesFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc)
+        private static void OutputTypesFiles(
+            I18nTextCompilerOptions options,
+            I18nTextSource i18textSrc,
+            Action<I18nTextCompilerOptions, IEnumerable<I18nTextCompileItem>> beforeCompile,
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
         {
             if (!i18textSrc.Types.Any()) return;
-            if (!Directory.Exists(options.TypesDirectory)) Directory.CreateDirectory(options.TypesDirectory);
 
-            var types = i18textSrc.Types.Select(type =>
+            var i18nTextCompilerItems = i18textSrc.Types.Select(type =>
             {
                 var typeFullName = options.NameSpace + "." + type.Key;
                 var typeNameParts = typeFullName.Split('.');
                 var typeNamespace = string.Join(".", typeNameParts.Take(typeNameParts.Length - 1));
                 var typeName = typeNameParts.Last();
+
                 var typeFilePath = Path.Combine(options.TypesDirectory, typeFullName + ".cs");
-                return (type, typeNamespace, typeName, typeFilePath);
+                return new I18nTextCompileItem(type, typeNamespace, typeName, typeFilePath);
             }).ToArray();
 
-            // Sweep old generated/should be purge type files.
-            var existsTypeFiles = Directory.GetFiles(options.TypesDirectory, "*.cs");
-            var shouldBeSweepedFiles = existsTypeFiles.Except(types.Select(t => t.typeFilePath));
-            foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
-            {
-                if (File.ReadLines(shouldBeSweepedFile).Any(line => line == GeneratedMarker))
-                {
-                    File.Delete(shouldBeSweepedFile);
-                }
-            }
+            beforeCompile?.Invoke(options, i18nTextCompilerItems);
 
-            Parallel.ForEach(types, ((KeyValuePair<string, I18nTextType> type, string typeNamespace, string typeName, string typeFilePath) arg) =>
+            Parallel.ForEach(i18nTextCompilerItems, comilerItem =>
             {
-                var langs = arg.type.Value.Langs;
+                var langs = comilerItem.Type.Value.Langs;
                 var langParts = options.FallBackLanguage.Split('-');
                 var fallbackLangs = langParts.Length > 1 ? new[] { options.FallBackLanguage, langParts[0] } : new[] { options.FallBackLanguage };
                 var fallbackLang = fallbackLangs.FirstOrDefault(lang => langs.ContainsKey(lang));
-                if (fallbackLang == null) throw new I18nTextCompileException($"IN1001: Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{arg.type.Key}'.");
+                if (fallbackLang == null) throw new I18nTextCompileException($"IN1001: Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{comilerItem.Type.Key}'.");
                 var textTable = langs[fallbackLang];
 
-                var hash = GenerateHash(arg.type.Value);
+                var hash = GenerateHash(comilerItem.Type.Value);
 
                 var typeCode = new List<string>();
                 typeCode.Add(GeneratedMarker);
-                typeCode.Add($"namespace {arg.typeNamespace}");
+                typeCode.Add($"namespace {comilerItem.TypeNamespace}");
                 typeCode.Add("{");
-                typeCode.Add($"    public partial class {arg.typeName} : global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextLateBinding, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextTableHash");
+                typeCode.Add($"    public partial class {comilerItem.TypeName} : global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextFallbackLanguage, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextLateBinding, global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextTableHash");
                 typeCode.Add("    {");
                 typeCode.Add($"        string global::Toolbelt.Blazor.I18nText.Interfaces.I18nTextTableHash.Hash => \"{hash}\";");
                 typeCode.Add("");
@@ -195,7 +207,7 @@ namespace Toolbelt.Blazor.I18nText
                 typeCode.Add("        public string this[string key] => global::Toolbelt.Blazor.I18nText.I18nTextExtensions.GetFieldValue(this, key);");
                 typeCode.Add("");
                 var is1stLine = true;
-                foreach (var textKey in arg.type.Value.TextKeys)
+                foreach (var textKey in comilerItem.Type.Value.TextKeys)
                 {
                     if (!is1stLine) typeCode.Add("");
                     typeCode.Add($"        /// <summary>\"{EscapeForXMLDocSummary(textTable[textKey])}\"</summary>");
@@ -205,37 +217,50 @@ namespace Toolbelt.Blazor.I18nText
                 typeCode.Add("    }");
                 typeCode.Add("}");
 
-                var skipOutput = false;
-                if (File.Exists(arg.typeFilePath))
-                {
-                    var prevTypeCode = File.ReadAllLines(arg.typeFilePath);
-                    skipOutput = prevTypeCode.SequenceEqual(typeCode);
-                }
-
-                if (!skipOutput) File.WriteAllLines(arg.typeFilePath, typeCode);
+                saveCode?.Invoke(options, comilerItem, typeCode);
             });
+        }
+
+        private static void SaveTypeCodeToTypeFiles(I18nTextCompilerOptions options, I18nTextCompileItem compileItem, IEnumerable<string> typeCode)
+        {
+            var skipOutput = false;
+            if (File.Exists(compileItem.TypeFilePath))
+            {
+                var prevTypeCode = File.ReadAllLines(compileItem.TypeFilePath);
+                skipOutput = prevTypeCode.SequenceEqual(typeCode);
+            }
+
+            if (!skipOutput)
+            {
+                if (!Directory.Exists(options.TypesDirectory)) Directory.CreateDirectory(options.TypesDirectory);
+                File.WriteAllLines(compileItem.TypeFilePath, typeCode);
+            }
+        }
+
+        /// <summary>
+        /// Sweep old generated/should be purge type files.
+        /// </summary>
+        private static void SweepTypeFilesShouldBePurged(I18nTextCompilerOptions options, IEnumerable<I18nTextCompileItem> compilerItems)
+        {
+            if (Directory.Exists(options.TypesDirectory))
+            {
+                var existsTypeFiles = Directory.GetFiles(options.TypesDirectory, "*.cs");
+                var shouldBeSweepedFiles = existsTypeFiles.Except(compilerItems.Select(t => t.TypeFilePath));
+                foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
+                {
+                    if (File.ReadLines(shouldBeSweepedFile).Any(line => line == GeneratedMarker))
+                    {
+                        File.Delete(shouldBeSweepedFile);
+                    }
+                }
+            }
         }
 
         internal static string GenerateHash(I18nTextType i18nText)
         {
             using var hash = SHA256.Create();
-#if true
             using var stream = new I18nTextTableStream(i18nText);
             var hashBytes = hash.ComputeHash(stream);
-#else
-            var text = "";
-            foreach (var lang in i18nText.Langs.OrderBy(l => l.Key))
-            {
-                text += lang.Key;
-                foreach (var table in lang.Value.OrderBy(t => t.Key))
-                {
-                    text += table.Key;
-                    text += table.Value;
-                }
-            }
-            var hashBytes = hash.ComputeHash(Encoding.UTF8.GetBytes(text));
-#endif
-
             return ToBase36(hashBytes);
         }
 
