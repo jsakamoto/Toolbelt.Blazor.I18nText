@@ -8,11 +8,13 @@ public class WorkSpace : IDisposable
 {
     public WorkDirectory ProjectDir { get; }
 
+    public string TextResJsonsDir { get; }
+
     public string RootNamespace { get; }
 
-    public string I18nTextNamespace { get; } = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText";
+    public string I18nTextNamespace { get; }
 
-    private ImmutableArray<AdditionalText> AdditionalFiles { get; }
+    private IEnumerable<AdditionalText> AdditionalFiles { get; }
 
     public WorkSpace()
     {
@@ -21,19 +23,22 @@ public class WorkSpace : IDisposable
 
         var testProjDir = FileIO.FindContainerDirToAncestor("*.csproj");
         this.ProjectDir = new WorkDirectory();
+        this.TextResJsonsDir = Path.Combine(this.ProjectDir, "obj", "Debug", "net6.0", "dist", "_content", "i18ntext");
+
         var i18ntextDir = Path.Combine(this.ProjectDir, "i18ntext");
         FileIO.XcopyDir(Path.Combine(testProjDir, "i18ntext"), i18ntextDir);
 
         this.AdditionalFiles = Directory.GetFiles(i18ntextDir, "*.*", SearchOption.AllDirectories)
             .Select(path => new AdditionalTextImplement(path))
             .Cast<AdditionalText>()
-            .ToImmutableArray();
+            .ToArray();
     }
 
     public GeneratorExecutionContext CreateGeneratorExecutionContext(
         string i18nTextSourceDirectory = "i18ntext",
         string fallbackLang = "en",
-        bool disableSubNameSpace = false
+        bool disableSubNameSpace = false,
+        Func<AdditionalText, bool>? filterAdditionalFiles = null
     )
     {
         var configOptionsProvider = new TestConfigOptionsProvider()
@@ -44,13 +49,16 @@ public class WorkSpace : IDisposable
                 .Add("build_property.i18ntextsourcedirectory", i18nTextSourceDirectory)
                 .Add("build_property.i18ntextfallbacklanguage", fallbackLang)
                 .Add("build_property.i18ntextdisablesubnamespace", disableSubNameSpace.ToString().ToLower())
-                .Add("build_property.i18ntextintermediatedir", Path.Combine(this.ProjectDir, @"obj\Debug\net6.0\dist\_content\i18ntext\"))
+                .Add("build_property.i18ntextintermediatedir", this.TextResJsonsDir)
             );
+
+        filterAdditionalFiles ??= _ => true;
+        var additionalFiles = this.AdditionalFiles.Where(filterAdditionalFiles).ToImmutableArray();
 
         var context = (GeneratorExecutionContext)Activator.CreateInstance(typeof(GeneratorExecutionContext), BindingFlags.NonPublic | BindingFlags.Instance, null, new object?[] {
             default(Compilation),
             default(ParseOptions),
-            this.AdditionalFiles,
+            additionalFiles,
             configOptionsProvider,
             default(ISyntaxReceiver),
             default(CancellationToken)

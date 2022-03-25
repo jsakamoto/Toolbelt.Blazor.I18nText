@@ -9,6 +9,8 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
     [Generator]
     public class I18nTextSourceGenerator : ISourceGenerator
     {
+        private readonly object _lock = new object();
+
         public void Initialize(GeneratorInitializationContext context)
         {
         }
@@ -27,12 +29,10 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
 
             //foreach (var src in srcFiles) Log.LogMessage($"- {src.Path}, {src.Encoding.BodyName}");
 
-            var compiler = new I18nTextCompiler();
-
-            var successOrNot = compiler.Compile(srcFiles, options, saveCode: (option, item, codeLines) =>
+            var successOrNot = I18nTextCompiler.Compile(srcFiles, options, saveCode: (option, item, codeLines) =>
             {
                 var hintName = Path.GetFileNameWithoutExtension(item.TypeFilePath) + ".g.cs";
-                context.AddSource(hintName, string.Join("\n", codeLines));
+                lock (this._lock) context.AddSource(hintName, string.Join("\n", codeLines));
             });
         }
 
@@ -54,8 +54,6 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             options.NameSpace = i18ntextNamespace;
             options.DisableSubNameSpace = bool.Parse(disableSubNameSpace);
             options.FallBackLanguage = fallbackLang;
-
-            options.DisableOutputI18nTextJsonFiles = true; // TODO:
 
             // TODO:
             options.LogMessage = msg => { };

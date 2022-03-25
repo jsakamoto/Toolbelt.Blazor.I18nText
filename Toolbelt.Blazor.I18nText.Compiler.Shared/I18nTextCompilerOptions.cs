@@ -21,8 +21,6 @@ namespace Toolbelt.Blazor.I18nText
 
         public string FallBackLanguage { get; set; }
 
-        public bool DisableOutputI18nTextJsonFiles { get; set; }
-
         public I18nTextCompilerOptions() : this(Directory.GetCurrentDirectory())
         {
         }

@@ -19,18 +19,18 @@ namespace Toolbelt.Blazor.I18nText
 
         public bool Compile(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
-            return this.Compile(srcFiles, options, beforeCompile: SweepTypeFilesShouldBePurged, saveCode: SaveTypeCodeToTypeFiles);
+            return Compile(srcFiles, options, beforeCompile: SweepTypeFilesShouldBePurged, saveCode: SaveTypeCodeToTypeFiles);
         }
 
-        public bool Compile(
+        public static bool Compile(
             IEnumerable<I18nTextSourceFile> srcFiles,
             I18nTextCompilerOptions options,
             Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
         {
-            return this.Compile(srcFiles, options, beforeCompile: null, saveCode);
+            return Compile(srcFiles, options, beforeCompile: null, saveCode);
         }
 
-        private bool Compile(
+        private static bool Compile(
             IEnumerable<I18nTextSourceFile> srcFiles,
             I18nTextCompilerOptions options,
             Action<I18nTextCompilerOptions, IEnumerable<I18nTextCompileItem>> beforeCompile,
@@ -40,7 +40,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 var i18textSrc = ParseSourceFiles(srcFiles, options);
                 OutputTypesFiles(options, i18textSrc, beforeCompile, saveCode);
-                if (!options.DisableOutputI18nTextJsonFiles) this.OutputI18nTextJsonFiles(options, i18textSrc);
+                OutputI18nTextJsonFiles(options, i18textSrc);
                 return true;
             }
             catch (AggregateException e) when (e.InnerException is I18nTextCompileException compileException)
@@ -284,7 +284,7 @@ namespace Toolbelt.Blazor.I18nText
             return SecurityElement.Escape(text).Replace("\r", "").Replace("\n", "<br/>");
         }
 
-        private void OutputI18nTextJsonFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc)
+        private static void OutputI18nTextJsonFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc)
         {
             if (!i18textSrc.Types.Any()) return;
             if (!Directory.Exists(options.OutDirectory)) Directory.CreateDirectory(options.OutDirectory);
