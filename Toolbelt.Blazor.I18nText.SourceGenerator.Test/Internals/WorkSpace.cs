@@ -35,6 +35,7 @@ public class WorkSpace : IDisposable
     }
 
     public GeneratorExecutionContext CreateGeneratorExecutionContext(
+        bool useSourceGenerator = true,
         string i18nTextSourceDirectory = "i18ntext",
         string fallbackLang = "en",
         bool disableSubNameSpace = false,
@@ -50,6 +51,7 @@ public class WorkSpace : IDisposable
                 .Add("build_property.i18ntextfallbacklanguage", fallbackLang)
                 .Add("build_property.i18ntextdisablesubnamespace", disableSubNameSpace.ToString().ToLower())
                 .Add("build_property.i18ntextintermediatedir", this.TextResJsonsDir)
+                .Add("build_property.i18ntextusesourcegenerator", useSourceGenerator.ToString().ToLower())
             );
 
         filterAdditionalFiles ??= _ => true;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,9 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
         public void Execute(GeneratorExecutionContext context)
         {
             var options = this.CreateI18nTextCompilerOptions(context);
+            if (!options.UseSourceGenerator) return;
+
+            var cancellationToken = context.CancellationToken;
 
             var i18nTextSourceDirectory = options.I18nTextSourceDirectory.TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
             var ignoreCase = StringComparison.InvariantCultureIgnoreCase;
@@ -31,17 +35,27 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
 
             //foreach (var src in srcFiles) Log.LogMessage($"- {src.Path}, {src.Encoding.BodyName}");
 
+            var generatedSources = new ConcurrentBag<GeneratedSource>();
             var successOrNot = I18nTextCompiler.Compile(srcFiles, options, saveCode: (option, item, codeLines) =>
             {
                 var hintName = Path.GetFileNameWithoutExtension(item.TypeFilePath) + ".g.cs";
-                lock (this._lock) context.AddSource(hintName, string.Join("\n", codeLines));
-            });
+                var sourceCode = string.Join("\n", codeLines);
+                generatedSources.Add(new GeneratedSource(hintName, sourceCode));
+            }, cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            foreach (var source in generatedSources)
+            {
+                context.AddSource(source.HintName, source.SourceCode);
+            }
         }
 
         private I18nTextCompilerOptions CreateI18nTextCompilerOptions(GeneratorExecutionContext context)
         {
             var globalOptions = context.AnalyzerConfigOptions.GlobalOptions;
             //if (!globalOptions.TryGetValue("build_property.rootnamespace", out var rootNamespace)) throw new Exception("Could not determin the root namespace.");
+            if (!globalOptions.TryGetValue("build_property.i18ntextusesourcegenerator", out var useSourceGenerator)) throw new Exception("Could not determin whether use source generator or not.");
             if (!globalOptions.TryGetValue("build_property.projectdir", out var projectDir)) throw new Exception("Could not determin the project diretcory.");
             if (!globalOptions.TryGetValue("build_property.i18ntextintermediatedir", out var i18ntextIntermediateDir)) throw new Exception("Could not determin the i18ntext intermediate directory.");
             if (!globalOptions.TryGetValue("build_property.i18ntextnamespace", out var i18ntextNamespace)) throw new Exception("Could not determin the i18ntext namespace.");
@@ -50,6 +64,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             if (!globalOptions.TryGetValue("build_property.i18ntextdisablesubnamespace", out var disableSubNameSpace)) throw new Exception("Could not determin whether disable sub-namespace or not.");
 
             var options = new I18nTextCompilerOptions(baseDir: projectDir);
+            options.UseSourceGenerator = bool.Parse(useSourceGenerator);
             options.I18nTextSourceDirectory = Path.Combine(projectDir, i18nTextSourceDirectory);
             options.OutDirectory = i18ntextIntermediateDir;
             options.NameSpace = i18ntextNamespace;

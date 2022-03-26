@@ -30,6 +30,13 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Toolbelt.Blazor.I18nText.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.SourceGenerator.Test", "Toolbelt.Blazor.I18nText.SourceGenerator.Test\Toolbelt.Blazor.I18nText.SourceGenerator.Test.csproj", "{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{9ABE5E2D-7FF6-43E7-B875-640A9197B669}"
+	ProjectSection(SolutionItems) = preProject
+		Build\BuildPackageReleaseNotes.targets = Build\BuildPackageReleaseNotes.targets
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp.csproj", "{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +67,10 @@ Global
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

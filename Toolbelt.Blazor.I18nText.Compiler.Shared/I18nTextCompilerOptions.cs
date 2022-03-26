@@ -21,6 +21,8 @@ namespace Toolbelt.Blazor.I18nText
 
         public string FallBackLanguage { get; set; }
 
+        public bool UseSourceGenerator { get; set; }
+
         public I18nTextCompilerOptions() : this(Directory.GetCurrentDirectory())
         {
         }
@@ -34,6 +36,7 @@ namespace Toolbelt.Blazor.I18nText
             this.LogMessage = _ => { };
             this.LogError = _ => { };
             this.FallBackLanguage = "en";
+            this.UseSourceGenerator = true;
         }
     }
 }

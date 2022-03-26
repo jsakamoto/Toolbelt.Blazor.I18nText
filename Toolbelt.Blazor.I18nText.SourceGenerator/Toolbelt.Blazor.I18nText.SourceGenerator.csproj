@@ -2,19 +2,28 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0</Version>
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageOutputPath>..\_dist</PackageOutputPath>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>12.0.0-preview.1.1</Version>
     <IsRoslynComponent>true</IsRoslynComponent>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <DevelopmentDependency>true</DevelopmentDependency>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>J.Sakamoto</Authors>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText</PackageProjectUrl>
+    <PackageTags>blazor,localize,i18n</PackageTags>
+    <PackageReleaseNotes>(Please write the package release notes in "../RELEASE-NOTES.txt")</PackageReleaseNotes>
+    <PackageIcon>nupkg-icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>..\_dist</PackageOutputPath>
+    <Copyright>Copyright © 2019-2022 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +37,12 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" GeneratePathProperty="true" />
     <PackageReference Include="TinyCsvParser" Version="2.6.1" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="/" />
+    <None Include="..\README.md" Visible="false" Pack="true" PackagePath="/" />
+    <None Include="..\THIRDPARTYNOTICES.txt" Visible="false" Pack="true" PackagePath="/notices" />
   </ItemGroup>
 
   <Target Name="GetDependencyTargetPaths">
@@ -47,5 +62,6 @@
   </Target>
 
   <Import Project="..\Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems" Label="Shared" />
+  <Import Project="..\Build\BuildPackageReleaseNotes.targets" />
 
 </Project>

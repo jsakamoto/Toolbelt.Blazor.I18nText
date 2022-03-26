@@ -1,4 +1,5 @@
-Toolbelt.Blazor.I18nText.CompileTask uses third-party material as listed below. 
+Toolbelt.Blazor.I18nText.CompileTask and Toolbelt.Blazor.I18nText.SourceGenerator
+uses third-party material as listed below. 
 The attached notices are provided for informational purposes only. 
 
 Notice for Newtonsoft.Json 

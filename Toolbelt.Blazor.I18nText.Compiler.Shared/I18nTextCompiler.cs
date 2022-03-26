@@ -5,10 +5,9 @@ using System.Linq;
 using System.Numerics;
 using System.Security;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TinyCsvParser;
-using TinyCsvParser.Mapping;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
@@ -19,28 +18,30 @@ namespace Toolbelt.Blazor.I18nText
 
         public bool Compile(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
         {
-            return Compile(srcFiles, options, beforeCompile: SweepTypeFilesShouldBePurged, saveCode: SaveTypeCodeToTypeFiles);
+            return Compile(srcFiles, options, beforeCompile: SweepTypeFilesShouldBePurged, saveCode: SaveTypeCodeToTypeFiles, CancellationToken.None);
         }
 
         public static bool Compile(
             IEnumerable<I18nTextSourceFile> srcFiles,
             I18nTextCompilerOptions options,
-            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode,
+            CancellationToken cancellationToken)
         {
-            return Compile(srcFiles, options, beforeCompile: null, saveCode);
+            return Compile(srcFiles, options, beforeCompile: null, saveCode, cancellationToken);
         }
 
         private static bool Compile(
             IEnumerable<I18nTextSourceFile> srcFiles,
             I18nTextCompilerOptions options,
             Action<I18nTextCompilerOptions, IEnumerable<I18nTextCompileItem>> beforeCompile,
-            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode,
+            CancellationToken cancellationToken)
         {
             try
             {
-                var i18textSrc = ParseSourceFiles(srcFiles, options);
-                OutputTypesFiles(options, i18textSrc, beforeCompile, saveCode);
-                OutputI18nTextJsonFiles(options, i18textSrc);
+                var i18textSrc = I18nTextSourceFile.Parse(srcFiles, options, cancellationToken);
+                OutputI18nTextJsonFiles(options, i18textSrc, cancellationToken);
+                OutputTypesFiles(options, i18textSrc, beforeCompile, saveCode, cancellationToken);
                 return true;
             }
             catch (AggregateException e) when (e.InnerException is I18nTextCompileException compileException)
@@ -55,119 +56,14 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        private delegate string ConvertPath(string srcPath);
-
-        private static I18nTextSource ParseSourceFiles(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options)
-        {
-            var i18textSrc = new I18nTextSource();
-            if (!srcFiles.Any()) return i18textSrc;
-
-            var i18nSrcDir = options.I18nTextSourceDirectory;
-            if (!i18nSrcDir.EndsWith(Path.DirectorySeparatorChar.ToString())) i18nSrcDir += Path.DirectorySeparatorChar;
-
-            ConvertPath convertPath;
-            if (options.DisableSubNameSpace)
-            {
-                convertPath = delegate (string srcPath) { return Path.GetFileName(srcPath); };
-            }
-            else
-            {
-                convertPath = delegate (string srcPath)
-                {
-                    return srcPath.StartsWith(i18nSrcDir) ? srcPath.Substring(i18nSrcDir.Length) : Path.GetFileName(srcPath);
-                };
-            }
-
-            Parallel.ForEach(srcFiles, srcFile =>
-            {
-                var srcName = convertPath(srcFile.Path);
-                var fnameParts = srcName.Split('.', Path.DirectorySeparatorChar);
-                var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 2));
-                var langCode = fnameParts[fnameParts.Length - 2];
-                var srcText = File.ReadAllText(srcFile.Path, srcFile.Encoding);
-                var textTable = DeserializeSrcText(srcText, Path.GetExtension(srcFile.Path).ToLower());
-
-                var type = i18textSrc.Types.GetOrAdd(typeName, new I18nTextType());
-                type.Langs[langCode] = textTable;
-            });
-
-            Parallel.ForEach(i18textSrc.Types.Values, type =>
-            {
-                type.TextKeys = type.Langs
-                    .SelectMany(lang => lang.Value)
-                    .Select(tt => tt.Key)
-                    .OrderBy(key => key)
-                    .Distinct()
-                    .ToList();
-
-                Parallel.ForEach(type.Langs, lang =>
-                {
-                    var textTable = lang.Value;
-                    foreach (var textKey in type.TextKeys.Where(k => !textTable.ContainsKey(k)))
-                    {
-                        var text = type.Langs.Keys
-                            .OrderBy(langCode => langCode.StartsWith("en") ? "0" : langCode)
-                            .Select(langCode => type.Langs[langCode].TryGetValue(textKey, out var t) ? t : null)
-                            .FirstOrDefault(t => t != null);
-                        textTable[textKey] = text ?? textKey;
-                    }
-                });
-            });
-
-            return i18textSrc;
-        }
-
-        private static I18nTextTable DeserializeSrcText(string srcText, string fileNameExtension)
-        {
-            switch (fileNameExtension)
-            {
-                case ".json": return DeserializeSrcTextFromJson(srcText);
-                case ".csv": return DeserializeSrcTextFromCsv(srcText);
-                default: throw new I18nTextCompileException(code: 2, $"Unknown file type ({fileNameExtension}) as an I18n Text source file.");
-            }
-        }
-
-        private static I18nTextTable DeserializeSrcTextFromJson(string srcText)
-        {
-            // NOTE:
-            // a JSON.NET old version has problem that it can't deserialize ConcurrentDictionary directly.
-            // Therefore, deserialize into normal dictionary at first, and second, re - constrauct as ConcurrentDictionary.
-            var tableTextRaw = JsonConvert.DeserializeObject<Dictionary<string, string>>(srcText);
-            return new I18nTextTable(tableTextRaw);
-        }
-
-        internal class KeyValue
-        {
-            public string Key { get; set; }
-
-            public string Value { get; set; }
-        }
-
-        internal class CsvKeyValueMapping : CsvMapping<KeyValue>
-        {
-            public CsvKeyValueMapping() : base()
-            {
-                this.MapProperty(0, x => x.Key);
-                this.MapProperty(1, x => x.Value);
-            }
-        }
-
-        private static I18nTextTable DeserializeSrcTextFromCsv(string srcText)
-        {
-            var csvParser = new CsvParser<KeyValue>(
-                new CsvParserOptions(skipHeader: false, fieldsSeparator: ','),
-                new CsvKeyValueMapping());
-            var tableTextRaw = csvParser.ReadFromString(new CsvReaderOptions(new[] { "\r\n", "\n" }), srcText)
-                .ToDictionary(row => row.Result.Key, row => row.Result.Value);
-            return new I18nTextTable(tableTextRaw);
-        }
-
         private static void OutputTypesFiles(
             I18nTextCompilerOptions options,
             I18nTextSource i18textSrc,
             Action<I18nTextCompilerOptions, IEnumerable<I18nTextCompileItem>> beforeCompile,
-            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode)
+            Action<I18nTextCompilerOptions, I18nTextCompileItem, IEnumerable<string>> saveCode,
+            CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!i18textSrc.Types.Any()) return;
 
             var i18nTextCompilerItems = i18textSrc.Types.Select(type =>
@@ -182,8 +78,9 @@ namespace Toolbelt.Blazor.I18nText
             }).ToArray();
 
             beforeCompile?.Invoke(options, i18nTextCompilerItems);
+            cancellationToken.ThrowIfCancellationRequested();
 
-            Parallel.ForEach(i18nTextCompilerItems, comilerItem =>
+            Parallel.ForEach(i18nTextCompilerItems, new ParallelOptions { CancellationToken = cancellationToken }, comilerItem =>
             {
                 var langs = comilerItem.Type.Value.Langs;
                 var langParts = options.FallBackLanguage.Split('-');
@@ -193,6 +90,7 @@ namespace Toolbelt.Blazor.I18nText
                 var textTable = langs[fallbackLang];
 
                 var hash = GenerateHash(comilerItem.Type.Value);
+                cancellationToken.ThrowIfCancellationRequested();
 
                 var typeCode = new List<string>();
                 typeCode.Add(GeneratedMarker);
@@ -284,8 +182,10 @@ namespace Toolbelt.Blazor.I18nText
             return SecurityElement.Escape(text).Replace("\r", "").Replace("\n", "<br/>");
         }
 
-        private static void OutputI18nTextJsonFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc)
+        private static void OutputI18nTextJsonFiles(I18nTextCompilerOptions options, I18nTextSource i18textSrc, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (!i18textSrc.Types.Any()) return;
             if (!Directory.Exists(options.OutDirectory)) Directory.CreateDirectory(options.OutDirectory);
 
@@ -298,18 +198,21 @@ namespace Toolbelt.Blazor.I18nText
             var shouldBeSweepedFiles = existsTextJsonFiles.Except(types.Select(t => t.jsonPath));
             foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 File.Delete(shouldBeSweepedFile);
             }
 
-            Parallel.ForEach(types, ((KeyValuePair<string, I18nTextTable> lang, string jsonPath) arg) =>
+            Parallel.ForEach(types, new ParallelOptions { CancellationToken = cancellationToken }, ((KeyValuePair<string, I18nTextTable> lang, string jsonPath) arg) =>
             {
                 var textTable = new SortedDictionary<string, string>(arg.lang.Value);
                 var jsonText = JsonConvert.SerializeObject(textTable, Formatting.Indented);
+                cancellationToken.ThrowIfCancellationRequested();
 
                 var skipOutput = false;
                 if (File.Exists(arg.jsonPath))
                 {
                     var prevJsonText = File.ReadAllText(arg.jsonPath);
+                    cancellationToken.ThrowIfCancellationRequested();
                     skipOutput = prevJsonText == jsonText;
                 }
 
