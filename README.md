@@ -18,7 +18,7 @@ This package is another way to localize text in your Blazor Web App!
 
 ### Notice
 
-Blazor WebAssembly started localization support officially since v.3.2 preview 4. It is based on .NET Standard `IStringLocalizer` and satellite assemblies with `.resx`.
+Blazor WebAssembly has started localization support officially since v.3.2 preview 4. It is based on .NET Standard `IStringLocalizer` and satellite assemblies with `.resx`.
 
 However, I will continue to develop and maintain this package, because this package still has some advantages over .NET standard implementation.
 
