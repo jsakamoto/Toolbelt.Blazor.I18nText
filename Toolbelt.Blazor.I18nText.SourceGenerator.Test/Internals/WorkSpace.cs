@@ -8,6 +8,8 @@ public class WorkSpace : IDisposable
 {
     public WorkDirectory ProjectDir { get; }
 
+    public string TypesDir { get; }
+
     public string TextResJsonsDir { get; }
 
     public string RootNamespace { get; }
@@ -24,8 +26,9 @@ public class WorkSpace : IDisposable
         var testProjDir = FileIO.FindContainerDirToAncestor("*.csproj");
         this.ProjectDir = new WorkDirectory();
         this.TextResJsonsDir = Path.Combine(this.ProjectDir, "obj", "Debug", "net6.0", "dist", "_content", "i18ntext");
-
         var i18ntextDir = Path.Combine(this.ProjectDir, "i18ntext");
+        this.TypesDir = Path.Combine(i18ntextDir, "@types");
+
         FileIO.XcopyDir(Path.Combine(testProjDir, "i18ntext"), i18ntextDir);
 
         this.AdditionalFiles = Directory.GetFiles(i18ntextDir, "*.*", SearchOption.AllDirectories)
@@ -44,14 +47,14 @@ public class WorkSpace : IDisposable
     {
         var configOptionsProvider = new TestConfigOptionsProvider()
             .ConfigureGlobalOptions(globalOptions => globalOptions
-                .Add("build_property.projectdir", this.ProjectDir)
-                .Add("build_property.rootnamespace", this.RootNamespace)
-                .Add("build_property.i18ntextnamespace", this.I18nTextNamespace)
-                .Add("build_property.i18ntextsourcedirectory", i18nTextSourceDirectory)
-                .Add("build_property.i18ntextfallbacklanguage", fallbackLang)
-                .Add("build_property.i18ntextdisablesubnamespace", disableSubNameSpace.ToString().ToLower())
-                .Add("build_property.i18ntextintermediatedir", this.TextResJsonsDir)
-                .Add("build_property.i18ntextusesourcegenerator", useSourceGenerator.ToString().ToLower())
+                .Add("build_property.ProjectDir", this.ProjectDir)
+                .Add("build_property.RootNamespace", this.RootNamespace)
+                .Add("build_property.I18nTextNamespace", this.I18nTextNamespace)
+                .Add("build_property.I18nTextSourceDirectory", i18nTextSourceDirectory)
+                .Add("build_property.I18nTextFallBackLanguage", fallbackLang)
+                .Add("build_property.I18nTextDisableSubNameSpace", disableSubNameSpace.ToString().ToLower())
+                .Add("build_property.I18nTextIntermediateDir", this.TextResJsonsDir)
+                .Add("build_property.I18nTextUseSourceGenerator", useSourceGenerator.ToString().ToLower())
             );
 
         filterAdditionalFiles ??= _ => true;
