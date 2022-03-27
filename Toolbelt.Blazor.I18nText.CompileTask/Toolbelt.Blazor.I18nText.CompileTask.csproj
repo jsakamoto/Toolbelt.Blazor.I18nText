@@ -20,4 +20,6 @@
     <Copy SourceFiles="$(PkgNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" DestinationFolder="$(OutDir)" />
   </Target>
 
+  <Import Project="..\Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems" Label="Shared" />
+
 </Project>

@@ -27,3 +27,8 @@
 .survay-prompt a {
     font-weight: bold;
 }
+
+.runtime-information {
+    font-size: 14px;
+    font-weight: bold;
+}

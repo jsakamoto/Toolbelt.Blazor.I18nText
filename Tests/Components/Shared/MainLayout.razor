@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using System.Runtime.InteropServices
 @inject Toolbelt.Blazor.I18nText.I18nText I18nText
 
 <div class="page">
@@ -15,7 +16,7 @@
             @Body
 	        <div class="footer">
 	            <div class="form-row align-items-center text-muted px-4">
-	                <div class="col"></div>
+	                <div class="col runtime-information">@RuntimeInformation.FrameworkDescription / @RuntimeInformation.ProcessArchitecture</div>
 	                <div class="col-auto">
 	                    <span class="oi oi-globe" aria-hidden="true"></span>
 	                </div>
