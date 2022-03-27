@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>11.1.3.0</Version>
+    <Version>12.0.0.0</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -19,6 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="11.1.3" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="12.0.0-preview.1.10" />
   </ItemGroup>
 </Project>

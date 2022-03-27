@@ -11,7 +11,7 @@ public class BuildTest
         "Client", "Host", "Server" };
 
     private static readonly IEnumerable<string> Frameworks = new[] {
-        "net6.0", "net7.0" };
+        "net6.0"/*, "net7.0"*/ };
 
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in HostingModels
