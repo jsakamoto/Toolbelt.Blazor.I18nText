@@ -205,7 +205,7 @@ public class I18nTextCompilerTest
         var options = new I18nTextCompilerOptions(workSpace.ProjectDir)
         {
             FallBackLanguage = "fr",
-            LogError = msg => logErrors.Add(msg),
+            LogError = e => logErrors.Add(e.Message),
             OutDirectory = workSpace.TextResJsonsDir
         };
         var compiler = new I18nTextCompiler();
@@ -214,7 +214,7 @@ public class I18nTextCompilerTest
         suceess.IsFalse();
         logErrors.Count.Is(1);
         logErrors.First()
-            .StartsWith("IN1001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.")
+            .StartsWith("Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.")
             .IsTrue();
     }
 

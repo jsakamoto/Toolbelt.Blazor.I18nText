@@ -24,7 +24,7 @@ public class WatchTest
         File.Exists(dstTextEnJsonPath).IsFalse();
 
         // 1st. When
-        using var watchProcess = Start("dotnet", $"watch -q msbuild -t:CompileI18nText --property:TargetFramework={framework} --nologo", workSpace.StartupProj);
+        using var watchProcess = Start("dotnet", $"watch build -f:{framework} --nologo", workSpace.StartupProj);
 
         await watchProcess.WaitForOutput(output => output == "watch : Waiting for a file to change before restarting dotnet...", millsecondsTimeout: 10000);
         watchProcess.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();

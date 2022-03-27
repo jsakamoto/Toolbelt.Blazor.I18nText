@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
+using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {
@@ -32,7 +33,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 if ((this.Include?.Length ?? 0) == 0)
                 {
-                    Log.LogMessage("No Source files were specified.");
+                    this.Log.LogMessage("No Source files were specified.");
                     return true;
                 }
 
@@ -44,22 +45,23 @@ namespace Toolbelt.Blazor.I18nText
                 options.OutDirectory = this.OutDirectory ?? options.OutDirectory;
                 options.NameSpace = string.IsNullOrEmpty(this.NameSpace) ? options.NameSpace : this.NameSpace;
                 options.DisableSubNameSpace = this.DisableSubNameSpace;
-                options.LogMessage = msg => Log.LogMessage(msg);
-                options.LogError = msg => Log.LogError(msg);
                 options.FallBackLanguage = this.FallBackLanguage ?? options.FallBackLanguage;
+                options.LogMessage = msg => this.Log.LogMessage(msg);
 
-                Log.LogMessage($"I18nTextSourceDirectory: [{options.I18nTextSourceDirectory}]");
-                Log.LogMessage($"TypesDirectory: [{options.TypesDirectory}]");
-                Log.LogMessage($"OutDirectory  : [{options.OutDirectory}]");
-                Log.LogMessage($"NameSpace     : [{options.NameSpace}]");
-                Log.LogMessage($"FallBackLanguage: [{options.FallBackLanguage}]");
+                options.LogError = ex => this.Log.LogError(ex is I18nTextCompileException compilerEx ? $"IN{compilerEx.Code:D3}: {ex.Message}" : ex.Message);
+
+                this.Log.LogMessage($"I18nTextSourceDirectory: [{options.I18nTextSourceDirectory}]");
+                this.Log.LogMessage($"TypesDirectory: [{options.TypesDirectory}]");
+                this.Log.LogMessage($"OutDirectory  : [{options.OutDirectory}]");
+                this.Log.LogMessage($"NameSpace     : [{options.NameSpace}]");
+                this.Log.LogMessage($"FallBackLanguage: [{options.FallBackLanguage}]");
 
                 var srcFiles = this.Include
                     .Select(taskItem => (Path: Path.Combine(baseDir, taskItem.ItemSpec), Encoding: GetEncoding(taskItem)))
                     .Select(item => new I18nTextSourceFile(item.Path, item.Encoding))
                     .ToArray();
 
-                foreach (var src in srcFiles) Log.LogMessage($"- {src.Path}, {src.Encoding.BodyName}");
+                foreach (var src in srcFiles) this.Log.LogMessage($"- {src.Path}, {src.Encoding.BodyName}");
 
                 var compiler = new I18nTextCompiler();
                 var successOrNot = compiler.Compile(srcFiles, options);
@@ -67,7 +69,7 @@ namespace Toolbelt.Blazor.I18nText
             }
             catch (Exception e)
             {
-                Log.LogErrorFromException(e, showStackTrace: true, showDetail: true, file: null);
+                this.Log.LogErrorFromException(e, showStackTrace: true, showDetail: true, file: null);
                 return false;
             }
         }

@@ -30,9 +30,10 @@ public class SetUpFixture
         static Version VerOf(Match m, string name) => Version.TryParse(m.Groups[name].Value, out var v) ? v : new Version(0, 0);
 
         var latestI18nTextVersion = packageFiles
-            .Select(path => Regex.Match(path, @"Toolbelt\.Blazor\.I18nText\.(?<verText>(?<ver>[\d\.]+)(-preview\.(?<pre-ver>[\d\.]+))?).nupkg$"))
+            .Select(path => Path.GetFileNameWithoutExtension(path))
+            .Select(path => Regex.Match(path, @"^Toolbelt\.Blazor\.I18nText\.(?<verText>(?<ver>[\d\.]+)(-[a-z]+\.(?<previewVer>[\d\.]+))?)$"))
             .Where(m => m.Success)
-            .OrderBy(m => VerOf(m, "ver")).ThenBy(m => VerOf(m, "pre-ver"))
+            .OrderBy(m => VerOf(m, "ver")).ThenBy(m => VerOf(m, "previewVer"))
             .Select(m => m.Groups["verText"].Value)
             .LastOrDefault();
         if (latestI18nTextVersion == null) Assert.Inconclusive("Before doing tests, the Blazor I18n text package should be packed at least once.");
@@ -44,26 +45,30 @@ public class SetUpFixture
         var projectNames = new[] {
             Path.Combine("Lib4PackRef","Lib4PackRef"),
             Path.Combine("Lib4ProjRef", "Lib4ProjRef")};
-        return UpdateReferencedPackageVersionAsync(packageName, latestPackageVersion, projectNames, buildIfChanges: true);
+        return UpdateReferencedPackageVersionAsync(packageName, latestPackageVersion, projectNames, restore: true, buildIfChanges: true);
     }
 
     private static async Task UpdatePackageRefAsync(string latestI18nTextVersion, IReadOnlyDictionary<string, string> versionOfLibProjects)
     {
-        var projectNames = new[] {
-            Path.Combine("Components", "SampleSite.Components"),
-            Path.Combine("Client", "SampleSite.Client"),
-            Path.Combine("Server", "SampleSite.Server")};
-        await UpdateReferencedPackageVersionAsync("Toolbelt.Blazor.I18nText", latestI18nTextVersion, projectNames, buildIfChanges: false);
+        var projects = new Dictionary<string, string>
+        {
+            ["Components"] = Path.Combine("Components", "SampleSite.Components"),
+            ["Client"] = Path.Combine("Client", "SampleSite.Client"),
+            ["Server"] = Path.Combine("Server", "SampleSite.Server")
+        };
 
-        await UpdateReferencedPackageVersionAsync("Lib4PackRef", versionOfLibProjects["Lib4PackRef"], projectNames.Where(n => n.StartsWith("Components")), buildIfChanges: false);
+        await UpdateReferencedPackageVersionAsync("Lib4PackRef", versionOfLibProjects["Lib4PackRef"], new[] { projects["Components"] }, restore: false, buildIfChanges: false);
+
+        await UpdateReferencedPackageVersionAsync("Toolbelt.Blazor.I18nText", latestI18nTextVersion, projects.Values, restore: true, buildIfChanges: false);
     }
 
-    private static async Task<IReadOnlyDictionary<string, string>> UpdateReferencedPackageVersionAsync(string packageName, string latestPackageVersion, IEnumerable<string> projectNames, bool buildIfChanges)
+    private static async Task<IReadOnlyDictionary<string, string>> UpdateReferencedPackageVersionAsync(string packageName, string latestPackageVersion, IEnumerable<string> projectNames, bool buildIfChanges, bool restore)
     {
         var versionOfProjects = new Dictionary<string, string>();
 
         var testDir = WorkSpace.GetTestDir();
-        foreach (var projectSubPath in projectNames)
+
+        await Parallel.ForEachAsync(projectNames, async (string projectSubPath, CancellationToken _) =>
         {
             var projectPath = Path.Combine(testDir, projectSubPath + ".csproj");
             var projectDir = Path.GetDirectoryName(projectPath);
@@ -71,34 +76,37 @@ public class SetUpFixture
             var projectXDoc = XDocument.Load(projectPath);
 
             var projectVersionNode = projectXDoc.XPathSelectElement("//Version");
-            var projectCurrentVersion = projectVersionNode?.Value ?? "1.0.0.0";
-            versionOfProjects.Add(projectName, projectCurrentVersion);
+            var projectCurrentVersionText = projectVersionNode?.Value ?? "1.0.0.0";
+            lock (versionOfProjects) versionOfProjects.Add(projectName, projectCurrentVersionText);
 
             var packageRef = projectXDoc.XPathSelectElement($"//PackageReference[@Include='{packageName}']");
             var referencedVersion = packageRef?.Attribute("Version")?.Value;
             if (packageRef == null) throw new Exception($"The package reference for \"{packageName}\" was not found in the {projectName}.csproj");
 
-            if (referencedVersion != latestPackageVersion)
+            var referencedPackageVersionHasChanged = referencedVersion != latestPackageVersion;
+
+            if (referencedPackageVersionHasChanged)
             {
                 packageRef.SetAttributeValue("Version", latestPackageVersion);
 
-                var baseVer = Version.Parse(projectCurrentVersion);
-                var projectNextVersion = $"{baseVer.ToString(3)}.{baseVer.Revision + 1}";
+                var projectCurrentVersion = Version.Parse(projectCurrentVersionText);
+                var projectNextVersion = $"{projectCurrentVersion.ToString(3)}.{projectCurrentVersion.Revision + 1}";
                 if (projectVersionNode != null) projectVersionNode.Value = projectNextVersion;
-                versionOfProjects[projectName] = projectNextVersion;
+                lock (versionOfProjects) versionOfProjects[projectName] = projectNextVersion;
 
                 projectXDoc.Save(projectPath);
             }
 
-            using var restoreProcess = await Start("dotnet", "restore", projectDir).WaitForExitAsync();
-            restoreProcess.ExitCode.Is(0, message: restoreProcess.Output);
-
-            if (referencedVersion != latestPackageVersion && buildIfChanges)
+            if (restore)
             {
-                using var buildProcess = await Start("dotnet", "build", projectDir).WaitForExitAsync();
-                buildProcess.ExitCode.Is(0, message: buildProcess.Output);
+                await Start("dotnet", "restore", projectDir).ExitCodeIs(0);
             }
-        }
+
+            if (referencedPackageVersionHasChanged && buildIfChanges)
+            {
+                await Start("dotnet", "build", projectDir).ExitCodeIs(0);
+            }
+        });
 
         return versionOfProjects;
     }

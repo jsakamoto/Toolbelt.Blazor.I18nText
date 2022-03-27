@@ -1,3 +1,6 @@
+v.12.0.0
+- Improve: introduce the custom C# source generator instead of the legacy MSBuild custom task for compiling localized source texts into typed files and resource json files.
+
 v.11.1.4
 - Add Support to .NET 7
 
