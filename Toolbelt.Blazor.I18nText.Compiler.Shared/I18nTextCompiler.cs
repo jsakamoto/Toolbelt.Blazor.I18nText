@@ -140,16 +140,31 @@ namespace Toolbelt.Blazor.I18nText
         /// </summary>
         private static void SweepTypeFilesShouldBePurged(I18nTextCompilerOptions options, IEnumerable<I18nTextCompileItem> compilerItems)
         {
+            SweepTypeFilesShouldBePurged(options, compilerItems, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Sweep old generated/should be purge type files.
+        /// </summary>
+        internal static void SweepTypeFilesShouldBePurged(I18nTextCompilerOptions options, IEnumerable<I18nTextCompileItem> compilerItems, CancellationToken cancellationToken)
+        {
             if (Directory.Exists(options.TypesDirectory))
             {
                 var existsTypeFiles = Directory.GetFiles(options.TypesDirectory, "*.cs");
                 var shouldBeSweepedFiles = existsTypeFiles.Except(compilerItems.Select(t => t.TypeFilePath));
                 foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (File.ReadLines(shouldBeSweepedFile).Any(line => line == GeneratedMarker))
                     {
                         File.Delete(shouldBeSweepedFile);
                     }
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!Directory.GetFileSystemEntries(options.TypesDirectory).Any())
+                {
+                    Directory.Delete(options.TypesDirectory, recursive: false);
                 }
             }
         }

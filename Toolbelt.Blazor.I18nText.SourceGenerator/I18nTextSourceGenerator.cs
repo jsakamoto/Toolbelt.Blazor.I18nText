@@ -43,8 +43,9 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
                 generatedSources.Add(new GeneratedSource(hintName, sourceCode));
             }, cancellationToken);
 
-            cancellationToken.ThrowIfCancellationRequested();
+            I18nTextCompiler.SweepTypeFilesShouldBePurged(options, Enumerable.Empty<I18nTextCompileItem>(), cancellationToken);
 
+            cancellationToken.ThrowIfCancellationRequested();
             foreach (var source in generatedSources)
             {
                 context.AddSource(source.HintName, source.SourceCode);
