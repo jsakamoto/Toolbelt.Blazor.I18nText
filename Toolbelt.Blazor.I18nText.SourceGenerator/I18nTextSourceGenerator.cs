@@ -27,7 +27,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             try
             {
                 var options = this.CreateI18nTextCompilerOptions(context, logMessage, logError);
-                if (!options.UseSourceGenerator) return;
+                if ((options?.UseSourceGenerator ?? false) == false) return;
 
                 var cancellationToken = context.CancellationToken;
 
@@ -66,8 +66,9 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
         private I18nTextCompilerOptions CreateI18nTextCompilerOptions(GeneratorExecutionContext context, Action<string> logMessage, Action<Exception> logError)
         {
             var globalOptions = context.AnalyzerConfigOptions.GlobalOptions;
+            if (!globalOptions.TryGetValue("build_property.I18nTextUseSourceGenerator", out var useSourceGenerator)) return null;
+
             //if (!globalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace)) throw new Exception("Could not determin the root namespace.");
-            if (!globalOptions.TryGetValue("build_property.I18nTextUseSourceGenerator", out var useSourceGenerator)) throw new Exception("Could not determin whether use source generator or not.");
             if (!globalOptions.TryGetValue("build_property.ProjectDir", out var projectDir)) throw new Exception("Could not determin the project diretcory.");
             if (!globalOptions.TryGetValue("build_property.I18nTextIntermediateDir", out var i18ntextIntermediateDir)) throw new Exception("Could not determin the i18ntext intermediate directory.");
             if (!globalOptions.TryGetValue("build_property.I18nTextNamespace", out var i18ntextNamespace)) throw new Exception("Could not determin the i18ntext namespace.");
@@ -75,18 +76,18 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             if (!globalOptions.TryGetValue("build_property.I18nTextFallBackLanguage", out var fallbackLang)) throw new Exception("Could not determin the fallback language.");
             if (!globalOptions.TryGetValue("build_property.I18nTextDisableSubNameSpace", out var disableSubNameSpace)) throw new Exception("Could not determin whether disable sub-namespace or not.");
 
-            var options = new I18nTextCompilerOptions(baseDir: projectDir);
-            options.UseSourceGenerator = bool.Parse(useSourceGenerator);
-            options.I18nTextSourceDirectory = Path.Combine(projectDir, i18nTextSourceDirectory);
-            options.OutDirectory = i18ntextIntermediateDir;
-            options.NameSpace = i18ntextNamespace;
-            options.DisableSubNameSpace = bool.Parse(disableSubNameSpace);
-            options.FallBackLanguage = fallbackLang;
+            return new I18nTextCompilerOptions(baseDir: projectDir)
+            {
+                UseSourceGenerator = bool.Parse(useSourceGenerator),
+                I18nTextSourceDirectory = Path.Combine(projectDir, i18nTextSourceDirectory),
+                OutDirectory = i18ntextIntermediateDir,
+                NameSpace = i18ntextNamespace,
+                DisableSubNameSpace = bool.Parse(disableSubNameSpace),
+                FallBackLanguage = fallbackLang,
 
-            options.LogMessage = logMessage;
-            options.LogError = logError;
-
-            return options;
+                LogMessage = logMessage,
+                LogError = logError
+            };
         }
 
         private Action<string> CreateMessageReporter(GeneratorExecutionContext context)

@@ -29,12 +29,13 @@
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild" DependsOnTargets="DefineI18nTextProperties">
     <PropertyGroup Condition=" $(I18nTextNewStaticWebAssetsArchitecture) ">
       <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
-      <GenerateStaticWebAssetsPackTargetsDependsOn>_RemoveBlazorI18nTextStaticWebAssetsFromPackage;$(GenerateStaticWebAssetsPackTargetsDependsOn);</GenerateStaticWebAssetsPackTargetsDependsOn>
+      <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
+      <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
     </PropertyGroup>
   </Target>
 
   <!-- FOR COMPILING BY MSBUILD CUSTOM TASK -->
-  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" Condition=" '$(I18nTextUseSourceGenerator)' == 'false' " />
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
   <ItemGroup>
@@ -121,25 +122,6 @@
     </ItemGroup>
 
   </Target>
-
-  <!-- FOR PROJECT-REFERENCED LIBRARIES -->
-  <ItemGroup>
-    <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json">
-    </_IntermediateBlazorI18nTextResourceJsons>
-    <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json">
-    </_IntermediateBlazorI18nTextResourceJsons>
-
-    <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)">
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-      <Visible>false</Visible>
-      <Pack>false</Pack>
-    </ContentWithTargetPath>
-  </ItemGroup>
-
 
   <!-- FOR CREATE PACKAGE -->
   <PropertyGroup>
