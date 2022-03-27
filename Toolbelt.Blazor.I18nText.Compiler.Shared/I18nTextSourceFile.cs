@@ -125,7 +125,7 @@ namespace Toolbelt.Blazor.I18nText
             }
             catch (JsonReaderException e)
             {
-                throw new I18nTextCompileException(DiagnosticCode.SourceTextIsInvalidFormat, e.Message, srcFile.Path, e.LineNumber - 1);
+                throw new I18nTextCompileException(DiagnosticCode.SourceTextIsInvalidFormat, e.Message, srcFile.Path, Math.Max(e.LineNumber - 1, 0));
             }
             catch (Exception e)
             {
