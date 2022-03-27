@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
 
 namespace Toolbelt.Blazor.I18nText
 {
@@ -86,7 +87,7 @@ namespace Toolbelt.Blazor.I18nText
                 var langParts = options.FallBackLanguage.Split('-');
                 var fallbackLangs = langParts.Length > 1 ? new[] { options.FallBackLanguage, langParts[0] } : new[] { options.FallBackLanguage };
                 var fallbackLang = fallbackLangs.FirstOrDefault(lang => langs.ContainsKey(lang));
-                if (fallbackLang == null) throw new I18nTextCompileException(code: 1, $"Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{comilerItem.Type.Key}'.");
+                if (fallbackLang == null) throw new I18nTextCompileException(DiagnosticCode.FallbackLangNotFound, $"Could not find an I18n source text file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{comilerItem.Type.Key}'.");
                 var textTable = langs[fallbackLang];
 
                 var hash = GenerateHash(comilerItem.Type.Value);

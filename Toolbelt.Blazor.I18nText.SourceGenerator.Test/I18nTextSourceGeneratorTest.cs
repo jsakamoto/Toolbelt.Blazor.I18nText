@@ -7,6 +7,7 @@ using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 using Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
+using Toolbelt.DynamicBinderExtension;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test;
 
@@ -152,6 +153,50 @@ public class I18nTextSourceGeneratorTest
         // Then: It souhld be error.
         context.GetDiagnostics().Select(d => d.ToString()).Is(
             "error I18N001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar'.");
+    }
+
+    /// <summary>
+    /// Compile - Error by localized text source file is invalid CSV format
+    /// </summary>
+    [Test]
+    public void Compile_Error_LocalizedTextSourceFile_is_InavidCsvFormat()
+    {
+        // Given
+        using var workSpace = new WorkSpace();
+        var srcPath = Path.Combine(workSpace.I18nTextDir, "Foo.Bar.en.json");
+        var renamedPath = Path.ChangeExtension(srcPath, "csv");
+        File.Move(srcPath, renamedPath);
+
+        var context = workSpace.CreateGeneratorExecutionContext();
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: It souhld be error.
+        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.ToDynamic().FilePath)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
+            "Foo.Bar.en.csv, Error I18N002: Invalid CSV format");
+    }
+
+    /// <summary>
+    /// Compile - Error by localized text source file is invalid JSON format
+    /// </summary>
+    [Test]
+    public void Compile_Error_LocalizedTextSourceFile_is_InavidJsonFormat()
+    {
+        // Given
+        using var workSpace = new WorkSpace();
+        var srcPath = Path.Combine(workSpace.I18nTextDir, "Foo.Bar.ja.csv");
+        var renamedPath = Path.ChangeExtension(srcPath, "json");
+        File.Move(srcPath, renamedPath);
+
+        var context = workSpace.CreateGeneratorExecutionContext();
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: It souhld be error.
+        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.ToDynamic().FilePath)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
+            "Foo.Bar.ja.json, Error I18N002: Unexpected character encountered while parsing value: H. Path '', line 0, position 0.");
     }
 
     /// <summary>

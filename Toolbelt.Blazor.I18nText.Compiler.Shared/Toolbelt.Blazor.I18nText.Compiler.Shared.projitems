@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)I18nTextCompiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)I18nTextCompilerOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)I18nTextSourceFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\DiagnosticCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\I18nTextCompileException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)I18nTextCompileItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\I18nTextSource.cs" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using Newtonsoft.Json;
 using TinyCsvParser;
 using TinyCsvParser.Mapping;
 using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
 
 namespace Toolbelt.Blazor.I18nText
 {
@@ -21,6 +23,11 @@ namespace Toolbelt.Blazor.I18nText
         {
             this.Path = path;
             this.Encoding = encoding;
+        }
+
+        public string GetText()
+        {
+            return File.ReadAllText(this.Path, this.Encoding);
         }
 
         private delegate string ConvertPath(string srcPath);
@@ -50,12 +57,12 @@ namespace Toolbelt.Blazor.I18nText
 
             Parallel.ForEach(srcFiles, new ParallelOptions { CancellationToken = canceleationToken }, srcFile =>
             {
+                var textTable = DeserializeSrcText(srcFile, options);
+
                 var srcName = convertPath(srcFile.Path);
                 var fnameParts = srcName.Split('.', System.IO.Path.DirectorySeparatorChar);
                 var typeName = string.Join(".", fnameParts.Take(fnameParts.Length - 2));
                 var langCode = fnameParts[fnameParts.Length - 2];
-                var srcText = File.ReadAllText(srcFile.Path, srcFile.Encoding);
-                var textTable = DeserializeSrcText(srcText, System.IO.Path.GetExtension(srcFile.Path).ToLower());
 
                 var type = i18textSrc.Types.GetOrAdd(typeName, new I18nTextType());
                 type.Langs[langCode] = textTable;
@@ -87,23 +94,43 @@ namespace Toolbelt.Blazor.I18nText
             return i18textSrc;
         }
 
-        private static I18nTextTable DeserializeSrcText(string srcText, string fileNameExtension)
+        private static I18nTextTable DeserializeSrcText(I18nTextSourceFile srcFile, I18nTextCompilerOptions options)
         {
-            switch (fileNameExtension)
+            try
             {
-                case ".json": return DeserializeSrcTextFromJson(srcText);
-                case ".csv": return DeserializeSrcTextFromCsv(srcText);
-                default: throw new I18nTextCompileException(code: 2, $"Unknown file type ({fileNameExtension}) as an I18n Text source file.");
+                var fileNameExtension = System.IO.Path.GetExtension(srcFile.Path).ToLower();
+                switch (fileNameExtension)
+                {
+                    case ".json": return DeserializeSrcTextFromJson(srcFile);
+                    case ".csv": return DeserializeSrcTextFromCsv(srcFile);
+                    default: throw new I18nTextCompileException(DiagnosticCode.UnknownFileType, $"Unknown file type ({fileNameExtension}) as an I18n Text source file.", srcFile.Path);
+                }
+            }
+            catch (Exception ex)
+            {
+                options.LogError(ex);
+                return new I18nTextTable(Enumerable.Empty<KeyValuePair<string, string>>());
             }
         }
 
-        private static I18nTextTable DeserializeSrcTextFromJson(string srcText)
+        private static I18nTextTable DeserializeSrcTextFromJson(I18nTextSourceFile srcFile)
         {
             // NOTE:
             // a JSON.NET old version has problem that it can't deserialize ConcurrentDictionary directly.
             // Therefore, deserialize into normal dictionary at first, and second, re - constrauct as ConcurrentDictionary.
-            var tableTextRaw = JsonConvert.DeserializeObject<Dictionary<string, string>>(srcText);
-            return new I18nTextTable(tableTextRaw);
+            try
+            {
+                var tableTextRaw = JsonConvert.DeserializeObject<Dictionary<string, string>>(srcFile.GetText());
+                return new I18nTextTable(tableTextRaw);
+            }
+            catch (JsonReaderException e)
+            {
+                throw new I18nTextCompileException(DiagnosticCode.SourceTextIsInvalidFormat, e.Message, srcFile.Path, e.LineNumber);
+            }
+            catch (Exception e)
+            {
+                throw new I18nTextCompileException(DiagnosticCode.SourceTextIsInvalidFormat, e.Message, srcFile.Path);
+            }
         }
 
         internal class KeyValue
@@ -122,14 +149,21 @@ namespace Toolbelt.Blazor.I18nText
             }
         }
 
-        private static I18nTextTable DeserializeSrcTextFromCsv(string srcText)
+        private static I18nTextTable DeserializeSrcTextFromCsv(I18nTextSourceFile srcFile)
         {
             var csvParser = new CsvParser<KeyValue>(
                 new CsvParserOptions(skipHeader: false, fieldsSeparator: ','),
                 new CsvKeyValueMapping());
-            var tableTextRaw = csvParser.ReadFromString(new CsvReaderOptions(new[] { "\r\n", "\n" }), srcText)
-                .ToDictionary(row => row.Result.Key, row => row.Result.Value);
-            return new I18nTextTable(tableTextRaw);
+
+            var srcText = srcFile.GetText();
+            var keyValuePairs = new Dictionary<string, string>();
+            var rows = csvParser.ReadFromString(new CsvReaderOptions(new[] { "\r\n", "\n" }), srcText);
+            foreach (var row in rows)
+            {
+                if (!row.IsValid) throw new I18nTextCompileException(DiagnosticCode.SourceTextIsInvalidFormat, "Invalid CSV format", srcFile.Path, row.RowIndex);
+                keyValuePairs.Add(row.Result.Key, row.Result.Value);
+            }
+            return new I18nTextTable(keyValuePairs);
         }
     }
 }

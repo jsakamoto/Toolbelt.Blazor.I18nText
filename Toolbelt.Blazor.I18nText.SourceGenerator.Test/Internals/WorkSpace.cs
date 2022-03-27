@@ -8,6 +8,8 @@ public class WorkSpace : IDisposable
 {
     public WorkDirectory ProjectDir { get; }
 
+    public string I18nTextDir { get; }
+
     public string TypesDir { get; }
 
     public string TextResJsonsDir { get; }
@@ -16,8 +18,6 @@ public class WorkSpace : IDisposable
 
     public string I18nTextNamespace { get; }
 
-    private IEnumerable<AdditionalText> AdditionalFiles { get; }
-
     public WorkSpace()
     {
         this.RootNamespace = "Toolbelt.Blazor.I18nTextCompileTask.Test";
@@ -25,16 +25,11 @@ public class WorkSpace : IDisposable
 
         var testProjDir = FileIO.FindContainerDirToAncestor("*.csproj");
         this.ProjectDir = new WorkDirectory();
+        this.I18nTextDir = Path.Combine(this.ProjectDir, "i18ntext");
+        this.TypesDir = Path.Combine(this.I18nTextDir, "@types");
         this.TextResJsonsDir = Path.Combine(this.ProjectDir, "obj", "Debug", "net6.0", "dist", "_content", "i18ntext");
-        var i18ntextDir = Path.Combine(this.ProjectDir, "i18ntext");
-        this.TypesDir = Path.Combine(i18ntextDir, "@types");
 
-        FileIO.XcopyDir(Path.Combine(testProjDir, "i18ntext"), i18ntextDir);
-
-        this.AdditionalFiles = Directory.GetFiles(i18ntextDir, "*.*", SearchOption.AllDirectories)
-            .Select(path => new AdditionalTextImplement(path))
-            .Cast<AdditionalText>()
-            .ToArray();
+        FileIO.XcopyDir(Path.Combine(testProjDir, "i18ntext"), this.I18nTextDir);
     }
 
     public GeneratorExecutionContext CreateGeneratorExecutionContext(
@@ -58,7 +53,11 @@ public class WorkSpace : IDisposable
             );
 
         filterAdditionalFiles ??= _ => true;
-        var additionalFiles = this.AdditionalFiles.Where(filterAdditionalFiles).ToImmutableArray();
+        var additionalFiles = Directory.GetFiles(this.I18nTextDir, "*.*", SearchOption.AllDirectories)
+            .Select(path => new AdditionalTextImplement(path))
+            .Cast<AdditionalText>()
+            .Where(filterAdditionalFiles)
+            .ToImmutableArray();
 
         var context = (GeneratorExecutionContext)Activator.CreateInstance(typeof(GeneratorExecutionContext), BindingFlags.NonPublic | BindingFlags.Instance, null, new object?[] {
             default(Compilation),
