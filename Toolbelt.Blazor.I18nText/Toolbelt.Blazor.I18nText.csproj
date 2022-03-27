@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>12.0.0-preview.1.0</Version>
+    <Version>12.0.0-preview.1.5</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
@@ -78,8 +78,10 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <BeforePack>$(BeforePack);BuildI18nTextCompileTask;</BeforePack>
+    <BeforePack>$(BeforePack);BuildI18nTextCompileTask;BuildI18nTextSourceGenerator;</BeforePack>
   </PropertyGroup>
+
+  <!-- BUILD I18N TEXT COMPILE TASK FOR PACKAGING -->
   <Target Name="BuildI18nTextCompileTask">
     <PropertyGroup>
       <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
@@ -88,6 +90,18 @@
     <Exec Command="dotnet build -c:$(Configuration) --nologo" WorkingDirectory="$(I18nTextCompileTaskProjectDir)" />
     <ItemGroup>
       <None Include="$(I18nTextCompileTaskOutDir)*.*" PackagePath="tools\" Pack="true" />
+    </ItemGroup>
+  </Target>
+
+  <!-- BUILD I18N TEXT SOURCE GENERATOR FOR PACKAGING -->
+  <Target Name="BuildI18nTextSourceGenerator">
+    <PropertyGroup>
+      <I18nTextSourceGeneratorProjectDir>..\Toolbelt.Blazor.I18nText.SourceGenerator\</I18nTextSourceGeneratorProjectDir>
+      <I18nTextSourceGeneratorOutDir>$(I18nTextSourceGeneratorProjectDir)bin\$(Configuration)\netstandard2.0\</I18nTextSourceGeneratorOutDir>
+    </PropertyGroup>
+    <Exec Command="dotnet build -c:$(Configuration) --nologo" WorkingDirectory="$(I18nTextSourceGeneratorProjectDir)" />
+    <ItemGroup>
+      <None Include="$(I18nTextSourceGeneratorOutDir)*.dll" PackagePath="analyzers\dotnet\cs\" Pack="true" />
     </ItemGroup>
   </Target>
 

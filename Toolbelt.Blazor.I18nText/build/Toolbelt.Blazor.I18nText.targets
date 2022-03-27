@@ -22,7 +22,7 @@
       <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(TargetFrameworkVersion)' == '' " >false</I18nTextNewStaticWebAssetsArchitecture>
       <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(I18nTextNewStaticWebAssetsArchitecture)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0'))</I18nTextNewStaticWebAssetsArchitecture>
       <I18nTextUseSourceGenerator Condition=" '$(TargetFrameworkVersion)' == '' " >false</I18nTextUseSourceGenerator>
-      <I18nTextUseSourceGenerator Condition=" '$(I18nTextUseSourceGenerator)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '5.0'))</I18nTextUseSourceGenerator>
+      <I18nTextUseSourceGenerator Condition=" '$(I18nTextUseSourceGenerator)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0'))</I18nTextUseSourceGenerator>
     </PropertyGroup>
   </Target>
 
@@ -43,11 +43,6 @@
     <None Include="$(I18nTextFilePattern)" />
     <!-- INCLUDES ~/i18ntext/*.{json|csv} FILES TO BE PROCEEDED BY I18N TEXT SOURCE GENERATOR -->
     <AdditionalFiles Include="$(I18nTextFilePattern)" />
-  </ItemGroup>
-
-  <!-- ADD REFERENCE TO I18N TEXT SOURCE GENERATOR -->
-  <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="12.0.0-preview.1.1" />
   </ItemGroup>
 
   <!-- EXPOSE MSBUILD PROPERTY TO I18N TEXT SOURCE GENERATOR -->
@@ -83,16 +78,16 @@
   </Target>
 
   <!-- PERFORM COMPILING BY USING MSBUILD CUSTOM TASK -->
-  <Target Name="_CompileI18nText" BeforeTargets="PreBuildEvent" DependsOnTargets="DefineI18nTextProperties">
-    <ItemGroup>
-      <I18nText Include="$(I18nTextFilePattern)" />
-    </ItemGroup>
+  <Target Name="_CompileI18nText" BeforeTargets="PrepareForBuild" DependsOnTargets="DefineI18nTextProperties">
     <MakeDir Directories="$(I18nTextIntermediateDir)" />
     <CallTarget Targets="_InvokeCompileI18nText" Condition=" '$(I18nTextUseSourceGenerator)' == 'false' " />
     <Touch Files="$(I18nTextUpToDateMarker)" AlwaysCreate="true" />
   </Target>
 
   <Target Name="_InvokeCompileI18nText" Condition=" '$(I18nTextUseSourceGenerator)' == 'false' ">
+    <ItemGroup>
+      <I18nText Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
     <CompileI18nText Include="@(I18nText)"
                      I18nTextSourceDirectory="$(I18nTextSourceDirectory)"
                      OutDirectory="$(IntermediateOutputPath)dist\_content\i18ntext"
@@ -100,6 +95,10 @@
                      Namespace="$(I18nTextNamespace)"
                      DisableSubNameSpace="$(I18nTextDisableSubNameSpace)"
                      FallBackLanguage="$(I18nTextFallBackLanguage)"/>
+    <ItemGroup>
+      <Compile Remove="$(I18nTextSourceDirectory)\@types\**\*.cs"/>
+      <Compile Include="$(I18nTextSourceDirectory)\@types\**\*.cs"/>
+    </ItemGroup>
   </Target>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
