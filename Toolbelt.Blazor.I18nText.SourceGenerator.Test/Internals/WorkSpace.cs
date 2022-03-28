@@ -1,6 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Globalization;
-using System.Reflection;
 using Microsoft.CodeAnalysis;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
@@ -59,15 +57,13 @@ public class WorkSpace : IDisposable
             .Where(filterAdditionalFiles)
             .ToImmutableArray();
 
-        var context = (GeneratorExecutionContext)Activator.CreateInstance(typeof(GeneratorExecutionContext), BindingFlags.NonPublic | BindingFlags.Instance, null, new object?[] {
+        var context = DynamicBinder.CreateInstance<GeneratorExecutionContext>(
             default(Compilation),
             default(ParseOptions),
             additionalFiles,
             configOptionsProvider,
             default(ISyntaxReceiver),
-            default(CancellationToken)
-        }, default(CultureInfo))!;
-
+            default(CancellationToken));
         return context;
     }
 
