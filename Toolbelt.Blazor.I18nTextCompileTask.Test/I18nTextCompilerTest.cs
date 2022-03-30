@@ -108,8 +108,8 @@ public class I18nTextCompilerTest
 
         // the i18n text type file should contain the i18n text typed public class.
         compiledType.IsNotNull();
-        compiledType!.IsClass.IsTrue();
-        compiledType!.IsPublic.IsTrue();
+        compiledType.IsClass.IsTrue();
+        compiledType.IsPublic.IsTrue();
 
         // the i18n text typed class has fileds that are combined all languages files.
         var fields = compiledType.GetFields(BindingFlags.Instance | BindingFlags.Public);
@@ -120,14 +120,14 @@ public class I18nTextCompilerTest
 
         var textTableObj = Activator.CreateInstance(compiledType);
         textTableObj.IsNotNull();
-        (textTableObj as I18nTextFallbackLanguage)!.FallBackLanguage.Is(langCode);
+        textTableObj.IsInstanceOf<I18nTextFallbackLanguage>().FallBackLanguage.Is(langCode);
         foreach (var generatedFieldName in generatedFieldNames)
         {
-            (textTableObj as I18nTextLateBinding)![generatedFieldName].Is(generatedFieldName);
+            textTableObj.IsInstanceOf<I18nTextLateBinding>()[generatedFieldName].Is(generatedFieldName);
         }
 
         // the i18n text typed class has the filed that is represent its hash code.
-        (textTableObj as I18nTextTableHash)!.Hash.Is(hashCode);
+        textTableObj.IsInstanceOf<I18nTextTableHash>().Hash.Is(hashCode);
     }
 
     /// <summary>

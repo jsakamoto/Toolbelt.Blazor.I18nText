@@ -75,13 +75,13 @@ public class I18nTextSourceGeneratorTest
 
         var enJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
 
-        var enTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(enJsonText)!;
+        var enTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(enJsonText) ?? new();
         enTexts["HelloWorld"].Is("Hello World!");
         enTexts["Exit"].Is("Exit");
         enTexts["GreetingOfJA"].Is("Ç±ÇÒÇ…ÇøÇÕ");
 
         var jaJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
-        var jaTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(jaJsonText)!;
+        var jaTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(jaJsonText) ?? new();
         jaTexts["HelloWorld"].Is("Ç±ÇÒÇ…ÇøÇÕê¢äE!");
         jaTexts["Exit"].Is("Exit");
         jaTexts["GreetingOfJA"].Is("Ç±ÇÒÇ…ÇøÇÕ");
@@ -307,7 +307,7 @@ public class I18nTextSourceGeneratorTest
 
         // the i18n text type file should contain the i18n text typed public class.
         compiledType.IsNotNull();
-        compiledType!.IsClass.IsTrue();
+        compiledType.IsClass.IsTrue();
         compiledType.IsPublic.IsTrue();
 
         // the i18n text typed class has fileds that are combined all languages files.
@@ -319,13 +319,13 @@ public class I18nTextSourceGeneratorTest
 
         var textTableObj = Activator.CreateInstance(compiledType);
         textTableObj.IsNotNull();
-        (textTableObj as I18nTextFallbackLanguage)!.FallBackLanguage.Is(langCode);
+        textTableObj.IsInstanceOf<I18nTextFallbackLanguage>().FallBackLanguage.Is(langCode);
         foreach (var generatedFieldName in generatedFieldNames)
         {
-            (textTableObj as I18nTextLateBinding)![generatedFieldName].Is(generatedFieldName);
+            textTableObj.IsInstanceOf<I18nTextLateBinding>()[generatedFieldName].Is(generatedFieldName);
         }
 
         // the i18n text typed class has the filed that is represent its hash code.
-        (textTableObj as I18nTextTableHash)!.Hash.Is(hashCode);
+        textTableObj.IsInstanceOf<I18nTextTableHash>().Hash.Is(hashCode);
     }
 }
