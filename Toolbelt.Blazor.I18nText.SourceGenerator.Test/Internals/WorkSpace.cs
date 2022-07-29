@@ -63,6 +63,7 @@ public class WorkSpace : IDisposable
             additionalFiles,
             configOptionsProvider,
             default(ISyntaxReceiver),
+            ".cs",
             default(CancellationToken));
         return context;
     }
