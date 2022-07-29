@@ -16,7 +16,7 @@ public class WorkSpace : IDisposable
 
     public string I18nTextNamespace { get; }
 
-    public WorkSpace()
+    public WorkSpace(string i18ntextSourceDir = "i18ntext")
     {
         this.RootNamespace = "Toolbelt.Blazor.I18nTextCompileTask.Test";
         this.I18nTextNamespace = this.RootNamespace + ".I18nText";
@@ -27,7 +27,7 @@ public class WorkSpace : IDisposable
         this.TypesDir = Path.Combine(this.I18nTextDir, "@types");
         this.TextResJsonsDir = Path.Combine(this.ProjectDir, "obj", "Debug", "net6.0", "dist", "_content", "i18ntext");
 
-        FileIO.XcopyDir(Path.Combine(testProjDir, "i18ntext"), this.I18nTextDir);
+        FileIO.XcopyDir(Path.Combine(testProjDir, i18ntextSourceDir), this.I18nTextDir);
     }
 
     public GeneratorExecutionContext CreateGeneratorExecutionContext(

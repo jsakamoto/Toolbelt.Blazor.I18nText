@@ -276,7 +276,75 @@ public class I18nTextSourceGeneratorTest
         Directory.Exists(workSpace.TypesDir).IsFalse();
     }
 
+    [Test]
+    public void Compile_50Thousand_localizedTextSourceJsonfiles_Test()
+    {
+        // Given
+        const int numOfItems = 50000;
+        using var workSpace = new WorkSpace("i18ntext - 50K items");
+        var context = workSpace.CreateGeneratorExecutionContext();
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: Validate compiled to i18n text types
+        var generatedSourceTexts = context.GetGeneratedSourceTexts();
+        const string nameSpace = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText";
+        var generatedClassName = $"{nameSpace}.Numbers";
+        var generatedClassSource = generatedSourceTexts.First(t => t.HintName == $"{generatedClassName}.g.cs");
+
+        // The generated i18n text type source should be a valid C# code.
+        ValidateGeneratedCSharpCode("en", generatedClassSource, generatedClassName,
+            fieldChecker: fields =>
+            {
+                var expectedFieldNames = Enumerable.Range(1, numOfItems).Select(n => $"_{n}").OrderBy(name => name);
+                var actualFieldNames = fields.Select(f => f.Name).OrderBy(name => name);
+                actualFieldNames.Is(expectedFieldNames);
+            },
+            textTableChecker: textTable =>
+            {
+                var expectedValues = Enumerable.Range(1, numOfItems).Select(n => $"_{n}");
+                var actualValues = Enumerable.Range(1, numOfItems).Select(n => textTable[$"_{n}"]);
+                actualValues.Is(expectedValues);
+            });
+
+        // and, there are no errors.
+        context.GetDiagnostics().Any().IsFalse();
+    }
+
     private static void ValidateGeneratedCSharpCode(string langCode, string hashCode, GeneratedSourceText generatedSource, string generatedClassName, string[] generatedFieldNames)
+    {
+        ValidateGeneratedCSharpCode(langCode, generatedSource, generatedClassName,
+
+            hashCodeChecker: actualHashCode =>
+            {
+                actualHashCode.Is(hashCode);
+            },
+
+            fieldChecker: fields =>
+            {
+                foreach (var generatedFieldName in generatedFieldNames)
+                {
+                    fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == generatedFieldName).IsTrue();
+                }
+            },
+
+            textTableChecker: textTable =>
+            {
+                foreach (var generatedFieldName in generatedFieldNames)
+                {
+                    textTable[generatedFieldName].Is(generatedFieldName);
+                }
+            });
+    }
+
+    private static void ValidateGeneratedCSharpCode(
+        string langCode,
+        GeneratedSourceText generatedSource,
+        string generatedClassName,
+        Action<string>? hashCodeChecker = null,
+        Action<IEnumerable<FieldInfo>>? fieldChecker = null,
+        Action<I18nTextLateBinding>? textTableChecker = null)
     {
         // The generated i18n text type source should be a valid C# code.
         var typeCode = generatedSource.Text.ToString();
@@ -312,20 +380,16 @@ public class I18nTextSourceGeneratorTest
 
         // the i18n text typed class has fileds that are combined all languages files.
         var fields = compiledType.GetFields(BindingFlags.Instance | BindingFlags.Public);
-        foreach (var generatedFieldName in generatedFieldNames)
-        {
-            fields.Where(f => f.FieldType == typeof(string)).Any(f => f.Name == generatedFieldName).IsTrue();
-        }
+        fieldChecker?.Invoke(fields);
 
         var textTableObj = Activator.CreateInstance(compiledType);
         textTableObj.IsNotNull();
         textTableObj.IsInstanceOf<I18nTextFallbackLanguage>().FallBackLanguage.Is(langCode);
-        foreach (var generatedFieldName in generatedFieldNames)
-        {
-            textTableObj.IsInstanceOf<I18nTextLateBinding>()[generatedFieldName].Is(generatedFieldName);
-        }
+        var textTableLateBinding = textTableObj.IsInstanceOf<I18nTextLateBinding>();
+        textTableChecker?.Invoke(textTableLateBinding);
 
         // the i18n text typed class has the filed that is represent its hash code.
-        textTableObj.IsInstanceOf<I18nTextTableHash>().Hash.Is(hashCode);
+        var hashCode = textTableObj.IsInstanceOf<I18nTextTableHash>().Hash;
+        hashCodeChecker?.Invoke(hashCode);
     }
 }
