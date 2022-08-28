@@ -4,19 +4,16 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <!--<TargetFrameworks>net6.0;net7.0</TargetFrameworks>-->
   </PropertyGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
   </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0-preview.2.22153.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0-preview.2.22153.2" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="7.0.0-preview.2.22152.2" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="12.0.0-preview.1.10" />
     <ProjectReference Include="..\Components\SampleSite.Components.csproj" />

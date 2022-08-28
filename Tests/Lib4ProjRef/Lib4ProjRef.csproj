@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>12.0.0.0</Version>
+    <Version>12.0.0.2</Version>
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
