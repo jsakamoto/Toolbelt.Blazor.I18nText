@@ -105,6 +105,17 @@ namespace Toolbelt.Blazor.I18nText
                 typeCode.Add("");
                 typeCode.Add("        public string this[string key] => global::Toolbelt.Blazor.I18nText.I18nTextExtensions.GetFieldValue(this, key);");
                 typeCode.Add("");
+                typeCode.Add("        public string GetValueByName(string propertyName)");
+                typeCode.Add("        {");
+                typeCode.Add("            var type = this.GetType();");
+                typeCode.Add("            var typeName = type.Name;");
+                typeCode.Add("            var value = type.GetProperty(propertyName)?.GetValue(this, null);");
+                typeCode.Add("");
+                typeCode.Add("            if (value == null)");
+                typeCode.Add("                throw new ArgumentException($\"Provided property {propertyName} for object {typeName} was not found on the compiled object.\");");
+                typeCode.Add("            ");
+                typeCode.Add("            return value?.ToString()!;");
+                typeCode.Add("        }");
                 var is1stLine = true;
                 foreach (var textKey in comilerItem.Type.Value.TextKeys)
                 {
