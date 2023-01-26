@@ -219,6 +219,43 @@ public class I18nTextCompilerTest
     }
 
     /// <summary>
+    /// Compile - Error by an invalid format json file
+    /// </summary>
+    [Test]
+    public void Compile_Error_InvalidJsonFormat()
+    {
+        using var workSpace = new WorkSpace("i18ntext (I18N002 error)");
+
+        var srcFiles = Directory.GetFiles(workSpace.I18nTextDir, "*.json", SearchOption.AllDirectories)
+            .Select(path => new TaskItem(path))
+            .ToArray();
+
+        var buildEngine = new BuildEngine();
+        var compileI18nTextMSBuildTask = new CompileI18nText
+        {
+            BuildEngine = buildEngine,
+            FallBackLanguage = "en",
+            BaseDir = workSpace.ProjectDir,
+            I18nTextSourceDirectory = workSpace.I18nTextDir,
+            TypesDirectory = workSpace.TypesDir,
+            OutDirectory = workSpace.TextResJsonsDir,
+            NameSpace = "Test",
+            Include = srcFiles,
+
+        };
+
+        var success = compileI18nTextMSBuildTask.Execute();
+
+        success.IsFalse();
+        buildEngine.LoggedBuildErrors.Count().Is(1);
+        var loggedError = buildEngine.LoggedBuildErrors.First();
+
+        loggedError.Message
+            .StartsWith("error I18N002: After parsing a value an unexpected character was encountered:")
+            .IsTrue(message: $"Actual: \"{loggedError.Message}\"");
+    }
+
+    /// <summary>
     /// Compile - sweep type files
     /// </summary>
     [Test]

@@ -12,9 +12,8 @@ internal class WorkSpace : IDisposable
 
     public string TextResJsonsDir { get; }
 
-    public WorkSpace()
+    public WorkSpace(string i18ntextSubDirName = "i18ntext")
     {
-        const string i18ntextSubDirName = "i18ntext";
         const string projectName = "Toolbelt.Blazor.I18nTextCompileTask.Test";
 
         var testProjectDir = FileIO.FindContainerDirToAncestor("*.csproj");
