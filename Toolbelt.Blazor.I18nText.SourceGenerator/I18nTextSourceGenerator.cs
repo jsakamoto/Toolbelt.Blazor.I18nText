@@ -121,7 +121,9 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
                 {
                     if (!string.IsNullOrEmpty(compileException.FilePath))
                     {
-                        location = Location.Create(compileException.FilePath, default, new LinePositionSpan(new LinePosition(compileException.LinePos, 0), new LinePosition(compileException.LinePos, 0)));
+                        location = Location.Create(compileException.FilePath, default, new LinePositionSpan(
+                            start: new LinePosition(Math.Max(compileException.LineNumber - 1, 0), compileException.LinePos),
+                            end: new LinePosition(Math.Max(compileException.LineNumber - 1, 0), compileException.LinePos)));
                     }
 
                     DiagnosticDescriptors.TryGetByCode(compileException.Code, out descriptor);

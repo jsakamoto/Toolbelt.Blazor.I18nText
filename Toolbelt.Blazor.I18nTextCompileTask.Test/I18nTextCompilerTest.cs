@@ -226,9 +226,7 @@ public class I18nTextCompilerTest
     {
         using var workSpace = new WorkSpace("i18ntext (I18N002 error)");
 
-        var srcFiles = Directory.GetFiles(workSpace.I18nTextDir, "*.json", SearchOption.AllDirectories)
-            .Select(path => new TaskItem(path))
-            .ToArray();
+        var srcFile = new TaskItem(Path.Combine(workSpace.I18nTextDir, "Localized.en.json"));
 
         var buildEngine = new BuildEngine();
         var compileI18nTextMSBuildTask = new CompileI18nText
@@ -240,8 +238,7 @@ public class I18nTextCompilerTest
             TypesDirectory = workSpace.TypesDir,
             OutDirectory = workSpace.TextResJsonsDir,
             NameSpace = "Test",
-            Include = srcFiles,
-
+            Include = new[] { srcFile }
         };
 
         var success = compileI18nTextMSBuildTask.Execute();
@@ -249,10 +246,12 @@ public class I18nTextCompilerTest
         success.IsFalse();
         buildEngine.LoggedBuildErrors.Count().Is(1);
         var loggedError = buildEngine.LoggedBuildErrors.First();
-
-        loggedError.Message
-            .StartsWith("error I18N002: After parsing a value an unexpected character was encountered:")
-            .IsTrue(message: $"Actual: \"{loggedError.Message}\"");
+        loggedError.Message.Is("IN002: After parsing a value an unexpected character was encountered: \". Path 'key3', line 5, position 2.");
+        loggedError.File.Is(srcFile.ItemSpec);
+        loggedError.LineNumber.Is(5);
+        loggedError.EndLineNumber.Is(5);
+        loggedError.ColumnNumber.Is(2);
+        loggedError.EndColumnNumber.Is(2);
     }
 
     /// <summary>
