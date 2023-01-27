@@ -48,7 +48,7 @@ namespace Toolbelt.Blazor.I18nText
                 options.FallBackLanguage = this.FallBackLanguage ?? options.FallBackLanguage;
                 options.LogMessage = msg => this.Log.LogMessage(msg);
 
-                options.LogError = ex => this.Log.LogError(ex is I18nTextCompileException compilerEx ? $"IN{compilerEx.Code:D3}: {ex.Message}" : ex.Message);
+                options.LogError = this.LogError;
 
                 this.Log.LogMessage($"I18nTextSourceDirectory: [{options.I18nTextSourceDirectory}]");
                 this.Log.LogMessage($"TypesDirectory: [{options.TypesDirectory}]");
@@ -65,12 +65,33 @@ namespace Toolbelt.Blazor.I18nText
 
                 var compiler = new I18nTextCompiler();
                 var successOrNot = compiler.Compile(srcFiles, options);
-                return successOrNot;
+                return successOrNot && !this.Log.HasLoggedErrors;
             }
             catch (Exception e)
             {
                 this.Log.LogErrorFromException(e, showStackTrace: true, showDetail: true, file: null);
                 return false;
+            }
+        }
+
+        public void LogError(Exception exception)
+        {
+            if (exception is I18nTextCompileException i18nexception)
+            {
+                this.Log.LogError(
+                    subcategory: "",
+                    errorCode: i18nexception.Code.ToString(),
+                    helpKeyword: "",
+                    file: i18nexception.FilePath,
+                    lineNumber: i18nexception.LineNumber,
+                    columnNumber: i18nexception.LinePos,
+                    endLineNumber: i18nexception.LineNumber,
+                    endColumnNumber: i18nexception.LinePos,
+                    $"IN{(int)i18nexception.Code:D3}: {i18nexception.Message}");
+            }
+            else
+            {
+                this.Log.LogError(exception.Message);
             }
         }
 
