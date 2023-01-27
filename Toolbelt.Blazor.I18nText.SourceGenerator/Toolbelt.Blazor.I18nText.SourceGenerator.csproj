@@ -6,10 +6,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>12.0.0-preview.1.1</Version>
+    <Version>12.0.1</Version>
     <IsRoslynComponent>true</IsRoslynComponent>
     <Authors>J.Sakamoto</Authors>
-    <Copyright>Copyright © 2019-2022 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Copyright>Copyright © 2019-2023 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 

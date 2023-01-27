@@ -1,3 +1,6 @@
+v.12.0.1
+- Fix: Unuseful error message on the MSBuild task version i18n compiler.
+
 v.12.0.0
 - Improve: introduce the custom C# source generator instead of the legacy MSBuild custom task for compiling localized source texts into typed files and resource json files.
 

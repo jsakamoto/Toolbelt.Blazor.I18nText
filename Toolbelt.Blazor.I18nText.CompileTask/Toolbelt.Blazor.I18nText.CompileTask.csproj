@@ -5,8 +5,8 @@
     <LangVersion>8.0</LangVersion>
     <RootNamespace>Toolbelt.Blazor.I18nText</RootNamespace>
     <Authors>J.Sakamoto</Authors>
-    <Version>3.0.1.0</Version>
-    <Copyright>Copyright © 2019-2022 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Version>12.0.1</Version>
+    <Copyright>Copyright © 2019-2023 J.Sakamoto, Mozilla Public License 2.0</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
