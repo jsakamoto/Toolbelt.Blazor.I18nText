@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" GeneratePathProperty="true" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" GeneratePathProperty="true" />
     <PackageReference Include="TinyCsvParser" Version="2.6.1" GeneratePathProperty="true" />
   </ItemGroup>
 
