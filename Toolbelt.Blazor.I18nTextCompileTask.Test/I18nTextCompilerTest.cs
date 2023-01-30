@@ -246,7 +246,8 @@ public class I18nTextCompilerTest
         success.IsFalse();
         buildEngine.LoggedBuildErrors.Count().Is(1);
         var loggedError = buildEngine.LoggedBuildErrors.First();
-        loggedError.Message.Is("IN002: After parsing a value an unexpected character was encountered: \". Path 'key3', line 5, position 2.");
+        loggedError.Code.Is("IN002");
+        loggedError.Message.Is("After parsing a value an unexpected character was encountered: \". Path 'key3', line 5, position 2.");
         loggedError.File.Is(srcFile.ItemSpec);
         loggedError.LineNumber.Is(5);
         loggedError.EndLineNumber.Is(5);

@@ -1,3 +1,6 @@
+v.12.0.2
+- Fix: Error code shows internal values on the MSBuild task version i18n compiler.
+
 v.12.0.1
 - Fix: Unuseful error message on the MSBuild task version i18n compiler.
 
