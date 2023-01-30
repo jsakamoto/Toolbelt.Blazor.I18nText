@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>12.0.1</Version>
+    <Version>12.0.2</Version>
     <IsRoslynComponent>true</IsRoslynComponent>
     <Authors>J.Sakamoto</Authors>
     <Copyright>Copyright © 2019-2023 J.Sakamoto, Mozilla Public License 2.0</Copyright>

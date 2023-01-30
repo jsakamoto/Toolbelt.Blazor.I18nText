@@ -80,14 +80,14 @@ namespace Toolbelt.Blazor.I18nText
             {
                 this.Log.LogError(
                     subcategory: "",
-                    errorCode: i18nexception.Code.ToString(),
+                    errorCode: $"IN{(int)i18nexception.Code:D3}",
                     helpKeyword: "",
                     file: i18nexception.FilePath,
                     lineNumber: i18nexception.LineNumber,
                     columnNumber: i18nexception.LinePos,
                     endLineNumber: i18nexception.LineNumber,
                     endColumnNumber: i18nexception.LinePos,
-                    $"IN{(int)i18nexception.Code:D3}: {i18nexception.Message}");
+                    i18nexception.Message);
             }
             else
             {
