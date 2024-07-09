@@ -9,7 +9,7 @@ namespace Toolbelt.Blazor.I18nText.Test;
 public class WatchTest
 {
     public static readonly IEnumerable<object[]> Frameworks =
-        from framwork in new[] { "net6.0", /*"net7.0" */}
+        from framwork in new[] { "net6.0", "net7.0" }
         select new object[] { framwork };
 
     [Test, TestCaseSource(nameof(Frameworks))]
