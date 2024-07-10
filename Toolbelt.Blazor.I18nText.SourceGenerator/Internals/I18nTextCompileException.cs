@@ -1,7 +1,6 @@
 ﻿using System;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
 
-namespace Toolbelt.Blazor.I18nText.Internals
+namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {
     internal class I18nTextCompileException : Exception
     {

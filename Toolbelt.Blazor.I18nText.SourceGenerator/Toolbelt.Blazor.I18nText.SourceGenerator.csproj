@@ -34,6 +34,4 @@
     <Copy SourceFiles="@(DependentPackageFile)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
 
-  <Import Project="..\Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems" Label="Shared" />
-
 </Project>

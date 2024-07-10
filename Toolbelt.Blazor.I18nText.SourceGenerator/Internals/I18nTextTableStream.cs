@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Toolbelt.Blazor.I18nText.Internals
+namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {
     internal class I18nTextTableStream : Stream
     {
@@ -15,7 +15,7 @@ namespace Toolbelt.Blazor.I18nText.Internals
 
         private long _InternalPosition = 0;
 
-        public override long Position { get => _InternalPosition; set => throw new NotImplementedException(); }
+        public override long Position { get => this._InternalPosition; set => throw new NotImplementedException(); }
 
         private IEnumerator<KeyValuePair<string, I18nTextTable>> LangEnumerator { get; }
 
@@ -32,7 +32,7 @@ namespace Toolbelt.Blazor.I18nText.Internals
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (this.Buffer != null) return ReadFromBuffer(buffer, offset, count);
+            if (this.Buffer != null) return this.ReadFromBuffer(buffer, offset, count);
 
             for (; ; )
             {
@@ -44,25 +44,25 @@ namespace Toolbelt.Blazor.I18nText.Internals
                     this.TextEnumerator = currentLang.Value.OrderBy(l => l.Key).GetEnumerator();
 
                     this.Buffer = Encoding.UTF8.GetBytes(currentLang.Key);
-                    return ReadFromBuffer(buffer, offset, count);
+                    return this.ReadFromBuffer(buffer, offset, count);
                 }
 
-                if (!TextEnumerator.MoveNext())
+                if (!this.TextEnumerator.MoveNext())
                 {
                     this.TextEnumerator = null;
                     continue;
                 }
 
-                var currentText = TextEnumerator.Current;
+                var currentText = this.TextEnumerator.Current;
                 this.Buffer = Encoding.UTF8.GetBytes(currentText.Key + currentText.Value);
-                return ReadFromBuffer(buffer, offset, count);
+                return this.ReadFromBuffer(buffer, offset, count);
             }
         }
 
         private int ReadFromBuffer(byte[] buffer, int offset, int count)
         {
             var cbRead = Math.Min(this.Buffer.Length - this.BufferSeekPointer, count);
-            Array.Copy(this.Buffer, BufferSeekPointer, buffer, offset, cbRead);
+            Array.Copy(this.Buffer, this.BufferSeekPointer, buffer, offset, cbRead);
             this.BufferSeekPointer += cbRead;
             if (this.Buffer.Length <= this.BufferSeekPointer)
             {

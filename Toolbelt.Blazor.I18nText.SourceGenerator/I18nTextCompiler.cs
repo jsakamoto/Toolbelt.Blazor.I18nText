@@ -8,8 +8,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Toolbelt.Blazor.I18nText.Internals;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {

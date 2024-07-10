@@ -1,4 +1,4 @@
-﻿namespace Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals
+﻿namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {
     internal enum DiagnosticCode
     {

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Interfaces;
-using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 using Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test;

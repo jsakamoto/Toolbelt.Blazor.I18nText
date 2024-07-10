@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TinyCsvParser;
 using TinyCsvParser.Mapping;
-using Toolbelt.Blazor.I18nText.Internals;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 
 namespace Toolbelt.Blazor.I18nText
 {

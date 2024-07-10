@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 
-namespace Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals
+namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {
     internal static class DiagnosticDescriptors
     {

@@ -12,30 +12,17 @@
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
+    <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
+    <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
   </PropertyGroup>
   
-  <Target Name="DefineI18nTextProperties">
+  <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
-      <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
-      <!-- NOTICE: $(TargetFrameworkVersion) IS EMPTY WHEN PERFORMING "dotnet restore". -->
-      <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(TargetFrameworkVersion)' == '' " >false</I18nTextNewStaticWebAssetsArchitecture>
-      <I18nTextNewStaticWebAssetsArchitecture Condition=" '$(I18nTextNewStaticWebAssetsArchitecture)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0'))</I18nTextNewStaticWebAssetsArchitecture>
-      <I18nTextUseSourceGenerator Condition=" '$(TargetFrameworkVersion)' == '' " >false</I18nTextUseSourceGenerator>
-      <I18nTextUseSourceGenerator Condition=" '$(I18nTextUseSourceGenerator)' == '' " >$([MSBuild]::VersionGreaterThanOrEquals($(TargetFrameworkVersion), '6.0'))</I18nTextUseSourceGenerator>
-    </PropertyGroup>
-  </Target>
-
-  <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild" DependsOnTargets="DefineI18nTextProperties">
-    <PropertyGroup Condition=" $(I18nTextNewStaticWebAssetsArchitecture) ">
       <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
       <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
       <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
     </PropertyGroup>
   </Target>
-
-  <!-- FOR COMPILING BY MSBUILD CUSTOM TASK -->
-  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileI18nText" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
   <ItemGroup>
@@ -58,54 +45,16 @@
     <CompilerVisibleProperty Include="I18nTextUseSourceGenerator" />
   </ItemGroup>
 
-  <!-- FOR FAST UP-TO-DATE CHECK -->
-  <Target Name="CollectUpToDateCheckI18nText" BeforeTargets="CollectUpToDateCheckInputDesignTime;CollectUpToDateCheckBuiltDesignTime" DependsOnTargets="DefineI18nTextProperties">
-    <ItemGroup>
-      <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
-      <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
-    </ItemGroup>
-  </Target>
-
   <!-- FOR DOTNET WATCH -->
   <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
     <Watch Remove="$(I18nTextFilePattern)" />
     <Watch Include="$(I18nTextFilePattern)" />
   </ItemGroup>
 
-  <!-- Watch command: "dotnet watch msbuild -nologo -t:CompileI18nText -v:n" -->
-  <Target Name="CompileI18nText" DependsOnTargets="_CompileI18nText;_IncludeGeneratedI18nTextResourceJsons">
-    <MakeDir Directories="$(TargetDir)wwwroot\_content\i18ntext" />
-    <Copy SourceFiles="@(_IntermediateBlazorI18nTextResourceJsons)" DestinationFolder="$(TargetDir)wwwroot\_content\i18ntext" SkipUnchangedFiles="true"/>
-  </Target>
-
-  <!-- PERFORM COMPILING BY USING MSBUILD CUSTOM TASK -->
-  <Target Name="_CompileI18nText" BeforeTargets="PrepareForBuild" DependsOnTargets="DefineI18nTextProperties">
-    <MakeDir Directories="$(I18nTextIntermediateDir)" />
-    <CallTarget Targets="_InvokeCompileI18nText" Condition=" '$(I18nTextUseSourceGenerator)' == 'false' " />
-    <Touch Files="$(I18nTextUpToDateMarker)" AlwaysCreate="true" />
-  </Target>
-
-  <Target Name="_InvokeCompileI18nText" Condition=" '$(I18nTextUseSourceGenerator)' == 'false' ">
-    <ItemGroup>
-      <I18nText Include="$(I18nTextFilePattern)" />
-    </ItemGroup>
-    <CompileI18nText Include="@(I18nText)"
-                     I18nTextSourceDirectory="$(I18nTextSourceDirectory)"
-                     OutDirectory="$(IntermediateOutputPath)dist\_content\i18ntext"
-                     BaseDir="$(ProjectDir)"
-                     Namespace="$(I18nTextNamespace)"
-                     DisableSubNameSpace="$(I18nTextDisableSubNameSpace)"
-                     FallBackLanguage="$(I18nTextFallBackLanguage)"/>
-    <ItemGroup>
-      <Compile Remove="$(I18nTextSourceDirectory)\@types\**\*.cs"/>
-      <Compile Include="$(I18nTextSourceDirectory)\@types\**\*.cs"/>
-    </ItemGroup>
-  </Target>
-
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
   <Target Name="_EnsureGeneratedI18nTextResourceJsons" AfterTargets="CoreCompile" BeforeTargets="GenerateStaticWebAssetsManifest;GetCopyToOutputDirectoryItems" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons"/>
 
-  <Target Name="_IncludeGeneratedI18nTextResourceJsons" DependsOnTargets="DefineI18nTextProperties">
+  <Target Name="_IncludeGeneratedI18nTextResourceJsons">
 
     <ItemGroup>
       <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json" />
@@ -123,32 +72,9 @@
 
   </Target>
 
-  <!-- FOR CREATE PACKAGE -->
-  <PropertyGroup>
-    <BeforePack>_IncludeBlazorI18nTextResourceJsonsForPack; $(BeforePack)</BeforePack>
-  </PropertyGroup>
-  <Target Name="_IncludeBlazorI18nTextResourceJsonsForPack" DependsOnTargets="CompileI18nText" >
-    <ItemGroup>
-
-      <None Include="@(_IntermediateBlazorI18nTextResourceJsons)">
-        <PackagePath>i18ntext\%(filename)%(extension)</PackagePath>
-        <Pack>true</Pack>
-        <Visible>false</Visible>
-      </None>
-
-      <None Include="$(MSBuildThisFileDirectory)..\targets\I18nTextPackageBuild.targets">
-        <PackagePath>build\$(PackageId).targets</PackagePath>
-        <Pack>true</Pack>
-        <Visible>false</Visible>
-      </None>
-
-    </ItemGroup>
-  </Target>
-
-
   <!-- FOR SUPPORT TO .NET 6 or later Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
 
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" Condition=" $(I18nTextNewStaticWebAssetsArchitecture) " DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
     <ItemGroup>
       <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
       <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
@@ -165,7 +91,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" Condition=" $(I18nTextNewStaticWebAssetsArchitecture) " DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
+  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
     <ItemGroup>
       <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
     </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using NUnit.Framework;
-using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test;
 

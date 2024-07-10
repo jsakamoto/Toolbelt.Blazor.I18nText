@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Toolbelt.Blazor.I18nText.Internals
+namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {
     internal class I18nTextType
     {

@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>13.0.0-preview.1</Version>
+    <Version>13.0.0-preview.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
@@ -68,29 +68,14 @@
     <None Include="build\Toolbelt.Blazor.I18nText.targets" Pack="true">
       <PackagePath>build\Toolbelt.Blazor.I18nText.targets</PackagePath>
     </None>
-    <None Include="build\I18nTextPackageBuild.targets" Pack="true">
-      <PackagePath>targets\I18nTextPackageBuild.targets</PackagePath>
-    </None>
     <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="/" />
     <None Include="..\README.md" Visible="false" Pack="true" PackagePath="/" />
     <None Include="..\THIRDPARTYNOTICES.txt" Visible="false" Pack="true" PackagePath="/notices" />
   </ItemGroup>
 
   <PropertyGroup>
-    <BeforePack>$(BeforePack);BuildI18nTextCompileTask;BuildI18nTextSourceGenerator;</BeforePack>
+    <BeforePack>$(BeforePack);BuildI18nTextSourceGenerator;</BeforePack>
   </PropertyGroup>
-
-  <!-- BUILD I18N TEXT COMPILE TASK FOR PACKAGING -->
-  <Target Name="BuildI18nTextCompileTask">
-    <PropertyGroup>
-      <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
-      <I18nTextCompileTaskOutDir>$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\</I18nTextCompileTaskOutDir>
-    </PropertyGroup>
-    <Exec Command="dotnet build -c:$(Configuration) --nologo" WorkingDirectory="$(I18nTextCompileTaskProjectDir)" />
-    <ItemGroup>
-      <None Include="$(I18nTextCompileTaskOutDir)*.*" PackagePath="tools\" Pack="true" />
-    </ItemGroup>
-  </Target>
 
   <!-- BUILD I18N TEXT SOURCE GENERATOR FOR PACKAGING -->
   <Target Name="BuildI18nTextSourceGenerator">
