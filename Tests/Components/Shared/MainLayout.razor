@@ -34,7 +34,7 @@
 
 @code {
 
-    private string CurrentLang;
+    private string? CurrentLang;
 
     private Text Text = new Text();
 
@@ -61,6 +61,6 @@
     {
         Console.WriteLine($"OnChange: {args.Value}");
         CurrentLang = args.Value as string;
-        await I18nText.SetCurrentLanguageAsync(CurrentLang);
+        await I18nText.SetCurrentLanguageAsync(CurrentLang ?? "en");
     }
 }

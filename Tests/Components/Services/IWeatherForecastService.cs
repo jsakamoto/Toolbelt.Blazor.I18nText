@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿namespace SampleSite.Components.Services;
 
-namespace SampleSite.Components.Services
+public interface IWeatherForecastService
 {
-    public interface IWeatherForecastService
-    {
-        Task<WeatherForecast[]> GetForecastAsync();
-    }
+    Task<WeatherForecast[]> GetForecastAsync();
 }
