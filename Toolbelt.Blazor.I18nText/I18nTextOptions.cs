@@ -2,26 +2,25 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Toolbelt.Blazor.I18nText
+namespace Toolbelt.Blazor.I18nText;
+
+public delegate ValueTask<string> GetInitialLanguage(IServiceProvider serviceProvider, I18nTextOptions options);
+
+public delegate ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options);
+
+public delegate void ConfigureHttpClient(IServiceProvider serviceProvider, HttpClient client);
+
+public class I18nTextOptions
 {
-    public delegate ValueTask<string> GetInitialLanguage(IServiceProvider serviceProvider, I18nTextOptions options);
+    public GetInitialLanguage? GetInitialLanguageAsync;
 
-    public delegate ValueTask PersistCurrentLanguageAsync(IServiceProvider serviceProvider, string langCode, I18nTextOptions options);
+    public PersistCurrentLanguageAsync? PersistCurrentLanguageAsync;
 
-    public delegate void ConfigureHttpClient(IServiceProvider serviceProvider, HttpClient client);
+    public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
 
-    public class I18nTextOptions
-    {
-        public GetInitialLanguage? GetInitialLanguageAsync;
+    public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
 
-        public PersistCurrentLanguageAsync? PersistCurrentLanguageAsync;
+    public Func<bool>? IsWasm;
 
-        public PersistanceLevel PersistanceLevel = PersistanceLevel.Session;
-
-        public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
-
-        public Func<bool>? IsWasm;
-
-        public ConfigureHttpClient? ConfigureHttpClient = null;
-    }
+    public ConfigureHttpClient? ConfigureHttpClient = null;
 }

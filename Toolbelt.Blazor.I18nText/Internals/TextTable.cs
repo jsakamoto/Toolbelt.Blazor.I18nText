@@ -2,41 +2,40 @@
 using System.Threading.Tasks;
 using Toolbelt.Blazor.I18nText.Interfaces;
 
-namespace Toolbelt.Blazor.I18nText.Internals
+namespace Toolbelt.Blazor.I18nText.Internals;
+
+internal delegate ValueTask FetchTextTableAsync(string langCode, object table);
+
+internal class TextTable
 {
-    internal delegate ValueTask FetchTextTableAsync(string langCode, object table);
+    private readonly FetchTextTableAsync FetchTextTableAsync;
 
-    internal class TextTable
+    internal ValueTask FetchTask;
+
+    internal readonly object TableObject;
+
+    public TextTable(Type tableType, string langCode, FetchTextTableAsync fetchTextTableAsync)
     {
-        private readonly FetchTextTableAsync FetchTextTableAsync;
+        var tableObject = Activator.CreateInstance(tableType);
+        if (tableObject == null) throw new Exception($"Creating the instance of {tableType.FullName} was failed.");
+        this.TableObject = tableObject;
+        this.FetchTextTableAsync = fetchTextTableAsync;
+        this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);
+    }
 
-        internal ValueTask FetchTask;
+    public async Task<T?> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
+    {
+        var fetchTask = this.FetchTask;
+        await fetchTask;
+        return this.TableObject as T;
+    }
 
-        internal readonly object TableObject;
-
-        public TextTable(Type tableType, string langCode, FetchTextTableAsync fetchTextTableAsync)
-        {
-            var tableObject = Activator.CreateInstance(tableType);
-            if (tableObject == null) throw new Exception($"Creating the instance of {tableType.FullName} was failed.");
-            this.TableObject = tableObject;
-            this.FetchTextTableAsync = fetchTextTableAsync;
-            this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);
-        }
-
-        public async Task<T?> GetTableAsync<T>() where T : class, I18nTextFallbackLanguage, new()
-        {
-            var fetchTask = this.FetchTask;
-            await fetchTask;
-            return this.TableObject as T;
-        }
-
-        public async Task RefreshTableAsync(string langCode)
-        {
-            var fetchTask = this.FetchTask;
-            await fetchTask;
-            fetchTask = this.FetchTextTableAsync(langCode, this.TableObject);
-            this.FetchTask = fetchTask;
-            await fetchTask;
-        }
+    public async Task RefreshTableAsync(string langCode)
+    {
+        var fetchTask = this.FetchTask;
+        await fetchTask;
+        fetchTask = this.FetchTextTableAsync(langCode, this.TableObject);
+        this.FetchTask = fetchTask;
+        await fetchTask;
     }
 }

@@ -6,85 +6,84 @@ using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
-namespace Toolbelt.Blazor.I18nText
+namespace Toolbelt.Blazor.I18nText;
+
+public class I18nText : IDisposable
 {
-    public class I18nText : IDisposable
+    internal readonly I18nTextOptions Options;
+
+    private string _CurrentLanguage = "en";
+
+    private readonly WeakRefCollection<ComponentBase> Components = new();
+
+    private Task? InitLangTask;
+
+    private readonly IServiceProvider ServiceProvider;
+
+    private readonly I18nTextRepository I18nTextRepository;
+
+    private readonly Guid ScopeId = Guid.NewGuid();
+
+    public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
+
+    internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
     {
-        internal readonly I18nTextOptions Options;
+        this.ServiceProvider = serviceProvider;
+        this.I18nTextRepository = serviceProvider.GetRequiredService<I18nTextRepository>();
+        this.Options = options;
+    }
 
-        private string _CurrentLanguage = "en";
+    internal void InitializeCurrentLanguage()
+    {
+        var getInitialLanguageAsync = this.Options.GetInitialLanguageAsync ?? HelperScript.DefaultGetInitialLanguageAsync;
+        this.InitLangTask = getInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
+            .AsTask()
+            .ContinueWith(t => { this._CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
+    }
 
-        private readonly WeakRefCollection<ComponentBase> Components = new WeakRefCollection<ComponentBase>();
+    public async Task<string> GetCurrentLanguageAsync()
+    {
+        await this.EnsureInitialLangAsync();
+        return this._CurrentLanguage;
+    }
 
-        private Task? InitLangTask;
+    public async Task SetCurrentLanguageAsync(string langCode)
+    {
+        if (this._CurrentLanguage == langCode) return;
 
-        private readonly IServiceProvider ServiceProvider;
-
-        private readonly I18nTextRepository I18nTextRepository;
-
-        private readonly Guid ScopeId = Guid.NewGuid();
-
-        public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
-
-        internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
+        if (this.Options.PersistCurrentLanguageAsync != null)
         {
-            this.ServiceProvider = serviceProvider;
-            this.I18nTextRepository = serviceProvider.GetRequiredService<I18nTextRepository>();
-            this.Options = options;
+            await this.Options.PersistCurrentLanguageAsync.Invoke(this.ServiceProvider, langCode, this.Options);
         }
 
-        internal void InitializeCurrentLanguage()
+        this._CurrentLanguage = langCode;
+        await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
+        this.ChangeLanguage?.Invoke(this, new I18nTextChangeLanguageEventArgs(langCode));
+
+        this.Components.InvokeStateHasChanged();
+    }
+
+    public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
+    {
+        await this.EnsureInitialLangAsync();
+        this.Components.Add(component);
+        var textTable = await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
+        return textTable ?? new T();
+    }
+
+    private async Task EnsureInitialLangAsync()
+    {
+        var initLangTask = default(Task);
+        lock (this) initLangTask = this.InitLangTask;
+        if (initLangTask != null && !initLangTask.IsCompleted)
         {
-            var getInitialLanguageAsync = this.Options.GetInitialLanguageAsync ?? HelperScript.DefaultGetInitialLanguageAsync;
-            this.InitLangTask = getInitialLanguageAsync.Invoke(this.ServiceProvider, this.Options)
-                .AsTask()
-                .ContinueWith(t => { _CurrentLanguage = t.IsFaulted ? CultureInfo.CurrentUICulture.Name : t.Result; });
+            await initLangTask;
+            lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
         }
+    }
 
-        public async Task<string> GetCurrentLanguageAsync()
-        {
-            await EnsureInitialLangAsync();
-            return _CurrentLanguage;
-        }
-
-        public async Task SetCurrentLanguageAsync(string langCode)
-        {
-            if (this._CurrentLanguage == langCode) return;
-
-            if (this.Options.PersistCurrentLanguageAsync != null)
-            {
-                await this.Options.PersistCurrentLanguageAsync.Invoke(this.ServiceProvider, langCode, this.Options);
-            }
-
-            this._CurrentLanguage = langCode;
-            await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
-            this.ChangeLanguage?.Invoke(this, new I18nTextChangeLanguageEventArgs(langCode));
-
-            this.Components.InvokeStateHasChanged();
-        }
-
-        public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
-        {
-            await EnsureInitialLangAsync();
-            this.Components.Add(component);
-            var textTable = await this.I18nTextRepository.GetTextTableAsync<T>(this.ScopeId, this._CurrentLanguage, singleLangInAScope: true);
-            return textTable ?? new T();
-        }
-
-        private async Task EnsureInitialLangAsync()
-        {
-            var initLangTask = default(Task);
-            lock (this) initLangTask = this.InitLangTask;
-            if (initLangTask != null && !initLangTask.IsCompleted)
-            {
-                await initLangTask;
-                lock (this) { this.InitLangTask?.Dispose(); this.InitLangTask = null; }
-            }
-        }
-
-        public void Dispose()
-        {
-            this.I18nTextRepository.RemoveScope(this.ScopeId);
-        }
+    public void Dispose()
+    {
+        this.I18nTextRepository.RemoveScope(this.ScopeId);
     }
 }
