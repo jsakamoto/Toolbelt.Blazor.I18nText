@@ -7,10 +7,7 @@ using Microsoft.JSInterop;
 
 namespace Toolbelt.Blazor.I18nText.Internals
 {
-    internal class HelperScript
-#if ENABLE_JSMODULE
-        : IAsyncDisposable
-#endif
+    internal class HelperScript : IAsyncDisposable
     {
         private delegate ValueTask<T> ScriptInvoker<T>(string identifier, params object[] args);
 
@@ -38,7 +35,6 @@ namespace Toolbelt.Blazor.I18nText.Internals
             return version;
         }
 
-#if ENABLE_JSMODULE
         private IJSObjectReference? JSModule = null;
 
         private async ValueTask<ScriptInvoker<T>?> EnsureScriptEnabledAsync<T>()
@@ -71,36 +67,6 @@ namespace Toolbelt.Blazor.I18nText.Internals
 
             return this.JSModule == null ? default(ScriptInvoker<T>) : this.JSModule.InvokeAsync<T>;
         }
-#else
-        private async ValueTask<ScriptInvoker<T>?> EnsureScriptEnabledAsync<T>()
-        {
-            if (!this.ScriptLoaded)
-            {
-                await this.Syncer.WaitAsync();
-                try
-                {
-                    if (!this.ScriptLoaded)
-                    {
-                        var scriptPath = "./_content/" + Namespace + "/script.min.js";
-
-                        // Add version string for refresh token only navigator is online.
-                        // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
-                        var jsInProcRuntime = this.JSRuntime as IJSInProcessRuntime;
-                        var isOnLine = jsInProcRuntime?.Invoke<bool>("eval", "navigator.onLine") ?? false;
-                        this._IsOnline = isOnLine;
-                        var versionQuery = isOnLine ? $"?v={this.GetVersionText()}" : "";
-
-                        await this.JSRuntime.InvokeVoidAsync("eval", "new Promise(r=>((d,t,s,v)=>(h=>h.querySelector(t+`[src^=\"${s}\"]`)?r():(e=>(e.src=(s+v),e.onload=r,h.appendChild(e)))(d.createElement(t)))(d.head))(document,'script','" + scriptPath + "','" + versionQuery + "'))");
-                        await this.JSRuntime.InvokeVoidAsync("eval", "Toolbelt.Blazor.I18nText.ready");
-                        this.ScriptLoaded = true;
-                    }
-                }
-                catch { }
-                finally { this.Syncer.Release(); }
-            }
-            return this.ScriptLoaded == false ? default(ScriptInvoker<T>) : this.JSRuntime.InvokeAsync<T>;
-        }
-#endif
 
         internal static async ValueTask<string> DefaultGetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
         {
@@ -120,18 +86,16 @@ namespace Toolbelt.Blazor.I18nText.Internals
 
         public async ValueTask<bool> IsOnlineAsync()
         {
-            if (!_IsOnline.HasValue)
+            if (!this._IsOnline.HasValue)
             {
-                await EnsureScriptEnabledAsync<object>();
+                await this.EnsureScriptEnabledAsync<object>();
             }
-            return _IsOnline!.Value;
+            return this._IsOnline!.Value;
         }
 
-#if ENABLE_JSMODULE
         public async ValueTask DisposeAsync()
         {
             if (this.JSModule != null) { await this.JSModule.DisposeAsync(); }
         }
-#endif
     }
 }

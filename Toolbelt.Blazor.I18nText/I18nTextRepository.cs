@@ -21,7 +21,7 @@ namespace Toolbelt.Blazor.I18nText
 
     internal class I18nTextRepository
     {
-        private readonly ScopeToLang ScopeToLangs = new ScopeToLang();
+        private readonly ScopeToLang ScopeToLangs = new();
 
         private readonly HttpClient? HttpClient;
 
@@ -36,7 +36,7 @@ namespace Toolbelt.Blazor.I18nText
             {
                 var helperScript = serviceProvider.GetRequiredService<HelperScript>();
                 var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-                this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName);
+                this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient");
                 this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapWasmAsync(helperScript);
             }
             else
@@ -47,7 +47,7 @@ namespace Toolbelt.Blazor.I18nText
 
         internal async ValueTask<T?> GetTextTableAsync<T>(Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
         {
-            var textTable = GetLazyTextTable(scopeId, langCode, typeof(T), singleLangInAScope);
+            var textTable = this.GetLazyTextTable(scopeId, langCode, typeof(T), singleLangInAScope);
             if (textTable == null) return null;
             await textTable.FetchTask;
             return textTable.TableObject as T;
@@ -59,7 +59,7 @@ namespace Toolbelt.Blazor.I18nText
 
             var langs = this.ScopeToLangs.GetOrAdd(scopeId, new LangToTextTable());
             var typeToTables = langs.GetOrAdd(singleLangInAScope ? "" : langCode, new TypeToTextTable());
-            var textTable = typeToTables.GetOrAdd(typeofTextTable, typeofTextTable => CreateTextTable(typeofTextTable, langCode));
+            var textTable = typeToTables.GetOrAdd(typeofTextTable, typeofTextTable => this.CreateTextTable(typeofTextTable, langCode));
             return textTable;
         }
 
@@ -86,7 +86,7 @@ namespace Toolbelt.Blazor.I18nText
 
         private async ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapWasmAsync(HelperScript helperScript, string jsonUrl, string hash)
         {
-            if (this.HttpClient == null) throw new NullReferenceException($"{nameof(I18nTextRepository)}.{nameof(HttpClient)} is null.");
+            if (this.HttpClient == null) throw new NullReferenceException($"{nameof(I18nTextRepository)}.{nameof(this.HttpClient)} is null.");
 
             var isOnline = await helperScript.IsOnlineAsync();
             if (isOnline && !string.IsNullOrEmpty(hash)) jsonUrl += "?hash=" + hash;

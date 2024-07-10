@@ -48,7 +48,7 @@ namespace Toolbelt.Blazor.Extensions.DependencyInjection
             {
                 if (options.ConfigureHttpClient != null)
                 {
-                    services.AddHttpClient(options.HttpClientName, (sp, client) => options.ConfigureHttpClient(sp, client));
+                    services.AddHttpClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient", (sp, client) => options.ConfigureHttpClient(sp, client));
                 }
 
                 services.TryAddScoped(serviceProvider => new I18nTextRepository(serviceProvider, options));

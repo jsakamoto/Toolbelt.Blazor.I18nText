@@ -1,20 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
-    <LangVersion>8.0</LangVersion>
-    <RazorLangVersion>3.0</RazorLangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <TypeScriptToolsVersion>3.0</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>5.0</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <Nullable>enable</Nullable>
-    <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard2.0' ">$(DefineConstants);ENABLE_JSMODULE</DefineConstants>
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>12.0.2</Version>
+    <Version>13.0.0-preview.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <Authors>J.Sakamoto</Authors>
@@ -25,36 +23,31 @@
     <PackageIcon>nupkg-icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageOutputPath>../_dist</PackageOutputPath>
-    <Copyright>Copyright © 2019-2023 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Copyright>Copyright © 2019-2024 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-  </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+  </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.7.4">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.5.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.6.362" />
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="3.2.449" />
     <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" PrivateAssets="all" />
   </ItemGroup>
 
   <PropertyGroup>
-    <TypeScriptTarget>ES2015</TypeScriptTarget>
+    <TypeScriptTarget>ES2022</TypeScriptTarget>
     <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
     <TypeScriptModuleKind>None</TypeScriptModuleKind>
     <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
