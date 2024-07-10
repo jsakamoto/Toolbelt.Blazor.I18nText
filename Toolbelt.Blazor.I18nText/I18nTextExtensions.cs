@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Toolbelt.Blazor.I18nText.Interfaces;
+﻿using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText.Internals;
 

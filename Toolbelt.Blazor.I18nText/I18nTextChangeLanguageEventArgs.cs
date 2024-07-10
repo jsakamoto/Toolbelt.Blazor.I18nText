@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Toolbelt.Blazor.I18nText;
+﻿namespace Toolbelt.Blazor.I18nText;
 
 public class I18nTextChangeLanguageEventArgs : EventArgs
 {

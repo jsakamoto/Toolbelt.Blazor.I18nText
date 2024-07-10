@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Toolbelt.Blazor.I18nText.Internals;
+﻿namespace Toolbelt.Blazor.I18nText.Internals;
 
 internal class WeakRefCollection<T> where T : class
 {

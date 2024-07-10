@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace Toolbelt.Blazor.I18nText;
+﻿namespace Toolbelt.Blazor.I18nText;
 
 public delegate ValueTask<string> GetInitialLanguage(IServiceProvider serviceProvider, I18nTextOptions options);
 
