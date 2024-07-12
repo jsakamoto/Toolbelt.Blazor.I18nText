@@ -16,6 +16,7 @@ public class I18nTextOptions
 
     public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
 
+    [Obsolete("The \"I18nTextOptions.IsWasm()\" is no longer used from anywhere.")]
     public Func<bool>? IsWasm;
 
     public ConfigureHttpClient? ConfigureHttpClient = null;

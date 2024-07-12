@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Toolbelt.Blazor.I18nText;
+using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
 namespace Toolbelt.Blazor.Extensions.DependencyInjection;
@@ -36,26 +36,28 @@ public static class I18nTextDependencyInjection
         {
             GetInitialLanguageAsync = HelperScript.DefaultGetInitialLanguageAsync,
             PersistCurrentLanguageAsync = HelperScript.DefaultPersistCurrentLanguageAsync,
-            IsWasm = DefaultIsWasm,
             ConfigureHttpClient = DefaultConfigureHttpClient
         };
         configure?.Invoke(options);
+        services.AddSingleton(options);
 
         // for Blazor WebAssembly apps
-        if (options.IsWasm())
+        if (OperatingSystem.IsBrowser())
         {
             if (options.ConfigureHttpClient != null)
             {
                 services.AddHttpClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient", (sp, client) => options.ConfigureHttpClient(sp, client));
             }
 
-            services.TryAddScoped(serviceProvider => new I18nTextRepository(serviceProvider, options));
+            services.TryAddScoped<ITextMapReader, TextMapReaderForWasm>();
+            services.TryAddScoped(serviceProvider => new I18nTextRepository(serviceProvider.GetRequiredService<ITextMapReader>()));
         }
 
         // for Blazor Server apps
         else
         {
-            services.TryAddSingleton(serviceProvider => new I18nTextRepository(serviceProvider, options));
+            services.TryAddSingleton<ITextMapReader, TextMapReaderForServer>();
+            services.TryAddSingleton(serviceProvider => new I18nTextRepository(serviceProvider.GetRequiredService<ITextMapReader>()));
         }
 
         services.TryAddScoped<HelperScript>();
@@ -67,10 +69,6 @@ public static class I18nTextDependencyInjection
         });
         return services;
     }
-
-    public static readonly bool IsWasm = RuntimeInformation.OSDescription == "web" || RuntimeInformation.OSDescription == "Browser";
-
-    private static bool DefaultIsWasm() => IsWasm;
 
     private static string? BaseAddress = null;
 

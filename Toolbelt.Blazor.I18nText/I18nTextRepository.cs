@@ -1,9 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Net;
 using System.Reflection;
 using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
-using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -17,26 +14,13 @@ internal class I18nTextRepository
 {
     private readonly ScopeToLang ScopeToLangs = new();
 
-    private readonly HttpClient? HttpClient;
-
-    private readonly ReadJsonAsTextMapAsync ReadJsonAsTextMapAsync;
-
     public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
-    internal I18nTextRepository(IServiceProvider serviceProvider, I18nTextOptions options)
+    private readonly ITextMapReader _textMapReader;
+
+    internal I18nTextRepository(ITextMapReader textMapReader)
     {
-        var isWasm = options.IsWasm?.Invoke() ?? I18nTextDependencyInjection.IsWasm;
-        if (isWasm)
-        {
-            var helperScript = serviceProvider.GetRequiredService<HelperScript>();
-            var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-            this.HttpClient = httpClientFactory.CreateClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient");
-            this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapWasmAsync(helperScript);
-        }
-        else
-        {
-            this.ReadJsonAsTextMapAsync = this.GetReadJsonAsTextMapServerAsync();
-        }
+        this._textMapReader = textMapReader;
     }
 
     internal async ValueTask<T?> GetTextTableAsync<T>(Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
@@ -73,46 +57,6 @@ internal class I18nTextRepository
         this.ScopeToLangs.TryRemove(scopeId, out var _);
     }
 
-    private ReadJsonAsTextMapAsync GetReadJsonAsTextMapWasmAsync(HelperScript helperScript)
-    {
-        return delegate (string jsonUrl, string hash) { return this.ReadJsonAsTextMapWasmAsync(helperScript, jsonUrl, hash); };
-    }
-
-    private async ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapWasmAsync(HelperScript helperScript, string jsonUrl, string hash)
-    {
-        if (this.HttpClient == null) throw new NullReferenceException($"{nameof(I18nTextRepository)}.{nameof(this.HttpClient)} is null.");
-
-        var isOnline = await helperScript.IsOnlineAsync();
-        if (isOnline && !string.IsNullOrEmpty(hash)) jsonUrl += "?hash=" + hash;
-
-        var httpRes = await this.HttpClient.GetAsync(jsonUrl);
-        if (httpRes.StatusCode == HttpStatusCode.NotFound) return null;
-        var contentBytes = await httpRes.Content.ReadAsByteArrayAsync();
-        return JsonSerializer.Deserialize<Dictionary<string, string>>(contentBytes);
-    }
-
-    private ReadJsonAsTextMapAsync GetReadJsonAsTextMapServerAsync()
-    {
-        var appDomainBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-        var baseDir = Path.Combine(appDomainBaseDir, "wwwroot");
-        if (baseDir[baseDir.Length - 1] != Path.DirectorySeparatorChar) baseDir += Path.DirectorySeparatorChar;
-        var baseUri = new Uri(baseDir);
-        return delegate (string jsonUrl, string hash) { return this.ReadJsonAsTextMapServerAsync(baseUri, jsonUrl); };
-    }
-
-    private ValueTask<Dictionary<string, string>?> ReadJsonAsTextMapServerAsync(Uri baseUri, string jsonUrl)
-    {
-        var jsonLocalPath = new Uri(baseUri, relativeUri: jsonUrl).LocalPath;
-        if (File.Exists(jsonLocalPath))
-        {
-            var jsonText = File.ReadAllText(jsonLocalPath);
-            var textMap = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonText);
-            return new ValueTask<Dictionary<string, string>?>(textMap);
-        }
-        return new ValueTask<Dictionary<string, string>?>(default(Dictionary<string, string>));
-    }
-
-
     private TextTable CreateTextTable(Type typeofTextTable, string langCode)
     {
         var textTable = new TextTable(typeofTextTable, langCode, this.FetchTextTableAsync);
@@ -148,7 +92,7 @@ internal class I18nTextRepository
         {
             try
             {
-                textMap = await this.ReadJsonAsTextMapAsync(jsonUrl, textTableHash);
+                textMap = await this._textMapReader.ReadAsync(jsonUrl, textTableHash);
                 if (textMap != null) break;
             }
             catch (JsonException) { }
