@@ -26,6 +26,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{9ABE5E2D-7FF6-43E7-B875-640A9197B669}"
 	ProjectSection(SolutionItems) = preProject
 		Build\BuildPackageReleaseNotes.targets = Build\BuildPackageReleaseNotes.targets
+		VersionInfo.props = VersionInfo.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp.csproj", "{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}"
