@@ -1,24 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
     <Version>12.0.0.5</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.32" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.1" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+    <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
+  </ItemGroup>
+
+  <Import Project="..\..\Toolbelt.Blazor.I18nText\build\Toolbelt.Blazor.I18nText.targets" Condition=" '$(RefI18nTextByPackage)' == 'false' "/>
 </Project>

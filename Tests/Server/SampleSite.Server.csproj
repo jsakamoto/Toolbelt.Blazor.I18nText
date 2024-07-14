@@ -5,14 +5,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.1" />
+    <ProjectReference Include="..\Components\SampleSite.Components.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Components\SampleSite.Components.csproj" />
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+    <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
   </ItemGroup>
 
 </Project>
