@@ -97,4 +97,13 @@
     </ItemGroup>
   </Target>
 
+  <!-- THE OPTIMIZATION FLAG, WHETHER ENABLING USING THE IL-LINKER FOR BROWSER-WASM PLATFORM OR NOT -->
+  <PropertyGroup>
+    <ToolbeltBlazorI18nTextOptimizeForWasm Condition=" '$(ToolbeltBlazorI18nTextOptimizeForWasm)' == '' ">true</ToolbeltBlazorI18nTextOptimizeForWasm>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(RuntimeIdentifier)' == 'browser-wasm' AND '$(ToolbeltBlazorI18nTextOptimizeForWasm)' == 'true' ">
+    <RuntimeHostConfigurationOption Include="Toolbelt.Blazor.I18nText.OptimizeForWasm" Value="true" Trim="true" />
+  </ItemGroup>
+
 </Project>

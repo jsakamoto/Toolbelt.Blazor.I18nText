@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace Toolbelt.Blazor.I18nText.Internals;
@@ -15,22 +15,18 @@ internal class HelperScript : IAsyncDisposable
 
     private readonly IJSRuntime JSRuntime;
 
+    private readonly ILogger<HelperScript> _Logger;
+
     private static readonly string Namespace = "Toolbelt.Blazor.I18nText";
 
     private bool? _IsOnline = null;
 
-    public HelperScript(IJSRuntime jSRuntime)
+    private static bool ShowDeveloperGuide() => true;
+
+    public HelperScript(IJSRuntime jSRuntime, ILogger<HelperScript> logger)
     {
         this.JSRuntime = jSRuntime;
-    }
-
-    private string GetVersionText()
-    {
-        var assembly = this.GetType().Assembly;
-        var version = assembly
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-            .InformationalVersion ?? assembly.GetName().Version!.ToString();
-        return version;
+        this._Logger = logger;
     }
 
     private IJSObjectReference? JSModule = null;
@@ -48,12 +44,25 @@ internal class HelperScript : IAsyncDisposable
 
                     // Add version string for refresh token only navigator is online.
                     // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
-                    const string moduleScript = "export function isOnLine(){ return navigator.onLine; }";
-                    await using var inlineJsModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", "data:text/javascript;charset=utf-8," + Uri.EscapeDataString(moduleScript));
-                    var isOnLine = await inlineJsModule.InvokeAsync<bool>("isOnLine");
-                    this._IsOnline = isOnLine;
+                    try
+                    {
+                        this._IsOnline = await this.JSRuntime.InvokeAsync<bool>("Toolbelt.Blazor.getProperty", "navigator.onLine");
 
-                    if (isOnLine) scriptPath += $"?v={this.GetVersionText()}";
+                        if (this._IsOnline == true) scriptPath += "?v=" + VersionInfo.VersionText;
+                    }
+                    catch (JSException e)
+                    {
+                        if (ShowDeveloperGuide())
+                        {
+                            if (e.Message.StartsWith("Could not find 'Toolbelt.Blazor.getProperty'"))
+                            {
+                                this._Logger.LogWarning(e.Message);
+                                this._Logger.LogWarning("Please see also: https://github.com/jsakamoto/Toolbelt.Blazor.HotKeys2/issues/17#issuecomment-2195830001");
+                            }
+                            else this._Logger.LogError(e, e.Message);
+                        }
+                        else this._Logger.LogError(e, e.Message);
+                    }
 
                     this.JSModule = await this.JSRuntime.InvokeAsync<IJSObjectReference>("import", scriptPath);
                     this.ScriptLoaded = true;
