@@ -26,11 +26,7 @@ However, I will continue to develop and maintain this package, because this pack
 
 ### Supported versions
 
-.NET Ver.  | Blazor I18n Text Ver.
------------|------------------------------
-v.6.0, 7.0 | **v.12** (Recommended), v.11
-v.5.0      | **v.12** (Recommended), v.11, v.10, v.9
-v.3.x      | **v.12** (Recommended), v.11, v.10, v.9
+.NET 6.0, 8.0, or later.
 
 ## 🚀 Quick Start
 
@@ -104,11 +100,6 @@ When that dotnet CLI detects localized text source files changing, the dotnet CL
 
 ![fig.2-2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002-2b.png)
 
-**⚠️NOTICE** - The source generator for Blazor I18n Text is enabled on **.NET 6 or later** and Blazor I18n Text **ver.12 or later** only.  
-For more details on previous versions and platforms, please see the following link.
-
-- [📄 Appendix: On .NET 5 or earlier / Blazor I18n Text ver.11 or earlier](https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/blob/master/NET5-OR-EARLIER.md#appendix-on-net-5-or-earlier--blazor-i18n-text-ver11-or-earlier)
-
 ### Step.4 - Configure your app to use I18nText service
 
 Edit the "Program.cs" file to register "I18nText" service, like this.
@@ -181,22 +172,27 @@ The I18nText service detects the language settings of the Web browser, and reads
 I recommend enabling "Request Localization" middleware inside Blazor server app, like this:
 
 ```csharp
-// in the Startup class
+// in the Program.cs
 ...
-public void ConfigureServices(IServiceCollection services)
+var builder = WebApplication.CreateBuilder(args);
+...
+
+// 👇 Add this configuration code before "var app = buildr.Build()".
+builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-  services.Configure<RequestLocalizationOptions>(options => {
     var supportedCultures = new[] { "en", "ja" };
     options.DefaultRequestCulture = new RequestCulture("en");
     options.AddSupportedCultures(supportedCultures);
     options.AddSupportedUICultures(supportedCultures);
-  });
-  ...
+});
+...
+var app = builder.Build();
+...
 
-public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-{
-  app.UseRequestLocalization();
-  ...
+// 👇 Add this code before "app.UseRouting()".
+app.UseRequestLocalization();
+app.UseRouting();
+...
 ```
 
 This code makes the result of server-side pre-rendering to be suitable for "Accept-Language" header value in a request from clients.
