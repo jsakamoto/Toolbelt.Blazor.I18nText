@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText.Internals;
 
+[SuppressMessage("Trimming", "IL2075"), SuppressMessage("Trimming", "IL2026")]
 internal class TextMapReaderForServer : ITextMapReader
 {
     private readonly IFileProvider _fileProvider;

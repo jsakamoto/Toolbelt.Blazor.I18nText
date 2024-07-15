@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.Json;
 using Toolbelt.Blazor.I18nText.Interfaces;
 
@@ -16,6 +17,7 @@ internal class TextMapReaderForWasm : ITextMapReader, IDisposable
         this._httpClient = httpClientFactory.CreateClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient");
     }
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Dictionary<string, string>)), SuppressMessage("Trimming", "IL2026")]
     public async ValueTask<Dictionary<string, string>?> ReadAsync(string jsonUrl, string textTableHash)
     {
         var isOnline = await this._helperScript.IsOnlineAsync();

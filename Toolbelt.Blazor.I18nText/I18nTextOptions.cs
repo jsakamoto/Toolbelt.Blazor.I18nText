@@ -1,4 +1,6 @@
-﻿namespace Toolbelt.Blazor.I18nText;
+﻿using System.ComponentModel;
+
+namespace Toolbelt.Blazor.I18nText;
 
 public delegate ValueTask<string> GetInitialLanguage(IServiceProvider serviceProvider, I18nTextOptions options);
 
@@ -16,7 +18,7 @@ public class I18nTextOptions
 
     public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
 
-    [Obsolete("The \"I18nTextOptions.IsWasm()\" is no longer used from anywhere.")]
+    [Obsolete("The \"I18nTextOptions.IsWasm()\" is no longer used from anywhere."), EditorBrowsable(EditorBrowsableState.Never)]
     public Func<bool>? IsWasm;
 
     public ConfigureHttpClient? ConfigureHttpClient = null;

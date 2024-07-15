@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 
@@ -34,7 +35,7 @@ internal class HelperScript : IAsyncDisposable
 
     private IJSObjectReference? JSModule = null;
 
-    private async ValueTask<ScriptInvoker<T>?> EnsureScriptEnabledAsync<T>()
+    private async ValueTask<ScriptInvoker<T>?> EnsureScriptEnabledAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] T>()
     {
         if (!this.ScriptLoaded)
         {
@@ -62,7 +63,7 @@ internal class HelperScript : IAsyncDisposable
             finally { this.Syncer.Release(); }
         }
 
-        return this.JSModule == null ? default(ScriptInvoker<T>) : this.JSModule.InvokeAsync<T>;
+        return this.JSModule == null ? default : this.JSModule.InvokeAsync<T>;
     }
 
     internal static async ValueTask<string> DefaultGetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)

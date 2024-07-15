@@ -1,4 +1,5 @@
-﻿using Toolbelt.Blazor.I18nText.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using Toolbelt.Blazor.I18nText.Interfaces;
 
 namespace Toolbelt.Blazor.I18nText.Internals;
 
@@ -12,10 +13,12 @@ internal class TextTable
 
     internal readonly object TableObject;
 
-    public TextTable(Type tableType, string langCode, FetchTextTableAsync fetchTextTableAsync)
+    public TextTable(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type tableType,
+        string langCode,
+        FetchTextTableAsync fetchTextTableAsync)
     {
-        var tableObject = Activator.CreateInstance(tableType);
-        if (tableObject == null) throw new Exception($"Creating the instance of {tableType.FullName} was failed.");
+        var tableObject = Activator.CreateInstance(tableType) ?? throw new Exception($"Creating the instance of {tableType.FullName} was failed.");
         this.TableObject = tableObject;
         this.FetchTextTableAsync = fetchTextTableAsync;
         this.FetchTask = fetchTextTableAsync(langCode, this.TableObject);

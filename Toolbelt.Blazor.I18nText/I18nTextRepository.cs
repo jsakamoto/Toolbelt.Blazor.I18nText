@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json;
 using Toolbelt.Blazor.I18nText.Interfaces;
@@ -23,7 +24,8 @@ internal class I18nTextRepository
         this._textMapReader = textMapReader;
     }
 
-    internal async ValueTask<T?> GetTextTableAsync<T>(Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
+    internal async ValueTask<T?> GetTextTableAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(
+        Guid scopeId, string langCode, bool singleLangInAScope) where T : class, I18nTextFallbackLanguage, new()
     {
         var textTable = this.GetLazyTextTable(scopeId, langCode, typeof(T), singleLangInAScope);
         if (textTable == null) return null;
@@ -31,13 +33,19 @@ internal class I18nTextRepository
         return textTable.TableObject as T;
     }
 
-    internal TextTable? GetLazyTextTable(Guid scopeId, string langCode, Type typeofTextTable, bool singleLangInAScope)
+    internal TextTable? GetLazyTextTable(
+        Guid scopeId,
+        string langCode,
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type? typeofTextTable,
+        bool singleLangInAScope)
     {
         if (typeofTextTable == null) return null;
 
         var langs = this.ScopeToLangs.GetOrAdd(scopeId, new LangToTextTable());
         var typeToTables = langs.GetOrAdd(singleLangInAScope ? "" : langCode, new TypeToTextTable());
-        var textTable = typeToTables.GetOrAdd(typeofTextTable, typeofTextTable => this.CreateTextTable(typeofTextTable, langCode));
+        var textTable = typeToTables.GetOrAdd(
+            typeofTextTable,
+            ([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] typeofTextTable) => this.CreateTextTable(typeofTextTable, langCode));
         return textTable;
     }
 
@@ -57,7 +65,9 @@ internal class I18nTextRepository
         this.ScopeToLangs.TryRemove(scopeId, out var _);
     }
 
-    private TextTable CreateTextTable(Type typeofTextTable, string langCode)
+    private TextTable CreateTextTable(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type typeofTextTable,
+        string langCode)
     {
         var textTable = new TextTable(typeofTextTable, langCode, this.FetchTextTableAsync);
         return textTable;

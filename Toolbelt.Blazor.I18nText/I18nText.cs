@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText.Interfaces;
@@ -61,7 +62,7 @@ public class I18nText : IDisposable
         this.Components.InvokeStateHasChanged();
     }
 
-    public async Task<T> GetTextTableAsync<T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
+    public async Task<T> GetTextTableAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] T>(ComponentBase component) where T : class, I18nTextFallbackLanguage, new()
     {
         await this.EnsureInitialLangAsync();
         this.Components.Add(component);
