@@ -11,6 +11,7 @@
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
+    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <Import Project="../VersionInfo.props" />
@@ -33,7 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.5.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -58,7 +58,7 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
     <ProjectReference Include="..\Toolbelt.Blazor.I18nText.SourceGenerator\Toolbelt.Blazor.I18nText.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
     <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="$(Version)" />
   </ItemGroup>

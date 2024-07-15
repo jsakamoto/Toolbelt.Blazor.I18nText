@@ -30,9 +30,8 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
   </ItemGroup>
-  <Import Project="..\..\Toolbelt.Blazor.I18nText\build\Toolbelt.Blazor.I18nText.targets" Condition=" '$(RefI18nTextByPackage)' == 'false' "/>
 
 </Project>

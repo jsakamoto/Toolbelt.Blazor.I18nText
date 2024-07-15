@@ -21,8 +21,5 @@
 
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
-    <!--
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
-    -->
   </ItemGroup>
 </Project>
