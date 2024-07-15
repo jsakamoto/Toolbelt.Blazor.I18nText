@@ -7,7 +7,6 @@ using static Toolbelt.Diagnostics.XProcess;
 
 namespace Toolbelt.Blazor.I18nText.Test;
 
-[Parallelizable(ParallelScope.All)]
 public class WatchTest
 {
     private static readonly IEnumerable<string> HostingModels = ["Client", "Host", "Server"];
