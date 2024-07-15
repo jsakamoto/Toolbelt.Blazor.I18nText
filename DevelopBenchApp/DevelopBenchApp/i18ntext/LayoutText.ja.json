@@ -1,0 +1,8 @@
+{
+  "SiteName": "サンプルサイト",
+
+  "About": "Blazor について",
+  "Home": "ホーム",
+  "Counter": "カウンター",
+  "Weather": "天気"
+}

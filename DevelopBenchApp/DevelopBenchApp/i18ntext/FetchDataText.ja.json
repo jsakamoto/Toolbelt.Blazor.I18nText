@@ -1,0 +1,22 @@
+{
+  "FetchData": "データ取得",
+
+  "Weather": "天気",
+  "Weather_Description": "このコンポーネントはデータ表示のデモンストレーションです。",
+  "Loading": "読み込み中...",
+  "Date": "日付",
+  "TempC": "気温(°C)",
+  "TempF": "気温(°F)",
+  "Summary": "概況",
+
+  "Freezing": "氷点下",
+  "Bracing": "冷たい",
+  "Chilly": "寒い",
+  "Cool": "涼しい",
+  "Mild": "穏やか",
+  "Warm": "暖かい",
+  "Balmy": "温暖",
+  "Hot": "暑い",
+  "Sweltering": "蒸し暑い",
+  "Scorching": "灼熱"
+}

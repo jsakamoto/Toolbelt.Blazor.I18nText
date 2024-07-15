@@ -1,0 +1,17 @@
+﻿@page "/"
+@inject I18nText I18nText
+
+<PageTitle>@_T.Home</PageTitle>
+
+<h1>@_T.HelloWorld</h1>
+
+@_T.WelcomeToYourNewApp
+
+@code {
+    private HomeText _T = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _T = await I18nText.GetTextTableAsync<HomeText>(this);
+    }
+}
