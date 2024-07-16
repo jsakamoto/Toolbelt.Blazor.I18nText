@@ -1,4 +1,3 @@
-using System.Globalization;
 using DevelopBenchApp.Components;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 
@@ -9,10 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddI18nText(options =>
-{
-    options.GetInitialLanguageAsync = (_, _) => ValueTask.FromResult(CultureInfo.CurrentUICulture.Name);
-});
+builder.Services.AddI18nText();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[] { "en", "ja" };

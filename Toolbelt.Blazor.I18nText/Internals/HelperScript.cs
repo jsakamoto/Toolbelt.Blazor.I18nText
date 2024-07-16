@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
@@ -79,7 +80,7 @@ internal class HelperScript : IAsyncDisposable
     {
         var helperScript = serviceProvider.GetRequiredService<HelperScript>();
         var invoker = await helperScript.EnsureScriptEnabledAsync<string>();
-        if (invoker == null) return "en-US";
+        if (invoker == null) return CultureInfo.CurrentUICulture.Name;
         return await invoker.Invoke(Namespace + ".initLang", options.PersistanceLevel);
     }
 
