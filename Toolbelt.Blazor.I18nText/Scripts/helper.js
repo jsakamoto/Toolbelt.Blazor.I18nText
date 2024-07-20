@@ -1,6 +1,7 @@
 const blazor = window.Blazor;
 const doc = document;
 const enhancedload = "enhancedload";
+const circuitClosed = "Toolbelt.Blazor.circuitClosed";
 const localstorage = localStorage;
 const sessionstorage = sessionStorage;
 const getLangFromCookie = (cookieName) => decodeURIComponent(doc.cookie.split(/[; ]+/).map(e => e.split('=')).filter(e => e[0] === cookieName)[0]?.pop() || '')
@@ -45,11 +46,10 @@ export const attach = async (dotNetObjectRef, options) => {
     };
     blazor?.addEventListener(enhancedload, onEnhancedLoad);
     const onCircuitClosed = () => helper.dispose?.();
-    const { circuitClosed } = await import("./Toolbelt.Blazor.I18nText.lib.module.js");
-    circuitClosed.add(onCircuitClosed);
+    doc.addEventListener(circuitClosed, onCircuitClosed);
     helper.dispose = () => {
         blazor?.removeEventListener(enhancedload, onEnhancedLoad);
-        circuitClosed.remove(onCircuitClosed);
+        doc.removeEventListener(circuitClosed, onCircuitClosed);
     };
     return helper;
 };
