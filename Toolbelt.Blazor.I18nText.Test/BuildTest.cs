@@ -75,7 +75,8 @@ public class BuildTest
         // Then
 
         // 1. Support client JavaScript file should be published into "_content/{PackageId}" folder.
-        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "script.min.js").IsTrue();
+        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "helper.min.js").IsTrue();
+        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.lib.module.js").IsTrue();
 
         // 2. Text resource json files have been generated under the publish folder.
         var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.json")
