@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace Toolbelt.Blazor.I18nText;
 
@@ -10,6 +11,8 @@ public delegate void ConfigureHttpClient(IServiceProvider serviceProvider, HttpC
 
 public class I18nTextOptions
 {
+    internal const string DefaultHttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
+
     public GetInitialLanguage? GetInitialLanguageAsync;
 
     public PersistCurrentLanguageAsync? PersistCurrentLanguageAsync;
@@ -26,12 +29,21 @@ public class I18nTextOptions
     public PersistanceLevel PersistenceLevel { get => this.PersistanceLevel; set => this.PersistanceLevel = value; }
 #pragma warning restore CS0618 // Type or member is obsolete
 
-    public string? HttpClientName = "Toolbelt.Blazor.I18nText.HttpClient";
+    public string? HttpClientName = DefaultHttpClientName;
 
     [Obsolete("The \"I18nTextOptions.IsWasm()\" is no longer used from anywhere."), EditorBrowsable(EditorBrowsableState.Never)]
     public Func<bool>? IsWasm;
 
+    /// <summary>
+    /// Gets or sets the function to configure the named HttpClient used by the I18nText service.
+    /// </summary>
     public ConfigureHttpClient? ConfigureHttpClient = null;
+
+    /// <summary>
+    /// Gets of sets the log level of the named HttpClient used by the I18nText service.<br/>
+    /// The default value is <see cref="LogLevel.Warning"/>.
+    /// </summary>
+    public LogLevel HttpClientLogLevel = LogLevel.Warning;
 
     /// <summary>
     /// The name of the cookie to store the current language when the <see cref="PersistenceLevel"/> is "Cookie" or "PersistentCookie".<br/>

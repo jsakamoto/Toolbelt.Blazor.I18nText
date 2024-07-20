@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor.I18nText;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
@@ -41,12 +42,17 @@ public static class I18nTextDependencyInjection
         configure?.Invoke(options);
         services.AddSingleton(options);
 
+        services.Configure<LoggerFilterOptions>(logFilterOptions =>
+        {
+            logFilterOptions.AddFilter("System.Net.Http.HttpClient." + I18nTextOptions.DefaultHttpClientName, options.HttpClientLogLevel);
+        });
+
         // for Blazor WebAssembly apps
         if (OperatingSystem.IsBrowser())
         {
             if (options.ConfigureHttpClient != null)
             {
-                services.AddHttpClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient", (sp, client) => options.ConfigureHttpClient(sp, client));
+                services.AddHttpClient(options.HttpClientName ?? I18nTextOptions.DefaultHttpClientName, (sp, client) => options.ConfigureHttpClient(sp, client));
             }
 
             services.TryAddScoped<ITextMapReader, TextMapReaderForWasm>();
@@ -62,6 +68,7 @@ public static class I18nTextDependencyInjection
 
         services.TryAddScoped<HelperScript>();
         services.TryAddScoped(serviceProvider => new I18nText.I18nText(serviceProvider));
+
         return services;
     }
 

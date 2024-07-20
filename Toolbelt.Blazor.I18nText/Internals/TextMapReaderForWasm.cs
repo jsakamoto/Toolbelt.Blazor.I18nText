@@ -14,7 +14,7 @@ internal class TextMapReaderForWasm : ITextMapReader, IDisposable
     public TextMapReaderForWasm(I18nTextOptions options, HelperScript helperScript, IHttpClientFactory httpClientFactory)
     {
         this._helperScript = helperScript;
-        this._httpClient = httpClientFactory.CreateClient(options.HttpClientName ?? "Toolbelt.Blazor.I18nText.HttpClient");
+        this._httpClient = httpClientFactory.CreateClient(options.HttpClientName ?? I18nTextOptions.DefaultHttpClientName);
     }
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Dictionary<string, string>)), SuppressMessage("Trimming", "IL2026")]
