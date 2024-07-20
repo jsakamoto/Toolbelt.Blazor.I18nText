@@ -61,12 +61,7 @@ public static class I18nTextDependencyInjection
         }
 
         services.TryAddScoped<HelperScript>();
-        services.TryAddScoped(serviceProvider =>
-        {
-            var i18ntext = new I18nText.I18nText(serviceProvider, options);
-            i18ntext.InitializeCurrentLanguage();
-            return i18ntext;
-        });
+        services.TryAddScoped(serviceProvider => new I18nText.I18nText(serviceProvider));
         return services;
     }
 

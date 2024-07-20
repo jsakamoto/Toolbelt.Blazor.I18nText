@@ -10,6 +10,10 @@
 
 <button class="btn btn-primary" @onclick="IncrementCount">@_T.ClickMe</button>
 
+<p class="mt-4">
+    (OperatingSystem.IsBrowser(): @OperatingSystem.IsBrowser())
+</p>
+
 @code {
     private int currentCount = 0;
 

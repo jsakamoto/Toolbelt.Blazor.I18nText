@@ -6,11 +6,20 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+    <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
   </ItemGroup>
 
 </Project>

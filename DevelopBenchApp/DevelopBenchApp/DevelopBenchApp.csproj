@@ -4,12 +4,21 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+    <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
   </ItemGroup>
 
 </Project>

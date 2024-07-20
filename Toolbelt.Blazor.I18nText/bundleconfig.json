@@ -1,16 +1,7 @@
 [
   {
-    "outputFileName": "wwwroot/script.min.js",
-    "inputFiles": [ "script.js" ],
-    "minify": {
-      "enabled": false,
-      "renameLocals": true
-    },
-    "sourceMap": false
-  },
-  {
-    "outputFileName": "wwwroot/script.module.min.js",
-    "inputFiles": [ "script.module.js" ],
+    "outputFileName": "wwwroot/helper.min.js",
+    "inputFiles": [ "Scripts/helper.js" ],
     "minify": {
       "enabled": true,
       "renameLocals": true

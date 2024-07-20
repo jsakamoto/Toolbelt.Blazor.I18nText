@@ -4,5 +4,7 @@ public enum PersistanceLevel
 {
     None,
     Session,
-    SessionAndLocal
+    SessionAndLocal,
+    Cookie,
+    PersistentCookie
 }

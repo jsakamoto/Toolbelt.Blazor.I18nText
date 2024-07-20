@@ -9,7 +9,13 @@ namespace Toolbelt.Blazor.I18nText;
 
 public class I18nText : IDisposable
 {
-    internal readonly I18nTextOptions Options;
+    private readonly IServiceProvider ServiceProvider;
+
+    private readonly I18nTextRepository I18nTextRepository;
+
+    private readonly HelperScript HelperScript;
+
+    private readonly I18nTextOptions Options;
 
     private string _CurrentLanguage = "en";
 
@@ -17,19 +23,23 @@ public class I18nText : IDisposable
 
     private Task? InitLangTask;
 
-    private readonly IServiceProvider ServiceProvider;
-
-    private readonly I18nTextRepository I18nTextRepository;
-
     private readonly Guid ScopeId = Guid.NewGuid();
 
     public event EventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
-    internal I18nText(IServiceProvider serviceProvider, I18nTextOptions options)
+    internal I18nText(IServiceProvider serviceProvider)
     {
         this.ServiceProvider = serviceProvider;
         this.I18nTextRepository = serviceProvider.GetRequiredService<I18nTextRepository>();
-        this.Options = options;
+        this.HelperScript = serviceProvider.GetRequiredService<HelperScript>();
+        this.Options = serviceProvider.GetRequiredService<I18nTextOptions>();
+        this.InitializeCurrentLanguage();
+        this.HelperScript.ChangeLanguage += this.HelperScript_ChangeLanguage;
+    }
+
+    private async Task HelperScript_ChangeLanguage(object? sender, I18nTextChangeLanguageEventArgs e)
+    {
+        await this.SetCurrentLanguageAsync(e.LanguageCode);
     }
 
     internal void InitializeCurrentLanguage()
@@ -83,6 +93,7 @@ public class I18nText : IDisposable
 
     public void Dispose()
     {
+        this.HelperScript.ChangeLanguage -= this.HelperScript_ChangeLanguage;
         this.I18nTextRepository.RemoveScope(this.ScopeId);
     }
 }

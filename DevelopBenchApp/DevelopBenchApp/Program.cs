@@ -1,5 +1,6 @@
 using DevelopBenchApp.Components;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Toolbelt.Blazor.I18nText;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-builder.Services.AddI18nText();
+builder.Services.AddI18nText(options => options.PersistenceLevel = PersistanceLevel.Cookie);
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[] { "en", "ja" };
