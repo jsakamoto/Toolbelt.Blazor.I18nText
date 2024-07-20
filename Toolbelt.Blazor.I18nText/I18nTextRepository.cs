@@ -43,9 +43,11 @@ internal class I18nTextRepository
 
         var langs = this.ScopeToLangs.GetOrAdd(scopeId, new LangToTextTable());
         var typeToTables = langs.GetOrAdd(singleLangInAScope ? "" : langCode, new TypeToTextTable());
+#pragma warning disable IL2067
         var textTable = typeToTables.GetOrAdd(
             typeofTextTable,
-            ([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] typeofTextTable) => this.CreateTextTable(typeofTextTable, langCode));
+            typeofTextTable => new(typeofTextTable, langCode, this.FetchTextTableAsync));
+#pragma warning restore IL2067
         return textTable;
     }
 
@@ -63,14 +65,6 @@ internal class I18nTextRepository
     internal void RemoveScope(Guid scopeId)
     {
         this.ScopeToLangs.TryRemove(scopeId, out var _);
-    }
-
-    private TextTable CreateTextTable(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] Type typeofTextTable,
-        string langCode)
-    {
-        var textTable = new TextTable(typeofTextTable, langCode, this.FetchTextTableAsync);
-        return textTable;
     }
 
     private async ValueTask FetchTextTableAsync(string langCode, object targetTableObject) //where TTextTableObject : class, I18nTextFallbackLanguage, new()
@@ -109,7 +103,9 @@ internal class I18nTextRepository
             catch (HttpRequestException e) when (e.Message.Split(' ').Contains("404")) { }
         }
 
+#pragma warning disable IL2075
         var fields = typeofTextTableObject.GetFields(BindingFlags.Instance | BindingFlags.Public).Where(f => f.FieldType == typeof(string));
+#pragma warning restore IL2075
         if (textMap != null)
         {
             foreach (var field in fields)

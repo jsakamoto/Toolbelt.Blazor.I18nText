@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>13.0.0-preview.2</Version>
+    <Version>14.0.0-preview.1</Version>
     <Copyright>Copyright © 2019-2024 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Authors>J.Sakamoto</Authors>
     <RepositoryType>git</RepositoryType>

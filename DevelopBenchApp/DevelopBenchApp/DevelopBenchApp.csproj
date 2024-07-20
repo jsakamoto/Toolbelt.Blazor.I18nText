@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
@@ -9,16 +9,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.6.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.1" />
   </ItemGroup>
 
 </Project>

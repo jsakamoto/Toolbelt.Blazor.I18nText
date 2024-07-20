@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591;NU1902</NoWarn>
@@ -18,7 +18,7 @@
   <Import Project="VersionInfo.targets" />
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder Condition="'$(Configuration)' == 'Debug'">$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
@@ -32,6 +32,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0-preview.6.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.6.*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-preview.6.*" />
   </ItemGroup>
 
   <ItemGroup>
