@@ -15,13 +15,20 @@
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
   </PropertyGroup>
-  
+
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+      <!-- Unclear at this time if this dependency is really necessary. -->
+      <ResolveStaticWebAssetsInputsDependsOn>MyTarget;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+      <!-- 
+      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn> 
+      -->
       <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
-      <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
+      <!-- <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn> -->
     </PropertyGroup>
+    <Message Importance="high" Text="$(ProjectName) - THIS IS TEST" />
+    <Message Importance="high" Text="NETCoreSdkVersion: $(NETCoreSdkVersion)" />
+    <Message Importance="high" Text="DOTNET_VER: $(DOTNET_VER)" />
   </Target>
 
   <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
@@ -52,7 +59,7 @@
   </ItemGroup>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
-  <Target Name="_EnsureGeneratedI18nTextResourceJsons" AfterTargets="CoreCompile" BeforeTargets="GenerateStaticWebAssetsManifest;GetCopyToOutputDirectoryItems" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons"/>
+  <!-- <Target Name="_EnsureGeneratedI18nTextResourceJsons" AfterTargets="CoreCompile" BeforeTargets="GenerateStaticWebAssetsManifest;GetCopyToOutputDirectoryItems" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons"/>
 
   <Target Name="_IncludeGeneratedI18nTextResourceJsons">
 
@@ -70,11 +77,11 @@
       </ContentWithTargetPath>
     </ItemGroup>
 
-  </Target>
+  </Target> -->
 
   <!-- FOR SUPPORT TO .NET 6 or later Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
 
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
+  <!-- <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
     <ItemGroup>
       <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
       <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
@@ -89,12 +96,48 @@
         <AssetRole>Primary</AssetRole>
       </StaticWebAsset>
     </ItemGroup>
-  </Target>
+  </Target> -->
 
-  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
+  <!-- <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
     <ItemGroup>
       <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
     </ItemGroup>
+  </Target> -->
+
+  <!-- 
+  NET9 SDK, I have confirmed that as long as the Content item is configured prior to ResolveStaticWebAssetsConfiguration, the content will be delivered either by dotnet run or dotnet publish.
+  Note that it is important to explicitly state that it depends on CoreCompile.
+  Otherwise, the source generator will not be able to generate the . {lang}.json file, and the generated . {lang}.json file is not copied.
+  NET SDK version can be obtained with $(NETCoreSdkVersion), so it might be better to use that to determine this.
+  -->
+  <Target Name="MyTarget" BeforeTargets="AssignTargetPaths;ResolveStaticWebAssetsConfiguration;GenerateStaticWebAssetsManifest;GetCopyToOutputDirectoryItems" DependsOnTargets="CoreCompile">
+    <ItemGroup>
+      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json" />
+      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
+      <!-- 
+      NET8 SDK, it is not copied to wwwroot/_content/i18ntext/ when published with .NET8 SDK unless it is ContentWithTargetPath.
+      NET9 SDK, it has been confirmed that it is copied with Content, but whether it is copied with ContentWithTargetPath or not has not been confirmed.
+      NET8 SDK, these contents are not distributed by dotnet run.
+      (NET9 SDK, it has been confirmed that these contents are delivered in a dotnet run when specified with Content.)
+      -->
+      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
+      <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+        <TargetPath>wwwroot/_content/i18ntext/%(FileName)%(Extension)</TargetPath>
+        <SourceType>Computed</SourceType>
+        <SourceId>$(PackageId)</SourceId>
+        <ContentRoot>%(RelativeDir)</ContentRoot>
+        <BasePath>/</BasePath>
+        <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
+        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
+        <AssetKind>All</AssetKind>
+        <AssetMode>All</AssetMode>
+        <AssetRole>Primary</AssetRole>
+        <!-- The following CopyTo~ specification may not be necessary. Not confirmed at this time. -->
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ContentWithTargetPath>
+    </ItemGroup>
+
   </Target>
 
   <!-- THE OPTIMIZATION FLAG, WHETHER ENABLING USING THE IL-LINKER FOR BROWSER-WASM PLATFORM OR NOT -->
