@@ -15,7 +15,7 @@
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
   </PropertyGroup>
-  
+
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
@@ -52,32 +52,10 @@
   </ItemGroup>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
-  <Target Name="_EnsureGeneratedI18nTextResourceJsons" AfterTargets="CoreCompile" BeforeTargets="GenerateStaticWebAssetsManifest;GetCopyToOutputDirectoryItems" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons"/>
-
-  <Target Name="_IncludeGeneratedI18nTextResourceJsons">
-
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile">
     <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Remove="$(I18nTextIntermediateDir)*.json" />
       <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
-
-      <ContentWithTargetPath Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
-      <ContentWithTargetPath Include="@(_IntermediateBlazorI18nTextResourceJsons)">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-        <Visible>false</Visible>
-        <Pack>false</Pack>
-      </ContentWithTargetPath>
-    </ItemGroup>
-
-  </Target>
-
-  <!-- FOR SUPPORT TO .NET 6 or later Razor SDK - NEW STATIC WEB ASSETS ARCHITECTURE -->
-
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
-    <ItemGroup>
-      <_BlazorI18nTextStaticWebAsset Include="@(ContentWithTargetPath)" Condition="$([System.String]::Copy('%(TargetPath)').Replace('/','\').StartsWith('wwwroot\_content\i18ntext\'))" />
-      <StaticWebAsset Include="@(_BlazorI18nTextStaticWebAsset)">
+      <StaticWebAsset Include="@(_IntermediateBlazorI18nTextResourceJsons)">
         <SourceType>Computed</SourceType>
         <SourceId>$(PackageId)</SourceId>
         <ContentRoot>%(RelativeDir)</ContentRoot>
@@ -87,13 +65,15 @@
         <AssetKind>All</AssetKind>
         <AssetMode>All</AssetMode>
         <AssetRole>Primary</AssetRole>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       </StaticWebAsset>
     </ItemGroup>
   </Target>
 
-  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_IncludeGeneratedI18nTextResourceJsons">
+  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_ResolveBlazorI18nTextStaticWebAssets">
     <ItemGroup>
-      <StaticWebAsset Remove="@(StaticWebAsset)" Condition="$([System.String]::Copy('%(RelativePath)').Replace('/','\').StartsWith('_content\i18ntext\'))"/>
+      <StaticWebAsset Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
     </ItemGroup>
   </Target>
 
