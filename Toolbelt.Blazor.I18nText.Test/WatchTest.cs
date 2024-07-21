@@ -34,7 +34,7 @@ public class WatchTest
         await Start("dotnet", "restore", workSpace.StartupProj).ExitCodeIs(0);
 
         // 1st. Given
-        var dstTextEnJsonPath = Path.Combine(workSpace.OutputDir, "wwwroot", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
+        var dstTextEnJsonPath = Path.Combine(componentsProjDir, "obj", "Debug", framework, "dist", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
         File.Exists(dstTextEnJsonPath).IsFalse();
 
         // 1st. When: Start the "dotnet watch" process.

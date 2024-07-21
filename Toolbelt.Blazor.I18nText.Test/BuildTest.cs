@@ -40,15 +40,9 @@ public class BuildTest
 
         // Then
 
-        // 1. The only text resource json files from projects have been generated under the output folder.
-        // (The text resource json files from packages won't copied to the output folder.
-        // They are referenced by the ASP.NET Core static web assets provider from the package cache folder, such as %HOME%/.nuget/packages. )
-        var textResJsonFileNames = Directory.GetFiles(distDir, "*.*")
-            .Select(Path.GetFileName)
-            .Order();
-
-        textResJsonFileNames
-            .Is(ExpectedTextResJsonFromProjects);
+        // 1. At the build time, the i18ntext output directory should not be created,
+        // because the static web assets pipeline will serve the text resource json files directly from the immediate output directory.
+        Directory.Exists(distDir).IsFalse(message: $"The output directory \"{distDir}\" should not be created.");
 
         // 2. The static web assets json have been generated, and it includes all text resource json file entries.
         var assetJsonPath = Path.Combine(workSpace.OutputDir, $"SampleSite.{startupProjName}.staticwebassets.runtime.json");
