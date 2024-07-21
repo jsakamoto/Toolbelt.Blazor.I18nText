@@ -1,3 +1,4 @@
+using System.Text.Json;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Diagnostics.XProcess;
@@ -7,51 +8,50 @@ namespace Toolbelt.Blazor.I18nText.Test;
 [Parallelizable(ParallelScope.All)]
 public class BuildTest
 {
-    private static readonly IEnumerable<string> HostingModels = ["Client", "Host", "Server"];
-
-    private static readonly IEnumerable<string> Frameworks = ["net6.0", "net8.0"];
-
     public static readonly IEnumerable<object[]> Projects =
-        from startupProjName in HostingModels
-        from framework in Frameworks
+        from startupProjName in new[] { "Client", "Host", "Server" }
+        from framework in new[] { "net6.0", "net8.0" }
         select new object[] { startupProjName, framework };
 
-    private static readonly IEnumerable<string> ExpectedTextResJsonFromPackages = [
-        "Lib4PackRef.I18nText.Text.en.json",
-        "Lib4PackRef.I18nText.Text.ja.json",
-        "Lib4PackRef6.I18nText.Text.en.json",
-        "Lib4PackRef6.I18nText.Text.ja.json"];
-
-    private static readonly IEnumerable<string> ExpectedTextResJsonFromProjects = [
-        "Lib4ProjRef.I18nText.Text.en.json",
-        "Lib4ProjRef.I18nText.Text.ja.json",
-        "SampleSite.Components.I18nText.Text.en.json",
-        "SampleSite.Components.I18nText.Text.ja.json"];
+    private static readonly IEnumerable<(string FileName, string Key, string Value)> ExpectedTextResJsons = [
+        ("Lib4PackRef.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4PackRef package."),
+        ("Lib4PackRef.I18nText.Text.ja.json", "Message", "この Blazor コンポーネントは Lib4PackRef で定義されています。"),
+        ("Lib4PackRef6.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4PackRef6 package."),
+        ("Lib4PackRef6.I18nText.Text.ja.json", "Message", "この Blazor コンポーネントは Lib4PackRef6 で定義されています。"),
+        ("Lib4ProjRef.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4ProjRef package."),
+        ("Lib4ProjRef.I18nText.Text.ja.json","Message", "この Blazor コンポーネントは Lib4ProjRef で定義されています。"),
+        ("SampleSite.Components.I18nText.Text.en.json","HelloWorld", "Hello, world!"),
+        ("SampleSite.Components.I18nText.Text.ja.json", "HelloWorld", "こんにちは、世界!")];
 
     [Test, TestCaseSource(nameof(Projects))]
-    public async Task BasicBuildTest(string startupProjName, string framework)
+    public async Task RunTest(string startupProjName, string framework)
     {
         // Given
         using var workSpace = new WorkSpace(startupProjName, framework, configuration: "Debug");
-        var distDir = Path.Combine(workSpace.OutputDir, Path.Combine("wwwroot/_content/i18ntext".Split('/')));
+        var baseUrl = $"http://localhost:{Network.GetAvailableTCPPort()}";
 
         // When
-        await Start("dotnet", $"build -f:{framework}", workSpace.StartupProj).ExitCodeIs(0);
+        using var dotnetRun = Start("dotnet", $"run -f:{framework} -p:BlazorEnableCompression=false -p:CompressionEnabled=false --no-launch-profile", workSpace.StartupProj, options =>
+        {
+            options.EnvironmentVariables["ASPNETCORE_ENVIRONMENT"] = "Development";
+            options.EnvironmentVariables["DOTNET_URLS"] = baseUrl;
+        });
+        var notTimeout = await dotnetRun.WaitForOutputAsync(
+            output => output.Trim().StartsWith("Now listening on: http://localhost:"),
+            options => options.IdleTimeout = 15000);
+        notTimeout.IsTrue();
+        dotnetRun.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();
 
         // Then
+        using var client = new HttpClient();
+        foreach (var expectedTextResJson in ExpectedTextResJsons)
+        {
+            var res = await client.GetAsync(new Uri($"{baseUrl}/_content/i18ntext/{expectedTextResJson.FileName}"));
+            res.IsSuccessStatusCode.IsTrue(message: $"{res.StatusCode} at {expectedTextResJson.FileName}");
 
-        // 1. At the build time, the i18ntext output directory should not be created,
-        // because the static web assets pipeline will serve the text resource json files directly from the immediate output directory.
-        Directory.Exists(distDir).IsFalse(message: $"The output directory \"{distDir}\" should not be created.");
-
-        // 2. The static web assets json have been generated, and it includes all text resource json file entries.
-        var assetJsonPath = Path.Combine(workSpace.OutputDir, $"SampleSite.{startupProjName}.staticwebassets.runtime.json");
-        File.Exists(assetJsonPath).IsTrue(message: $"The static web assets json file \"{assetJsonPath}\" was not found.");
-        dynamic assets = JsonToDynamicConverter.Parse(File.ReadAllText(assetJsonPath));
-        var textResJsonFileEntries = (IDictionary<string, object?>)assets.Root.Children._content.Children.i18ntext.Children;
-
-        textResJsonFileEntries.Keys.Order()
-            .Is(ExpectedTextResJsonFromPackages.Concat(ExpectedTextResJsonFromProjects).Order());
+            var texts = JsonSerializer.Deserialize<Dictionary<string, string>>(await res.Content.ReadAsStringAsync()) ?? [];
+            texts[expectedTextResJson.Key].Is(expectedTextResJson.Value);
+        }
     }
 
     [Test, TestCaseSource(nameof(Projects))]
@@ -64,7 +64,7 @@ public class BuildTest
         var staticWebAssetDir = Path.Combine(wwwrootContentDir, "Toolbelt.Blazor.I18nText");
 
         // When
-        await Start("dotnet", $"publish -c:Release -f:{framework} -p:UsingBrowserRuntimeWorkload=false --nologo", workSpace.StartupProj).ExitCodeIs(0);
+        await Start("dotnet", $"publish -c:Release -f:{framework} -p:UsingBrowserRuntimeWorkload=false -p:BlazorEnableCompression=false -p:CompressionEnabled=false --nologo", workSpace.StartupProj).ExitCodeIs(0);
 
         // Then
 
@@ -73,11 +73,14 @@ public class BuildTest
         FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.lib.module.js").IsTrue();
 
         // 2. Text resource json files have been generated under the publish folder.
-        var textResJsonFileNames = Directory.GetFiles(i18nDistDir, "*.json")
-            .Select(Path.GetFileName)
-            .Order();
+        var actualTextResJsons = Directory.GetFiles(i18nDistDir, "*.json");
+        foreach (var expectedTextResJson in ExpectedTextResJsons)
+        {
+            var expectedTextResJsonPath = Path.Combine(i18nDistDir, expectedTextResJson.FileName);
+            actualTextResJsons.Contains(expectedTextResJsonPath).IsTrue(message: $"NotFound at {expectedTextResJson.FileName}");
 
-        textResJsonFileNames
-            .Is(ExpectedTextResJsonFromPackages.Concat(ExpectedTextResJsonFromProjects).Order());
+            var texts = JsonSerializer.Deserialize<Dictionary<string, string>>(await File.ReadAllTextAsync(expectedTextResJsonPath)) ?? [];
+            texts[expectedTextResJson.Key].Is(expectedTextResJson.Value);
+        }
     }
 }

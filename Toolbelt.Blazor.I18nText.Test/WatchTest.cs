@@ -1,6 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Text.Json;
+﻿using System.Text.Json;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Diagnostics.XProcess;
@@ -9,21 +7,10 @@ namespace Toolbelt.Blazor.I18nText.Test;
 
 public class WatchTest
 {
-    private static readonly IEnumerable<string> HostingModels = ["Client", "Host", "Server"];
-
-    private static readonly IEnumerable<string> Frameworks = ["net6.0", "net8.0"];
-
     public static readonly IEnumerable<object[]> Projects =
-        from startupProjName in HostingModels
-        from framework in Frameworks
+        from startupProjName in new[] { "Client", "Host", "Server" }
+        from framework in new[] { "net6.0", "net8.0" }
         select new object[] { startupProjName, framework };
-
-    private static int GetAvailableTCPPort()
-    {
-        using var listener = new TcpListener(IPAddress.Loopback, 0);
-        listener.Start();
-        return ((IPEndPoint)listener.LocalEndpoint).Port;
-    }
 
     [Test, TestCaseSource(nameof(Projects))]
     public async Task Watch_Test(string startupProjName, string framework)
@@ -42,19 +29,23 @@ public class WatchTest
             "watch",
             "-f:" + framework,
             "--nologo",
+            "--no-restore",
             "--non-interactive",
-            "--no-launch-profile"
+            "--no-launch-profile",
+            "--property:BlazorEnableCompression=false",
+            "--property:CompressionEnabled=false"
         };
         using var watchProcess = Start("dotnet", string.Join(' ', arguments), workSpace.StartupProj, options =>
         {
+            options.EnvironmentVariables["ASPNETCORE_ENVIRONMENT"] = "Development";
             options.EnvironmentVariables["DOTNET_WATCH_SUPPRESS_EMOJIS"] = "true";
-            options.EnvironmentVariables["DOTNET_URLS"] = $"http://localhost:{GetAvailableTCPPort()}";
+            options.EnvironmentVariables["DOTNET_URLS"] = $"http://localhost:{Network.GetAvailableTCPPort()}";
         });
 
         var notTimeout = await watchProcess.WaitForOutputAsync(
             output => output.Trim().StartsWith("Now listening on: http://localhost:"),
             options => options.IdleTimeout = 15000);
-        notTimeout.IsTrue();
+        notTimeout.IsTrue(message: watchProcess.Output);
         watchProcess.GetAndClearBufferedOutput().Contains("ERROR").IsFalse();
 
         // 1st. Then: The text resource json files from projects have been generated under the output folder.
