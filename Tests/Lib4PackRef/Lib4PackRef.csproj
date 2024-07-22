@@ -4,7 +4,7 @@
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>12.0.0.4</Version>
+    <Version>14.0.0.1</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
@@ -26,6 +26,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.1" />
   </ItemGroup>
 </Project>
