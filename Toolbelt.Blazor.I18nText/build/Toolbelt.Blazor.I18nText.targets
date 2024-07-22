@@ -18,7 +18,7 @@
 
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssetsClassic;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
       <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
       <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
     </PropertyGroup>
@@ -52,7 +52,8 @@
   </ItemGroup>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile">
+  <!-- ...FOR .NET6 and 8 SDK -->
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssetsClassic" DependsOnTargets="CoreCompile" Condition="!$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
     <ItemGroup>
       <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
       <StaticWebAsset Include="@(_IntermediateBlazorI18nTextResourceJsons)">
@@ -68,6 +69,26 @@
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       </StaticWebAsset>
+    </ItemGroup>
+  </Target>
+
+  <!-- ...FOR .NET9 SDK -->
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile" BeforeTargets="AssignTargetPaths;ResolveStaticWebAssetsConfiguration" Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
+    <ItemGroup>
+      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
+      <Content Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+        <SourceType>Computed</SourceType>
+        <SourceId>$(PackageId)</SourceId>
+        <ContentRoot>%(RelativeDir)</ContentRoot>
+        <BasePath>/</BasePath>
+        <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
+        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
+        <AssetKind>All</AssetKind>
+        <AssetMode>All</AssetMode>
+        <AssetRole>Primary</AssetRole>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
+      </Content>
     </ItemGroup>
   </Target>
 
