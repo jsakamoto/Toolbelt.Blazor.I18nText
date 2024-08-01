@@ -1,0 +1,14 @@
+﻿@inject Toolbelt.Blazor.I18nText.I18nText I18nText
+
+<div class="my-component">
+    @_T.Message
+</div>
+
+@code {
+    private Component1Text _T = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _T = await this.I18nText.GetTextTableAsync<Component1Text>(this);
+    }
+}

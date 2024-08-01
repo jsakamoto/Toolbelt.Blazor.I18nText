@@ -8,7 +8,7 @@
     @if (LangOptionModel is not null)
     {
         <EditForm Model="LangOptionModel" FormName="LangOption" OnSubmit="OnSubmitLangOption" Enhance>
-            <select name="LangOptionModel.Language" onchange="this.parentElement.querySelector('[type=submit]').click()">
+            <select name="LangOptionModel.Language" onchange="this.parentElement.querySelector('[type=submit]').click()" class="form-control form-control-sm">
                 <option value="en" selected="@(LangOptionModel.Language == "en")">English</option>
                 <option value="ja" selected="@(LangOptionModel.Language == "ja")">日本語</option>
             </select>
