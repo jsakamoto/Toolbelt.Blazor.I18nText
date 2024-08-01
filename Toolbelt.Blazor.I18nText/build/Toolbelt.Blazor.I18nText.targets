@@ -14,6 +14,7 @@
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
     <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);PopulateI18nLocalizedTextSourceFiles</CoreCompileDependsOn>
   </PropertyGroup>
 
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
@@ -25,13 +26,15 @@
   </Target>
 
   <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
-  <ItemGroup>
-    <Content Remove="$(I18nTextFilePattern)" />
-    <None Remove="$(I18nTextFilePattern)" />
-    <None Include="$(I18nTextFilePattern)" />
-    <!-- INCLUDES ~/i18ntext/*.{json|csv} FILES TO BE PROCEEDED BY I18N TEXT SOURCE GENERATOR -->
-    <AdditionalFiles Include="$(I18nTextFilePattern)" />
-  </ItemGroup>
+  <Target Name="PopulateI18nLocalizedTextSourceFiles">
+    <ItemGroup>
+      <Content Remove="$(I18nTextFilePattern)" />
+      <None Remove="$(I18nTextFilePattern)" />
+      <None Include="$(I18nTextFilePattern)" />
+      <!-- INCLUDES ~/i18ntext/*.{json|csv} FILES TO BE PROCEEDED BY I18N TEXT SOURCE GENERATOR -->
+      <AdditionalFiles Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+  </Target>
 
   <!-- EXPOSE MSBUILD PROPERTY TO I18N TEXT SOURCE GENERATOR -->
   <ItemGroup>
