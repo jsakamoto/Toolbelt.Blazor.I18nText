@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35103.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp.csproj", "{4B829116-671C-400A-B544-66360825D294}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp.csproj", "{4B829116-671C-400A-B544-66360825D294}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevelopBenchApp.Client", "DevelopBenchApp.Client\DevelopBenchApp.Client.csproj", "{C2F1F558-23D9-4559-BFDE-B7CF682304D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp.Client", "DevelopBenchApp.Client\DevelopBenchApp.Client.csproj", "{C2F1F558-23D9-4559-BFDE-B7CF682304D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorClassLibrary1", "RazorClassLibrary1\RazorClassLibrary1.csproj", "{18E507B5-A555-4AB7-A1B3-7E09C6538123}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{C2F1F558-23D9-4559-BFDE-B7CF682304D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F1F558-23D9-4559-BFDE-B7CF682304D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2F1F558-23D9-4559-BFDE-B7CF682304D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18E507B5-A555-4AB7-A1B3-7E09C6538123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18E507B5-A555-4AB7-A1B3-7E09C6538123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18E507B5-A555-4AB7-A1B3-7E09C6538123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18E507B5-A555-4AB7-A1B3-7E09C6538123}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
+    <ProjectReference Include="..\RazorClassLibrary1\RazorClassLibrary1.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.6.*" />
   </ItemGroup>
 

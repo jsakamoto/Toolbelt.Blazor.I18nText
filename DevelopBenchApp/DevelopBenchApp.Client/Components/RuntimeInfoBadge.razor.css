@@ -1,0 +1,10 @@
+﻿.runtime-information {
+    display: inline-block;
+    font-size: 12px;
+    background-color: #edf2f5;
+    padding: 2px 6px;
+    border: solid 1px #cedce5;
+    border-radius: 4px;
+    color: #878b8f;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
