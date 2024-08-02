@@ -52,6 +52,7 @@ public event EventHandler<I18nTextChangeLanguageEventArgs> ChangeLanguage;
 ```
 
 #### Description
+
 This event will be invoked after the language is changed.  It is invoked after the language has been changed, but before the component state has changed.
 
 ### `GetTextTableAsync()` method
@@ -149,12 +150,12 @@ public delegate Task PersistCurrentLanguageAsync(
 By the default configuration, this field points to the static method that will or will not store the language code that is specified for the argument of the delegate.  
 The behavior of the default implements rely on what value is specified in the`PersistanceLevel` filed of the `option` argument.
 
-### `PersistanceLevel` field
+### `PersistenceLevel` property
 
 #### Syntax
 
 ```csharp
-public PersistanceLevel PersistanceLevel;
+public PersistanceLevel PersistenceLevel { get; set; }
 ```
 
 #### Default Value
@@ -163,26 +164,35 @@ public PersistanceLevel PersistanceLevel;
 
 #### Description
 
-This enum field allows you to control which storage is used for storing the current language selecting when the `SetCurrentLanguageAsync(..)` method is invoked.
+This enum property allows you to control which storage is used for storing the current language selecting when the `SetCurrentLanguageAsync(..)` method is invoked.
 
-The type of this field is a enum type that has following values, and this field has one of the these enum values.
+The type of this property is a enum type that has following values, and this property has one of the these enum values.
 
 ```csharp
 public enum PersistanceLevel
 {
   None,
   Session,
-  SessionAndLocal
+  SessionAndLocal,
+  Cookie,
+  PersistentCookie
 }
 ```
 
 These enumerated values ​​have the following meanings.
 
-- **None** ... the language code will not persist anywhere.
-- **Session** ... the language code will persist into web borwser's session storage.
-- **SessionAndLocal** ... the language code will persist into web borwser's session storage and local storage.
+Value                | Description
+---------------------|------------
+**None**             | the language code will not persist anywhere.
+**Session**          | the language code will persist into web borwser's session storage.
+**SessionAndLocal**  | the language code will persist into web borwser's session storage and local storage.
+**Cookie**           | the language code will persist into web borwser's cookie storage.
+**PersistentCookie** | the language code will persist into web borwser's cookie storage with a long expiration date.
 
-This field value is used by the static method that is the default value of `PersistCurrentLanguageAsync` field.
+This property value is used by the static method that is the default value of `PersistCurrentLanguageAsync` field.
+
+> [!NOTE]
+> If your Blazor app has SSR areas, we strongly recommend to use `PersistanceLevel.Cookie` option to keep the language settings, because it is the only way to keep the language settings in the SSR areas. If your Blazor app doesn't have any SSR areas, you can use other options, such as `PersistanceLevel.Session`, etc.
 
 ### `HttpClientName` field
 
