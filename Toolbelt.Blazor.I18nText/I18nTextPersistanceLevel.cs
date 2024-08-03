@@ -1,9 +1,10 @@
-﻿namespace Toolbelt.Blazor.I18nText
+﻿namespace Toolbelt.Blazor.I18nText;
+
+public enum PersistanceLevel
 {
-    public enum PersistanceLevel
-    {
-        None,
-        Session,
-        SessionAndLocal
-    }
+    None,
+    Session,
+    SessionAndLocal,
+    Cookie,
+    PersistentCookie
 }

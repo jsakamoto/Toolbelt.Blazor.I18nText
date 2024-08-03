@@ -1,22 +1,19 @@
-﻿using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
 using SampleSite.Components.Services;
 
-namespace SampleSite.Client.Services
+namespace SampleSite.Client.Services;
+
+public class WeatherForecastService : IWeatherForecastService
 {
-    public class WeatherForecastService : IWeatherForecastService
+    private readonly HttpClient HttpClient;
+
+    public WeatherForecastService(HttpClient httpClient)
     {
-        private readonly HttpClient HttpClient;
+        this.HttpClient = httpClient;
+    }
 
-        public WeatherForecastService(HttpClient httpClient)
-        {
-            HttpClient = httpClient;
-        }
-
-        public Task<WeatherForecast[]> GetForecastAsync()
-        {
-            return this.HttpClient.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
-        }
+    public async Task<WeatherForecast[]> GetForecastAsync()
+    {
+        return await this.HttpClient.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json") ?? Array.Empty<WeatherForecast>();
     }
 }

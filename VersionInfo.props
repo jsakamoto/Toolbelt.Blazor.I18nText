@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <Version>13.0.0-preview.2</Version>
+    <Copyright>Copyright © 2019-2024 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Authors>J.Sakamoto</Authors>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/</RepositoryUrl>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PackageTags>blazor,localize,i18n</PackageTags>
+    <PackageIcon>nupkg-icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageOutputPath>../_dist</PackageOutputPath>
+    <PackageReleaseNotes>(Please write the package release notes in "../RELEASE-NOTES.txt")</PackageReleaseNotes>
+    <Description>This NuGet package allows you to localize texts in your Blazor app.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.assets\nupkg-icon.png" Visible="false" Pack="true" PackagePath="/" />
+    <None Include="..\README.md" Visible="false" Pack="true" PackagePath="/" />
+    <None Include="..\THIRDPARTYNOTICES.txt" Visible="false" Pack="true" PackagePath="/notices" />
+  </ItemGroup>
+</Project>

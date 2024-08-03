@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Toolbelt.Blazor.I18nText.Internals;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Inetrnals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator
 {
@@ -27,7 +26,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             try
             {
                 var options = this.CreateI18nTextCompilerOptions(context, logMessage, logError);
-                if ((options?.UseSourceGenerator ?? false) == false) return;
+                if (options == null) return;
 
                 var cancellationToken = context.CancellationToken;
 
@@ -66,7 +65,7 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
         private I18nTextCompilerOptions CreateI18nTextCompilerOptions(GeneratorExecutionContext context, Action<string> logMessage, Action<Exception> logError)
         {
             var globalOptions = context.AnalyzerConfigOptions.GlobalOptions;
-            if (!globalOptions.TryGetValue("build_property.I18nTextUseSourceGenerator", out var useSourceGenerator)) return null;
+            if (!globalOptions.TryGetValue("build_property.I18nTextUseSourceGenerator", out var _)) return null;
 
             //if (!globalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace)) throw new Exception("Could not determin the root namespace.");
             if (!globalOptions.TryGetValue("build_property.ProjectDir", out var projectDir)) throw new Exception("Could not determin the project diretcory.");
@@ -78,7 +77,6 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
 
             return new I18nTextCompilerOptions(baseDir: projectDir)
             {
-                UseSourceGenerator = bool.Parse(useSourceGenerator),
                 I18nTextSourceDirectory = Path.Combine(projectDir, i18nTextSourceDirectory),
                 OutDirectory = i18ntextIntermediateDir,
                 NameSpace = i18ntextNamespace,

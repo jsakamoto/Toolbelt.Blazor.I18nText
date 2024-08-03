@@ -13,16 +13,4 @@ internal static class XProcessExtensions
             process.ExitCode.Is(expected, "message: " + process.Output);
         }
     }
-
-    public static async ValueTask WaitForOutput(this XProcess process, Func<string, bool> predicate, int millsecondsTimeout)
-    {
-        var bufferedOutput = process.GetAndClearBufferedOutput();
-        if (predicate(bufferedOutput)) return;
-
-        var cts = new CancellationTokenSource(millsecondsTimeout);
-        await foreach (var output in process.GetOutputAsyncStream().WithCancellation(cts.Token))
-        {
-            if (predicate(output)) return;
-        }
-    }
 }

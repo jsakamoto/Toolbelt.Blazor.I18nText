@@ -1,7 +1,6 @@
-﻿namespace Toolbelt.Blazor.I18nText.Interfaces
+﻿namespace Toolbelt.Blazor.I18nText.Interfaces;
+
+public interface I18nTextTableHash
 {
-    public interface I18nTextTableHash
-    {
-        string Hash { get; }
-    }
+    string Hash { get; }
 }

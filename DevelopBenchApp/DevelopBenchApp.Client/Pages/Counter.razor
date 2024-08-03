@@ -1,0 +1,30 @@
+﻿@page "/counter"
+@rendermode InteractiveAuto
+@inject I18nText I18nText
+
+<PageTitle>@_T.Counter</PageTitle>
+
+<h1>@_T.Counter</h1>
+
+<p><RuntimeInfoBadge /></p>
+
+<p role="status">@_T.CurrentCount: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">@_T.ClickMe</button>
+
+
+@code {
+    private int currentCount = 0;
+
+    private CounterText _T = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _T = await this.I18nText.GetTextTableAsync<CounterText>(this);
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

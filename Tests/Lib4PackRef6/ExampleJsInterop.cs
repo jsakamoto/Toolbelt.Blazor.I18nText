@@ -15,21 +15,21 @@ public class ExampleJsInterop : IAsyncDisposable
 
     public ExampleJsInterop(IJSRuntime jsRuntime)
     {
-        moduleTask = new (() => jsRuntime.InvokeAsync<IJSObjectReference>(
+        this.moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Lib4PackRef6/exampleJsInterop.js").AsTask());
     }
 
     public async ValueTask<string> Prompt(string message)
     {
-        var module = await moduleTask.Value;
+        var module = await this.moduleTask.Value;
         return await module.InvokeAsync<string>("showPrompt", message);
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (moduleTask.IsValueCreated)
+        if (this.moduleTask.IsValueCreated)
         {
-            var module = await moduleTask.Value;
+            var module = await this.moduleTask.Value;
             await module.DisposeAsync();
         }
     }

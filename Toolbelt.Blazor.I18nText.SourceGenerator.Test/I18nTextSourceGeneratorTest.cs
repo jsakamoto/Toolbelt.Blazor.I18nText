@@ -5,9 +5,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Interfaces;
-using Toolbelt.Blazor.I18nText.Internals;
+using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 using Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
-using Toolbelt.DynamicBinderExtension;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test;
 
@@ -172,8 +171,8 @@ public class I18nTextSourceGeneratorTest
         // When
         new I18nTextSourceGenerator().Execute(context);
 
-        // Then: It souhld be error.
-        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.ToDynamic().FilePath)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
+        // Then: It should be error.
+        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.GetMappedLineSpan().Path)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
             "Foo.Bar.en.csv, Error I18N002: Invalid CSV format");
     }
 
@@ -181,7 +180,7 @@ public class I18nTextSourceGeneratorTest
     /// Compile - Error by localized text source file is invalid JSON format
     /// </summary>
     [Test]
-    public void Compile_Error_LocalizedTextSourceFile_is_InavidJsonFormat()
+    public void Compile_Error_LocalizedTextSourceFile_is_InvalidJsonFormat()
     {
         // Given
         using var workSpace = new WorkSpace();
@@ -194,8 +193,8 @@ public class I18nTextSourceGeneratorTest
         // When
         new I18nTextSourceGenerator().Execute(context);
 
-        // Then: It souhld be error.
-        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.ToDynamic().FilePath)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
+        // Then: It should be error.
+        context.GetDiagnostics().Select(d => $"{Path.GetFileName(d.Location.GetMappedLineSpan().Path)}, {d.Severity} {d.Id}: {d.GetMessage()}").Is(
             "Foo.Bar.ja.json, Error I18N002: Unexpected character encountered while parsing value: H. Path '', line 0, position 0.");
     }
 

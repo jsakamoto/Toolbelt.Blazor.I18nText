@@ -1,3 +1,11 @@
+v.13.0.0
+- Improve: Now it supports .NET 8.0 correctly.
+- Improve: Enable IL Trimming on the Blazor WebAssembly platform.
+- Improve: The Blazor SSR support by using the Cookie for storing selected language.
+- BREAKING CHANGE: Supporting for .NET Core 3.1, .NET 5.0 and 7.0 was dropped.
+- BREAKING CHANGE: The i18n compiler MSBuild task was removed. It only works as the custom C# source generator.
+- BREAKING CHANGE: The "IsWasm" option was obsoleted. It is still there for binary compatibility, but now it is no longer used from anywhere.
+
 v.12.0.2
 - Fix: Error code shows internal values on the MSBuild task version i18n compiler.
 

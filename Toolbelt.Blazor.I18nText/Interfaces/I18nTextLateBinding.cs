@@ -1,7 +1,6 @@
-﻿namespace Toolbelt.Blazor.I18nText.Interfaces
+﻿namespace Toolbelt.Blazor.I18nText.Interfaces;
+
+public interface I18nTextLateBinding
 {
-    public interface I18nTextLateBinding
-    {
-        string this[string key] { get; }
-    }
+    string this[string key] { get; }
 }

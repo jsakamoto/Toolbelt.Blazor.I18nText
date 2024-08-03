@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
     <Version>12.0.0.1</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,10 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.32" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="12.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0-preview.2" />
   </ItemGroup>
 </Project>

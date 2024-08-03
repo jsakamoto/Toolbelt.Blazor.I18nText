@@ -1,0 +1,22 @@
+{
+  "FetchData": "Fetch data",
+
+  "Weather": "Weather",
+  "Weather_Description": "This component demonstrates showing data.",
+  "Loading": "Loading...",
+  "Date": "Date",
+  "TempC": "Temp. (C)",
+  "TempF": "Temp. (F)",
+  "Summary": "Summary",
+
+  "Freezing": "Freezing",
+  "Bracing": "Bracing",
+  "Chilly": "Chilly",
+  "Cool": "Cool",
+  "Mild": "Mild",
+  "Warm": "Warm",
+  "Balmy": "Balmy",
+  "Hot": "Hot",
+  "Sweltering": "Sweltering",
+  "Scorching": "Scorching"
+}

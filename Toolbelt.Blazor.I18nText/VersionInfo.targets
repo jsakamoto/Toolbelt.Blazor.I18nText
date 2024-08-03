@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <PrepareForBuildDependsOn>$(PrepareForBuildDependsOn);_GenerateVersionInfoClass</PrepareForBuildDependsOn>
+  </PropertyGroup>
+
+  <Target Name="_GenerateVersionInfoClass" Inputs="..\VersionInfo.props" Outputs="VersionInfo.cs">
+    <ItemGroup>
+      <VersionInfoLines Include="namespace $(RootNamespace)%3b"/>
+      <VersionInfoLines Include="internal static class VersionInfo"/>
+      <VersionInfoLines Include="{"/>
+      <VersionInfoLines Include="%20%20%20%20internal const string VersionText = &quot;$(Version)&quot;%3b"/>
+      <VersionInfoLines Include="}"/>
+    </ItemGroup>
+    <WriteLinesToFile File="VersionInfo.cs" Overwrite="true" Lines="@(VersionInfoLines)"></WriteLinesToFile>
+  </Target>
+
+</Project>

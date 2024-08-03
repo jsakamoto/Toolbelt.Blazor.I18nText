@@ -1,0 +1,50 @@
+﻿@using System.Globalization
+@using Microsoft.Extensions.Options
+
+@inject I18nText I18nText
+@inject IOptions<RequestLocalizationOptions> RequestLocalizationOptions
+
+<div class="language-selector">
+    @if (LangOptionModel is not null)
+    {
+        <EditForm Model="LangOptionModel" FormName="LangOption" OnSubmit="OnSubmitLangOption" Enhance>
+            <select name="LangOptionModel.Language" onchange="this.parentElement.querySelector('[type=submit]').click()" class="form-control form-control-sm">
+                <option value="en" selected="@(LangOptionModel.Language == "en")">English</option>
+                <option value="ja" selected="@(LangOptionModel.Language == "ja")">日本語</option>
+            </select>
+            <button type="submit" style="display:none">Submit</button>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required HttpContext HttpContext { get; init; }
+
+    protected override void OnInitialized()
+    {
+        if (LangOptionModel is null)
+        {
+            var options = RequestLocalizationOptions.Value;
+            var lang = CultureInfo.CurrentUICulture.Name.Split('-').First();
+            lang = options.SupportedUICultures?.Any(culture => culture.Name.Split('-').First() == lang) == true ? lang : options.DefaultRequestCulture.UICulture.Name;
+            LangOptionModel = new() { Language = lang };
+        }
+    }
+
+    [SupplyParameterFromForm]
+    public LanguageOption? LangOptionModel { get; set; }
+
+    public class LanguageOption
+    {
+        public required string Language { get; set; }
+    }
+
+    private async Task OnSubmitLangOption()
+    {
+        if (LangOptionModel is null) return;
+        var lang = LangOptionModel.Language;
+        this.HttpContext.Response.Cookies.Append(".AspNetCore.Culture", $"c={lang}|uic={lang}");
+        await this.I18nText.SetCurrentLanguageAsync(lang);
+    }
+}

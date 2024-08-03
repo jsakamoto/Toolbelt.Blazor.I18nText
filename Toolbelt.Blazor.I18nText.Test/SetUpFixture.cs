@@ -5,6 +5,8 @@ using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Diagnostics.XProcess;
 
+[assembly: LevelOfParallelism(2)]
+
 namespace Toolbelt.Blazor.I18nText.Test;
 
 [SetUpFixture]

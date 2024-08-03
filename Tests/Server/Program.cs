@@ -1,20 +1,40 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Localization;
+using SampleSite.Components.Services;
+using SampleSite.Server.Data;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
-namespace SampleSite.Server
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddI18nText();
+
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<IWeatherForecastService, WeatherForecastService>();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    var supportedCultures = new[] { "en", "ja" };
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.AddSupportedCultures(supportedCultures);
+    options.AddSupportedUICultures(supportedCultures);
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
+
+app.UseRequestLocalization();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.MapRazorPages();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+
+app.Run();

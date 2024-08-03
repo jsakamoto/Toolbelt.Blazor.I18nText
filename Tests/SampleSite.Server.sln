@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleSite.Components", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lib4PackRef6", "Lib4PackRef6\Lib4PackRef6.csproj", "{08DF4401-FB9E-46F6-ABEB-EDA0C1146E93}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText", "..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{08DF4401-FB9E-46F6-ABEB-EDA0C1146E93}.Release|x64.Build.0 = Release|Any CPU
 		{08DF4401-FB9E-46F6-ABEB-EDA0C1146E93}.Release|x86.ActiveCfg = Release|Any CPU
 		{08DF4401-FB9E-46F6-ABEB-EDA0C1146E93}.Release|x86.Build.0 = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|x64.Build.0 = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Debug|x86.Build.0 = Debug|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|x64.ActiveCfg = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|x64.Build.0 = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|x86.ActiveCfg = Release|Any CPU
+		{56DE8FBE-4EA5-4E15-ABF7-B90A4E65202E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

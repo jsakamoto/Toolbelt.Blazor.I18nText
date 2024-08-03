@@ -5,15 +5,10 @@ VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText", "Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj", "{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.CompileTask", "Toolbelt.Blazor.I18nText.CompileTask\Toolbelt.Blazor.I18nText.CompileTask.csproj", "{784D7AF5-C724-4642-96D2-1A8915188A70}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nTextCompileTask.Test", "Toolbelt.Blazor.I18nTextCompileTask.Test\Toolbelt.Blazor.I18nTextCompileTask.Test.csproj", "{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "- README -", "- README -", "{D8B20BA4-E0AC-482A-8561-1FEA406BF42B}"
 	ProjectSection(SolutionItems) = preProject
 		API-REFERENCE.md = API-REFERENCE.md
 		README-CONFIGURATION.md = README-CONFIGURATION.md
-		NET5-OR-EARLIER.md = NET5-OR-EARLIER.md
 		README.md = README.md
 		RELEASE-NOTES.txt = RELEASE-NOTES.txt
 		THIRDPARTYNOTICES.txt = THIRDPARTYNOTICES.txt
@@ -25,18 +20,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.So
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{D3BFA8A3-283A-45B3-A108-04C24DA7A768}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Compiler", "Compiler", "{DAC0252D-70B9-47A7-8404-63E2BCF0715B}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Toolbelt.Blazor.I18nText.Compiler.Shared", "Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.shproj", "{EBE99769-E67D-4E13-A3AE-FDA6055F9434}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toolbelt.Blazor.I18nText.SourceGenerator.Test", "Toolbelt.Blazor.I18nText.SourceGenerator.Test\Toolbelt.Blazor.I18nText.SourceGenerator.Test.csproj", "{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{9ABE5E2D-7FF6-43E7-B875-640A9197B669}"
 	ProjectSection(SolutionItems) = preProject
 		Build\BuildPackageReleaseNotes.targets = Build\BuildPackageReleaseNotes.targets
+		VersionInfo.props = VersionInfo.props
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp.csproj", "{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DevelopBenchApp", "DevelopBenchApp", "{BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp.Client", "DevelopBenchApp\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj", "{7F889A27-1C78-4821-A9B7-AA0EEF6412EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp\DevelopBenchApp.csproj", "{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary1", "DevelopBenchApp\RazorClassLibrary1\RazorClassLibrary1.csproj", "{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,14 +46,6 @@ Global
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87CB0C26-4A06-4C5C-A2E7-06648E2E6931}.Release|Any CPU.Build.0 = Release|Any CPU
-		{784D7AF5-C724-4642-96D2-1A8915188A70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{784D7AF5-C724-4642-96D2-1A8915188A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{784D7AF5-C724-4642-96D2-1A8915188A70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{784D7AF5-C724-4642-96D2-1A8915188A70}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33}.Release|Any CPU.Build.0 = Release|Any CPU
 		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -68,28 +58,30 @@ Global
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CB60EBF8-A97F-478B-A209-DB4E1139A6C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{784D7AF5-C724-4642-96D2-1A8915188A70} = {DAC0252D-70B9-47A7-8404-63E2BCF0715B}
-		{97C07E76-99A4-4CE6-81FA-2ACCC2DF0A33} = {D3BFA8A3-283A-45B3-A108-04C24DA7A768}
 		{53DA5045-94CF-4FA7-B5E2-5475D17D70A7} = {D3BFA8A3-283A-45B3-A108-04C24DA7A768}
-		{E5189A34-DFE2-4257-84DF-DCFAA73B074E} = {DAC0252D-70B9-47A7-8404-63E2BCF0715B}
-		{EBE99769-E67D-4E13-A3AE-FDA6055F9434} = {DAC0252D-70B9-47A7-8404-63E2BCF0715B}
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A} = {D3BFA8A3-283A-45B3-A108-04C24DA7A768}
+		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
+		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36200F0-D306-4B7C-95B7-1299B29091CF}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{784d7af5-c724-4642-96d2-1a8915188a70}*SharedItemsImports = 5
-		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{e5189a34-dfe2-4257-84df-dcfaa73b074e}*SharedItemsImports = 5
-		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{ebe99769-e67d-4e13-a3ae-fda6055f9434}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
