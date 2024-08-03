@@ -7,8 +7,9 @@
 
   <!-- DEFINE MSBUILD PROPERTIES FOR I18N TEXT -->
   <PropertyGroup>
-    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(ProjectDir)i18ntext</I18nTextSourceDirectory>
-    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceDirectory)\**\*.json;$(I18nTextSourceDirectory)\**\*.csv</I18nTextFilePattern>
+    <I18nTextSourceSubDirectory Condition=" '$(I18nTextSourceSubDirectory)' == '' ">i18ntext</I18nTextSourceSubDirectory>
+    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(ProjectDir)$(I18nTextSourceSubDirectory)</I18nTextSourceDirectory>
+    <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceSubDirectory)\**\*.json;$(I18nTextSourceSubDirectory)\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
@@ -28,11 +29,23 @@
   <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
   <Target Name="PopulateI18nLocalizedTextSourceFiles">
     <ItemGroup>
-      <Content Remove="$(I18nTextFilePattern)" />
-      <None Remove="$(I18nTextFilePattern)" />
-      <None Include="$(I18nTextFilePattern)" />
+      <_I18nTextFile Include="$(I18nTextFilePattern)" />
+      <Content Remove="@(_I18nTextFile)" />
+      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
       <!-- INCLUDES ~/i18ntext/*.{json|csv} FILES TO BE PROCEEDED BY I18N TEXT SOURCE GENERATOR -->
-      <AdditionalFiles Include="$(I18nTextFilePattern)" />
+      <AdditionalFiles Remove="@(_I18nTextFile->'%(FullPath)')" />
+      <AdditionalFiles Include="@(_I18nTextFile->'%(FullPath)')" />
+      <_I18nTextFile Remove="@(_I18nTextFile)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- EXCLUDE I18N LOCALIZED TEXT SOURCE FILES FROM PUBLISHING CONTENTS -->
+  <Target Name="OmmitI18nLocalizedTextSourceFileFromContent" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <ItemGroup>
+      <_I18nTextFile Include="$(I18nTextFilePattern)" />
+      <Content Remove="@(_I18nTextFile)" />
+      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
+      <_I18nTextFile Remove="@(_I18nTextFile)" />
     </ItemGroup>
   </Target>
 
@@ -50,8 +63,10 @@
 
   <!-- FOR DOTNET WATCH -->
   <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
-    <Watch Remove="$(I18nTextFilePattern)" />
-    <Watch Include="$(I18nTextFilePattern)" />
+    <_I18nTextFile Include="$(I18nTextFilePattern)" />
+    <Watch Remove="@(_I18nTextFile->'%(FullPath)')" />
+    <Watch Include="@(_I18nTextFile->'%(FullPath)')" />
+    <_I18nTextFile Remove="@(_I18nTextFile)" />
   </ItemGroup>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
