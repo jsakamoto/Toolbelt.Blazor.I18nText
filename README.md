@@ -1,4 +1,4 @@
-# Blazor Internationalization(I18n) Text [![NuGet Package](https://img.shields.io/nuget/v/Toolbelt.Blazor.I18nText.svg)](https://www.nuget.org/packages/Toolbelt.Blazor.I18nText/)
+# Blazor Internationalization(I18n) Text [![NuGet Package](https://img.shields.io/nuget/v/Toolbelt.Blazor.I18nText.svg)](https://www.nuget.org/packages/Toolbelt.Blazor.I18nText/) [![Discord](https://img.shields.io/discord/798312431893348414?style=flat&logo=discord&logoColor=white&label=Blazor%20Community&labelColor=5865f2&color=gray)](https://discord.com/channels/798312431893348414/1202165955900473375)
 
 ## 📝 Summary
 
@@ -128,11 +128,11 @@ If your Blazor app has SSR areas, or the Server-side Pre-rendering is enabled, o
 // in your Program.cs
 
 ...
-// 👇 Add the following code to configure 
+// 👇 Add the following code to configure
 //     the RequestLocalization middleware, and...
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    // This is an example. 
+    // This is an example.
     // You should configure the supported cultures as you like.
     var supportedCultures = new[] { "en", "ja" };
     options.DefaultRequestCulture = new("en");
@@ -192,9 +192,11 @@ If you are using Visual Studio in Windows OS or Visual Studio Code with the C# e
 
 > [!TIP]
 > Text Table object allows you to get localized text by key string dynamically, with indexer syntax, like this.
+>
 > ```html
 > <h1>@MyText["HelloWorld"]</h1>
 > ```
+>
 > If you make some mistakes that typo of key string, it will just return the key string as is without any runtime exceptions.
 
 ### Step 7 - Run it!
