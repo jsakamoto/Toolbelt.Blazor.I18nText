@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp.Client", "D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopBenchApp\DevelopBenchApp\DevelopBenchApp.csproj", "{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary1", "DevelopBenchApp\RazorClassLibrary1\RazorClassLibrary1.csproj", "{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{AA66E953-67F0-45B8-BBD5-2FA41AAE4F5A} = {D3BFA8A3-283A-45B3-A108-04C24DA7A768}
 		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
 		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
+		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36200F0-D306-4B7C-95B7-1299B29091CF}
