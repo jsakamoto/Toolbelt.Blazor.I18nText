@@ -91,7 +91,7 @@
   </Target>
 
   <!-- ...FOR .NET9 SDK -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile" BeforeTargets="AssignTargetPaths;ResolveStaticWebAssetsConfiguration" Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile" BeforeTargets="ResolveProjectStaticWebAssets" Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
     <ItemGroup>
       <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
       <Content Include="@(_IntermediateBlazorI18nTextResourceJsons)">
