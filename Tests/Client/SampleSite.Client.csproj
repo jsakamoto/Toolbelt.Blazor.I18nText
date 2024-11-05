@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0-preview.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0" />
     <ProjectReference Include="..\Components\SampleSite.Components.csproj" />
   </ItemGroup>
 </Project>

@@ -17,12 +17,12 @@
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Lib4PackRef" Version="13.0.0.1" />
+    <PackageReference Include="Lib4PackRef" Version="13.0.0.2" />
     <PackageReference Include="Lib4PackRef6" Version="13.0.0.0" />
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
   </ItemGroup>
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0-preview.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />

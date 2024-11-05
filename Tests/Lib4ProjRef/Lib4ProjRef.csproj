@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>13.0.0.1</Version>
+    <Version>13.0.0.2</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
   </ItemGroup>
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0-preview.1" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.1.0" />
   </ItemGroup>
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
