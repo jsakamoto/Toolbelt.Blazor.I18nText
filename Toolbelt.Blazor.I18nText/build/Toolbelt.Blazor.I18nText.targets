@@ -20,7 +20,7 @@
 
   <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssetsClassic;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
+      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssets;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
       <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
       <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
     </PropertyGroup>
@@ -70,11 +70,68 @@
   </ItemGroup>
 
   <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
-  <!-- ...FOR .NET6 and 8 SDK -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssetsClassic" DependsOnTargets="CoreCompile" Condition="!$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
+  <UsingTask TaskName="_Toolbelt_ComputeHash" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <ComputedItems ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Numerics" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+
+      static byte[] ComputeHash(ITaskItem item) {
+          var path = item.GetMetadata("OriginalItemSpec");
+          if (!File.Exists(path)) path = item.GetMetadata("FullPath");
+          if (!File.Exists(path)) path = item.GetMetadata("Identity");
+          var contentBytes = File.ReadAllBytes(path);
+          using var sha256 = SHA256.Create();
+          return sha256.ComputeHash(contentBytes);
+      }
+
+      static string ToBase36(byte[] hash)
+      {
+          var array = new char[10];
+          var buff = new byte[10];
+          Array.Copy(hash, buff, 10);
+          var dividend = BigInteger.Abs(new BigInteger(buff));
+          for (var i = 0; i < 10; i++)
+          {
+              dividend = BigInteger.DivRem(dividend, 36, out var remainder);
+              array[i] = "0123456789abcdefghijklmnopqrstuvwxyz"[(int)remainder];
+          }
+          return new string(array);
+      }
+
+      foreach (var item in this.Items) {
+          var hash = ComputeHash(item);
+          item.SetMetadata("Integrity", Convert.ToBase64String(hash));
+          item.SetMetadata("Fingerprint", ToBase36(hash));
+      }
+
+      this.ComputedItems = this.Items;
+      ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile">
+
     <ItemGroup>
       <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
-      <StaticWebAsset Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+    </ItemGroup>
+
+    <_Toolbelt_ComputeHash Items="@(_IntermediateBlazorI18nTextResourceJsons)">
+      <Output TaskParameter="ComputedItems" ItemName="_ComputedBlazorI18nTextResourceJsons" />
+    </_Toolbelt_ComputeHash>
+
+    <ItemGroup>
+      <StaticWebAsset Include="@(_ComputedBlazorI18nTextResourceJsons)">
         <SourceType>Computed</SourceType>
         <SourceId>$(PackageId)</SourceId>
         <ContentRoot>%(RelativeDir)</ContentRoot>
@@ -87,26 +144,6 @@
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       </StaticWebAsset>
-    </ItemGroup>
-  </Target>
-
-  <!-- ...FOR .NET9 SDK -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile" BeforeTargets="ResolveProjectStaticWebAssets" Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
-    <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
-      <Content Include="@(_IntermediateBlazorI18nTextResourceJsons)">
-        <SourceType>Computed</SourceType>
-        <SourceId>$(PackageId)</SourceId>
-        <ContentRoot>%(RelativeDir)</ContentRoot>
-        <BasePath>/</BasePath>
-        <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
-        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
-        <AssetKind>All</AssetKind>
-        <AssetMode>All</AssetMode>
-        <AssetRole>Primary</AssetRole>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-      </Content>
     </ItemGroup>
   </Target>
 

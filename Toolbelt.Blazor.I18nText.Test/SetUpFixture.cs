@@ -5,8 +5,6 @@ using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Diagnostics.XProcess;
 
-[assembly: LevelOfParallelism(2)]
-
 namespace Toolbelt.Blazor.I18nText.Test;
 
 [SetUpFixture]
@@ -17,6 +15,7 @@ public class SetUpFixture
     {
         var latestI18nTextVersion = GetLatestI18nTextPackageVersion();
         var versionOfLibProjects = await UpdateLibraryProjectsAsync("Toolbelt.Blazor.I18nText", latestI18nTextVersion);
+        await BuildLibPackagesAsync();
         await UpdatePackageRefAsync(latestI18nTextVersion, versionOfLibProjects);
     }
 
@@ -111,5 +110,33 @@ public class SetUpFixture
         });
 
         return versionOfProjects;
+    }
+
+    private static async Task BuildLibPackagesAsync()
+    {
+        var testDir = WorkSpace.GetTestDir();
+        var libPackProjects = new[] {
+            Path.Combine("Lib4PackRef", "Lib4PackRef"),
+            Path.Combine("Lib4PackRef6", "Lib4PackRef6"),
+        };
+        await Parallel.ForEachAsync(libPackProjects, async (string projectSubPath, CancellationToken _) =>
+        {
+            var projectPath = Path.Combine(testDir, projectSubPath + ".csproj");
+            var projectDir = Path.GetDirectoryName(projectPath);
+            var projectName = Path.GetFileNameWithoutExtension(projectPath);
+            var projectXDoc = XDocument.Load(projectPath);
+
+            var projectVersionNode = projectXDoc.XPathSelectElement("//Version");
+            var projectCurrentVersionText = projectVersionNode?.Value ?? "1.0.0.0";
+
+            var existingLibPacks = Directory.GetFiles(Path.Combine(testDir, "_dist"), $"{projectName}.*.nupkg");
+            var libPackName = $"{projectName}.{projectCurrentVersionText}.nupkg";
+            var libPackExists = existingLibPacks.Any(path => Path.GetFileName(path) == libPackName);
+
+            if (!libPackExists)
+            {
+                await Start("dotnet", "pack -c:Release --nologo", projectDir).ExitCodeIs(0);
+            }
+        });
     }
 }

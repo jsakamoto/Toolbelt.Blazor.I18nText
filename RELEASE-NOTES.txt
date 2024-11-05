@@ -1,3 +1,6 @@
+v.13.1.0
+- Improve: .NET 9 SDK support
+
 v.13.0.0
 - Improve: Now it supports .NET 8.0 correctly.
 - Improve: Enable IL Trimming on the Blazor WebAssembly platform.

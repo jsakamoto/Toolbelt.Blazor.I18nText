@@ -77,13 +77,13 @@ public class I18nTextSourceGeneratorTest
         var enTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(enJsonText) ?? new();
         enTexts["HelloWorld"].Is("Hello World!");
         enTexts["Exit"].Is("Exit");
-        enTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
+        enTexts["GreetingOfJA"].Is("ã“ã‚“ã«ã¡ã¯");
 
         var jaJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
         var jaTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(jaJsonText) ?? new();
-        jaTexts["HelloWorld"].Is("‚±‚ñ‚É‚¿‚Í¢ŠE!");
+        jaTexts["HelloWorld"].Is("ã“ã‚“ã«ã¡ã¯ä¸–ç•Œ!");
         jaTexts["Exit"].Is("Exit");
-        jaTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
+        jaTexts["GreetingOfJA"].Is("ã“ã‚“ã«ã¡ã¯");
 
         // and, there are no errors.
         context.GetDiagnostics().Any().IsFalse();
