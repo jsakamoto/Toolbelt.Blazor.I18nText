@@ -35,9 +35,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0-preview.6.*" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-preview.6.*" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-preview.6.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0-rc.2.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-rc.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-rc.2.*" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,16 +10,16 @@
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
     <ProjectReference Include="..\RazorClassLibrary1\RazorClassLibrary1.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-preview.6.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0-rc.2.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.3" />
   </ItemGroup>
 
 </Project>
