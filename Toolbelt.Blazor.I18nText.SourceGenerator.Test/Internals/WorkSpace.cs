@@ -2,14 +2,21 @@
 using Microsoft.CodeAnalysis;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
+
 public class WorkSpace : IDisposable
 {
     public WorkDirectory ProjectDir { get; }
 
+    /// <summary>
+    /// Gets the directory path of the Localized Text Source files.<br/>
+    /// By default, it is "~/i18ntext".
+    /// </summary>
     public string I18nTextDir { get; }
 
-    public string TypesDir { get; }
-
+    /// <summary>
+    /// Get the the output directory path of the generated Localized Text Resource JSON files.<br/>
+    /// it is "~/obj/Debug/net8.0/dist/_content/i18ntext".
+    /// </summary>
     public string TextResJsonsDir { get; }
 
     public string RootNamespace { get; }
@@ -18,14 +25,13 @@ public class WorkSpace : IDisposable
 
     public WorkSpace(string i18ntextSourceDir = "i18ntext")
     {
-        this.RootNamespace = "Toolbelt.Blazor.I18nTextCompileTask.Test";
+        this.RootNamespace = "Toolbelt.Blazor.I18nText.SourceGenerator.Test";
         this.I18nTextNamespace = this.RootNamespace + ".I18nText";
 
         var testProjDir = FileIO.FindContainerDirToAncestor("*.csproj");
         this.ProjectDir = new WorkDirectory();
         this.I18nTextDir = Path.Combine(this.ProjectDir, "i18ntext");
-        this.TypesDir = Path.Combine(this.I18nTextDir, "@types");
-        this.TextResJsonsDir = Path.Combine(this.ProjectDir, "obj", "Debug", "net6.0", "dist", "_content", "i18ntext");
+        this.TextResJsonsDir = Path.Combine(this.ProjectDir, Path.Combine("obj/Debug/net8.0/dist/_content/i18ntext".Split('/')));
 
         FileIO.XcopyDir(Path.Combine(testProjDir, i18ntextSourceDir), this.I18nTextDir);
     }

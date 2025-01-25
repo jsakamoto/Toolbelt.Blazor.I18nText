@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
+using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
 {

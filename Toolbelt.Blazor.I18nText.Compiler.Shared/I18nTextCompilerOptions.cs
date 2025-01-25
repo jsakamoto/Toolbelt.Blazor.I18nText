@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 
-namespace Toolbelt.Blazor.I18nText
+namespace Toolbelt.Blazor.I18nText.Compiler.Shared
 {
     public class I18nTextCompilerOptions
     {
         public string I18nTextSourceDirectory { get; set; }
-
-        public string TypesDirectory { get; set; }
 
         public string OutDirectory { get; set; }
 
@@ -28,12 +26,20 @@ namespace Toolbelt.Blazor.I18nText
         public I18nTextCompilerOptions(string baseDir)
         {
             this.I18nTextSourceDirectory = Path.Combine(baseDir, "i18ntext");
-            this.TypesDirectory = Path.Combine(this.I18nTextSourceDirectory, "@types");
             this.OutDirectory = Path.Combine(baseDir, "wwwroot", "content", "i18ntext");
             this.NameSpace = Path.GetFileName(baseDir.TrimEnd('\\')) + ".I18nText";
             this.LogMessage = _ => { };
             this.LogError = _ => { };
             this.FallBackLanguage = "en";
+        }
+
+        /// <summary>
+        /// Get the fallback language candidates, like ["en-US", "en"] or ["ja"]
+        /// </summary>
+        public string[] GetFallbackLangCandidates()
+        {
+            var fallbackLangParts = this.FallBackLanguage.Split('-');
+            return fallbackLangParts.Length > 1 ? new[] { this.FallBackLanguage, fallbackLangParts[0] } : new[] { this.FallBackLanguage };
         }
     }
 }

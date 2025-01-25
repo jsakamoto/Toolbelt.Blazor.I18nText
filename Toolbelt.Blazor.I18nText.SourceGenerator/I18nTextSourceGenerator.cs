@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Toolbelt.Blazor.I18nText.Compiler.Shared;
+using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator
@@ -43,12 +45,10 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
                 var generatedSources = new ConcurrentBag<GeneratedSource>();
                 var successOrNot = I18nTextCompiler.Compile(srcFiles, options, saveCode: (option, item, codeLines) =>
                 {
-                    var hintName = Path.GetFileNameWithoutExtension(item.TypeFilePath) + ".g.cs";
+                    var hintName = item.TypeFileName + ".g.cs";
                     var sourceCode = string.Join("\n", codeLines);
                     generatedSources.Add(new GeneratedSource(hintName, sourceCode));
                 }, cancellationToken);
-
-                I18nTextCompiler.SweepTypeFilesShouldBePurged(options, Enumerable.Empty<I18nTextCompileItem>(), cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
                 foreach (var source in generatedSources)

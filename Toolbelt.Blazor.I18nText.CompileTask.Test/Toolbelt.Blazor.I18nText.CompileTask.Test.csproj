@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ChainingAssertion-NUnit.Bin" Version="4.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="Toolbelt.WorkDirectory" Version="1.1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Toolbelt.Blazor.I18nText.CompileTask\Toolbelt.Blazor.I18nText.CompileTask.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Toolbelt.Blazor.I18nText.CompileTask.Test" />
+  </ItemGroup>
+
+  <Import Project="../VersionInfo.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" GeneratePathProperty="true" />
+    <PackageReference Include="TinyCsvParser" Version="2.7.1" GeneratePathProperty="true" />
+  </ItemGroup>
+
+  <Target Name="CopyNuGetPackagesDlls" AfterTargets="Build">
+    <Copy SourceFiles="$(PkgTinyCsvParser)\lib\netstandard2.0\TinyCsvParser.dll" DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="$(PkgNewtonsoft_Json)\lib\netstandard2.0\Newtonsoft.Json.dll" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <Import Project="..\Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems" Label="Shared" />
+
+</Project>

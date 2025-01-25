@@ -36,6 +36,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevelopBenchApp", "DevelopB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary1", "DevelopBenchApp\RazorClassLibrary1\RazorClassLibrary1.csproj", "{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Toolbelt.Blazor.I18nText.Compiler.Shared", "Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.shproj", "{EBE99769-E67D-4E13-A3AE-FDA6055F9434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbelt.Blazor.I18nText.CompileTask", "Toolbelt.Blazor.I18nText.CompileTask\Toolbelt.Blazor.I18nText.CompileTask.csproj", "{B3F6BC3D-E981-51DD-2ED5-B9F83E6BE3D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toolbelt.Blazor.I18nText.CompileTask.Test", "Toolbelt.Blazor.I18nText.CompileTask.Test\Toolbelt.Blazor.I18nText.CompileTask.Test.csproj", "{C40DBE7E-6A38-8BF9-D624-C40887100E08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +76,14 @@ Global
 		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F6BC3D-E981-51DD-2ED5-B9F83E6BE3D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F6BC3D-E981-51DD-2ED5-B9F83E6BE3D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F6BC3D-E981-51DD-2ED5-B9F83E6BE3D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F6BC3D-E981-51DD-2ED5-B9F83E6BE3D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C40DBE7E-6A38-8BF9-D624-C40887100E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C40DBE7E-6A38-8BF9-D624-C40887100E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C40DBE7E-6A38-8BF9-D624-C40887100E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C40DBE7E-6A38-8BF9-D624-C40887100E08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,8 +94,14 @@ Global
 		{7F889A27-1C78-4821-A9B7-AA0EEF6412EB} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
 		{CEEC0FF9-2D3F-40FE-A9B0-1711E95E8359} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
 		{C761EDD7-6A6C-4D57-9DE8-EDF640F86575} = {BCD45B60-44E2-40AB-B6AA-4A65E0AC2134}
+		{C40DBE7E-6A38-8BF9-D624-C40887100E08} = {D3BFA8A3-283A-45B3-A108-04C24DA7A768}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A36200F0-D306-4B7C-95B7-1299B29091CF}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{b3f6bc3d-e981-51dd-2ed5-b9f83e6be3d1}*SharedItemsImports = 5
+		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{e5189a34-dfe2-4257-84df-dcfaa73b074e}*SharedItemsImports = 5
+		Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems*{ebe99769-e67d-4e13-a3ae-fda6055f9434}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

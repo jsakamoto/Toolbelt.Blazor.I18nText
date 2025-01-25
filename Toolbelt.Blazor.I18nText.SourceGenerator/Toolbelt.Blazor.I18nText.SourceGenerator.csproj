@@ -8,6 +8,10 @@
     <BeforePack>$(BeforePack);_IncludeAnalyzerAssembliesToPack;</BeforePack>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Toolbelt.Blazor.I18nText.SourceGenerator.Test" />
+  </ItemGroup>
+
   <Import Project="../VersionInfo.props" />
 
   <PropertyGroup>
@@ -38,6 +42,8 @@
       <None Include="$(OutDir)*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
     </ItemGroup>
   </Target>
+
+  <Import Project="..\Toolbelt.Blazor.I18nText.Compiler.Shared\Toolbelt.Blazor.I18nText.Compiler.Shared.projitems" Label="Shared" />
 
   <Import Project="..\Build\BuildPackageReleaseNotes.targets" />
 

@@ -22,7 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="ChainingAssertion-NUnit.Bin" Version="4.0.1" />
-    <PackageReference Include="Toolbelt.WorkDirectory" Version="1.0.0" />
+    <PackageReference Include="Toolbelt.WorkDirectory" Version="1.1.0.1" />
     <PackageReference Include="DynamicBinder" Version="2.2.0" />
   </ItemGroup>
 

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TinyCsvParser;
 using TinyCsvParser.Mapping;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
+using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 
-namespace Toolbelt.Blazor.I18nText
+namespace Toolbelt.Blazor.I18nText.Compiler.Shared
 {
     public class I18nTextSourceFile
     {
@@ -31,9 +31,9 @@ namespace Toolbelt.Blazor.I18nText
 
         private delegate string ConvertPath(string srcPath);
 
-        internal static I18nTextSource Parse(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options, CancellationToken canceleationToken)
+        internal static I18nTextSource Parse(IEnumerable<I18nTextSourceFile> srcFiles, I18nTextCompilerOptions options, CancellationToken cancellationToken)
         {
-            canceleationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
 
             var i18textSrc = new I18nTextSource();
             if (!srcFiles.Any()) return i18textSrc;
@@ -54,7 +54,7 @@ namespace Toolbelt.Blazor.I18nText
                 };
             }
 
-            Parallel.ForEach(srcFiles, new ParallelOptions { CancellationToken = canceleationToken }, srcFile =>
+            Parallel.ForEach(srcFiles, new ParallelOptions { CancellationToken = cancellationToken }, srcFile =>
             {
                 var textTable = DeserializeSrcText(srcFile, options);
 
@@ -67,7 +67,7 @@ namespace Toolbelt.Blazor.I18nText
                 type.Langs[langCode] = textTable;
             });
 
-            Parallel.ForEach(i18textSrc.Types.Values, new ParallelOptions { CancellationToken = canceleationToken }, type =>
+            Parallel.ForEach(i18textSrc.Types.Values, new ParallelOptions { CancellationToken = cancellationToken }, type =>
             {
                 type.TextKeys = type.Langs
                     .SelectMany(lang => lang.Value)
@@ -76,7 +76,7 @@ namespace Toolbelt.Blazor.I18nText
                     .Distinct()
                     .ToList();
 
-                Parallel.ForEach(type.Langs, new ParallelOptions { CancellationToken = canceleationToken }, lang =>
+                Parallel.ForEach(type.Langs, new ParallelOptions { CancellationToken = cancellationToken }, lang =>
                 {
                     var textTable = lang.Value;
                     foreach (var textKey in type.TextKeys.Where(k => !textTable.ContainsKey(k)))
@@ -88,6 +88,15 @@ namespace Toolbelt.Blazor.I18nText
                         textTable[textKey] = text ?? textKey;
                     }
                 });
+            });
+
+            // fallbackLangs is like "en-US" -> ["en-US", "en"], "ja" -> ["ja"]
+            var fallbackLangs = options.GetFallbackLangCandidates();
+
+            i18textSrc.Types.AsParallel().ForAll((KeyValuePair<string, I18nTextType> arg) =>
+            {
+                if (!arg.Value.Langs.Keys.Any(lang => fallbackLangs.Contains(lang)))
+                    throw new I18nTextCompileException(DiagnosticCode.FallbackLangNotFound, $"Could not find a localized text source file of fallback language '{options.FallBackLanguage}', for '{options.NameSpace}.{arg.Key}'.");
             });
 
             return i18textSrc;
