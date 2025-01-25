@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <Version>14.0.0-preview.3</Version>
-    <Copyright>Copyright © 2019-2024 J.Sakamoto, Mozilla Public License 2.0</Copyright>
+    <Copyright>Copyright © 2019-2025 J.Sakamoto, Mozilla Public License 2.0</Copyright>
     <Authors>J.Sakamoto</Authors>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/jsakamoto/Toolbelt.Blazor.I18nText/</RepositoryUrl>
