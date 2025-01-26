@@ -81,6 +81,19 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <Target Name="BuildI18nTextCompileTask" BeforeTargets="DispatchToInnerBuilds">
+    <PropertyGroup>
+      <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
+    </PropertyGroup>
+    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration)" />
+    <ItemGroup>
+      <None Include="$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\*.*">
+        <PackagePath>tools\</PackagePath>
+        <Pack>true</Pack>
+      </None>
+    </ItemGroup>
+  </Target>
+
   <Import Project="..\Build\BuildPackageReleaseNotes.targets" />
 
 </Project>
