@@ -26,7 +26,7 @@ However, I will continue to develop and maintain this package, because this pack
 
 ### Supported .NET versions
 
-.NET 6.0, 8.0, or later versions.
+.NET 8.0, 9.0 or later versions.
 
 ## 🚀 Quick Start
 
