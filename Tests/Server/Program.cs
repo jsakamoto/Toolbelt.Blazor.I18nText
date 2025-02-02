@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Localization;
 using SampleSite.Components.Services;
 using SampleSite.Server.Data;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Toolbelt.Blazor.I18nText;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddI18nText();
+builder.Services.AddI18nText(options => options.PersistenceLevel = PersistanceLevel.PersistentCookie);
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -31,9 +32,18 @@ if (!app.Environment.IsDevelopment())
 
 app.UseRequestLocalization();
 app.UseHttpsRedirection();
+#if NET9_0_OR_GREATER
+app.MapStaticAssets();
+#else
 app.UseStaticFiles();
+#endif
+
 app.UseRouting();
+#if NET9_0_OR_GREATER
+app.MapRazorPages().WithStaticAssets();
+#else
 app.MapRazorPages();
+#endif
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

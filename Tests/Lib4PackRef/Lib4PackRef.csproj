@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>14.0.0.2</Version>
+    <Version>14.0.0.4</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
@@ -12,18 +12,17 @@
   </PropertyGroup>
   <ItemGroup>
     <SupportedPlatform Include="browser" />
-    <Content Update="global.json" Pack="false" CopyToOutputDirectory="Never" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.35" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.20" />
-  </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.1" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.2" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
   </ItemGroup>
 </Project>
