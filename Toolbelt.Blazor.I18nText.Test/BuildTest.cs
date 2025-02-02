@@ -10,18 +10,18 @@ public class BuildTest
 {
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in new[] { "Client", "Host", "Server" }
-        from framework in new[] { "net6.0", "net8.0" }
+        from framework in new[] { "net8.0", "net9.0" }
         select new object[] { startupProjName, framework };
 
     private static readonly IEnumerable<(string FileName, string Key, string Value)> ExpectedTextResJsons = [
         ("Lib4PackRef.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4PackRef package."),
-        ("Lib4PackRef.I18nText.Text.ja.json", "Message", "‚±‚Ì Blazor ƒRƒ“ƒ|[ƒlƒ“ƒg‚Í Lib4PackRef ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B"),
+        ("Lib4PackRef.I18nText.Text.ja.json", "Message", "ã“ã® Blazor ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¯ Lib4PackRef ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚"),
         ("Lib4PackRef6.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4PackRef6 package."),
-        ("Lib4PackRef6.I18nText.Text.ja.json", "Message", "‚±‚Ì Blazor ƒRƒ“ƒ|[ƒlƒ“ƒg‚Í Lib4PackRef6 ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B"),
+        ("Lib4PackRef6.I18nText.Text.ja.json", "Message", "ã“ã® Blazor ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¯ Lib4PackRef6 ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚"),
         ("Lib4ProjRef.I18nText.Text.en.json", "Message", "This Blazor component is defined in the Lib4ProjRef package."),
-        ("Lib4ProjRef.I18nText.Text.ja.json","Message", "‚±‚Ì Blazor ƒRƒ“ƒ|[ƒlƒ“ƒg‚Í Lib4ProjRef ‚Å’è‹`‚³‚ê‚Ä‚¢‚Ü‚·B"),
+        ("Lib4ProjRef.I18nText.Text.ja.json","Message", "ã“ã® Blazor ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã¯ Lib4ProjRef ã§å®šç¾©ã•ã‚Œã¦ã„ã¾ã™ã€‚"),
         ("SampleSite.Components.I18nText.Text.en.json","HelloWorld", "Hello, world!"),
-        ("SampleSite.Components.I18nText.Text.ja.json", "HelloWorld", "‚±‚ñ‚É‚¿‚ÍA¢ŠE!")];
+        ("SampleSite.Components.I18nText.Text.ja.json", "HelloWorld", "ã“ã‚“ã«ã¡ã¯ã€ä¸–ç•Œ!")];
 
     [Test, TestCaseSource(nameof(Projects))]
     public async Task RunTest(string startupProjName, string framework)
@@ -70,7 +70,7 @@ public class BuildTest
 
         // 1. Support client JavaScript file should be published into "_content/{PackageId}" folder.
         FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "helper.min.js").IsTrue();
-        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.lib.module.js").IsTrue();
+        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.*.lib.module.js").IsTrue();
 
         // 2. Text resource json files have been generated under the publish folder.
         var actualTextResJsons = Directory.GetFiles(i18nDistDir, "*.json");

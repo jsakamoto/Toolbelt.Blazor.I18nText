@@ -4,6 +4,9 @@
   This targets file will be bundled with a NuGet package of this library in 'build' package path,
   and will be imported the project file that references this package.
   -->
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileTask.GenerateLocalizedTextResourceJson" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileTask.ComputeIntegrityAndFingerprint" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
+  <UsingTask TaskName="Toolbelt.Blazor.I18nText.CompileTask.RecoverStaticWebAssetEndpoints" AssemblyFile="$(MSBuildThisFileDirectory)..\tools\Toolbelt.Blazor.I18nText.CompileTask.dll" />
 
   <!-- DEFINE MSBUILD PROPERTIES FOR I18N TEXT -->
   <PropertyGroup>
@@ -13,43 +16,13 @@
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
-    <I18nTextIntermediateDir>$(ProjectDir)$(IntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
+    <I18nTextIntermediateDir>$(ProjectDir)$(BaseIntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
-    <CoreCompileDependsOn>$(CoreCompileDependsOn);PopulateI18nLocalizedTextSourceFiles</CoreCompileDependsOn>
+    <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
+    <CoreCompileDependsOn>$(CoreCompileDependsOn);_I18nText_PopulateLocalizedTextSources</CoreCompileDependsOn>
   </PropertyGroup>
 
-  <Target Name="EnsureI18nTextProperties" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ResolveStaticWebAssetsInputsDependsOn>_ResolveBlazorI18nTextStaticWebAssetsClassic;$(ResolveStaticWebAssetsInputsDependsOn)</ResolveStaticWebAssetsInputsDependsOn>
-      <!-- The order is important: the "_RemoveBlazorI18nTextStaticWebAssetsFromPackage" target MUST BE PLACED at the LAST of the pipeline. -->
-      <GenerateStaticWebAssetsPackTargetsDependsOn>$(GenerateStaticWebAssetsPackTargetsDependsOn);_RemoveBlazorI18nTextStaticWebAssetsFromPackage;</GenerateStaticWebAssetsPackTargetsDependsOn>
-    </PropertyGroup>
-  </Target>
-
-  <!-- INCLUDE I18N LOCALIZED TEXT SOURCE FILES -->
-  <Target Name="PopulateI18nLocalizedTextSourceFiles">
-    <ItemGroup>
-      <_I18nTextFile Include="$(I18nTextFilePattern)" />
-      <Content Remove="@(_I18nTextFile)" />
-      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
-      <!-- INCLUDES ~/i18ntext/*.{json|csv} FILES TO BE PROCEEDED BY I18N TEXT SOURCE GENERATOR -->
-      <AdditionalFiles Remove="@(_I18nTextFile->'%(FullPath)')" />
-      <AdditionalFiles Include="@(_I18nTextFile->'%(FullPath)')" />
-      <_I18nTextFile Remove="@(_I18nTextFile)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- EXCLUDE I18N LOCALIZED TEXT SOURCE FILES FROM PUBLISHING CONTENTS -->
-  <Target Name="OmmitI18nLocalizedTextSourceFileFromContent" BeforeTargets="GetCopyToPublishDirectoryItems">
-    <ItemGroup>
-      <_I18nTextFile Include="$(I18nTextFilePattern)" />
-      <Content Remove="@(_I18nTextFile)" />
-      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
-      <_I18nTextFile Remove="@(_I18nTextFile)" />
-    </ItemGroup>
-  </Target>
-
-  <!-- EXPOSE MSBUILD PROPERTY TO I18N TEXT SOURCE GENERATOR -->
+  <!-- EXPOSE MSBUILD PROPERTY TO THE I18N SOURCE GENERATOR -->
   <ItemGroup>
     <CompilerVisibleProperty Include="ProjectDir" />
     <CompilerVisibleProperty Include="RootNamespace" />
@@ -61,20 +34,44 @@
     <CompilerVisibleProperty Include="I18nTextUseSourceGenerator" />
   </ItemGroup>
 
-  <!-- FOR DOTNET WATCH -->
-  <ItemGroup Condition=" '$(DotNetWatchBuild)' == 'true' ">
-    <_I18nTextFile Include="$(I18nTextFilePattern)" />
-    <Watch Remove="@(_I18nTextFile->'%(FullPath)')" />
-    <Watch Include="@(_I18nTextFile->'%(FullPath)')" />
-    <_I18nTextFile Remove="@(_I18nTextFile)" />
-  </ItemGroup>
-
-  <!-- INCLUDE GENERATED I18N TEXT RESOURCE JSONS -->
-  <!-- ...FOR .NET6 and 8 SDK -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssetsClassic" DependsOnTargets="CoreCompile" Condition="!$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
+  <!-- FOR FAST UP-TO-DATE CHECK -->
+  <Target Name="_I18nText_CollectUpToDateCheck" BeforeTargets="CollectUpToDateCheckInputDesignTime;CollectUpToDateCheckBuiltDesignTime">
     <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
-      <StaticWebAsset Include="@(_IntermediateBlazorI18nTextResourceJsons)">
+      <UpToDateCheckInput Include="$(I18nTextFilePattern)" Set="I18nTextUpToDateCheck" />
+      <UpToDateCheckBuilt Include="$(I18nTextUpToDateMarker)" Set="I18nTextUpToDateCheck" />
+    </ItemGroup>
+  </Target>
+
+  <!-- GENERATE LOCALIZED TEXT RESOURCE JSONS FROM THE LOCALIZED TEXT SOURCES -->
+  <Target Name="_I18nText_GenerateLocalizedTextResourceJson" BeforeTargets="ResolveProjectStaticWebAssets">
+
+    <ItemGroup>
+      <_I18nTextFile Include="$(I18nTextFilePattern)" />
+    </ItemGroup>
+    <Toolbelt.Blazor.I18nText.CompileTask.GenerateLocalizedTextResourceJson
+      Include="@(_I18nTextFile)"
+      I18nTextSourceDirectory="$(I18nTextSourceDirectory)"
+      OutDirectory="$(I18nTextIntermediateDir)"
+      BaseDir="$(ProjectDir)"
+      Namespace="$(I18nTextNamespace)"
+      DisableSubNameSpace="$(I18nTextDisableSubNameSpace)"
+      FallBackLanguage="$(I18nTextFallBackLanguage)" >
+    </Toolbelt.Blazor.I18nText.CompileTask.GenerateLocalizedTextResourceJson>
+    <ItemGroup>
+      <_I18nTextFile Remove="@(_I18nTextFile)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_I18nIntermediateLocalizedTextResourceJson Remove="$(I18nTextIntermediateDir)*.json" />
+      <_I18nIntermediateLocalizedTextResourceJson Include="$(I18nTextIntermediateDir)*.json" />
+    </ItemGroup>
+
+    <Toolbelt.Blazor.I18nText.CompileTask.ComputeIntegrityAndFingerprint Items="@(_I18nIntermediateLocalizedTextResourceJson)">
+      <Output TaskParameter="ComputedItems" ItemName="_I18nFingerPrintedLocalizedTextResourceJson" />
+    </Toolbelt.Blazor.I18nText.CompileTask.ComputeIntegrityAndFingerprint>
+
+    <ItemGroup>
+      <StaticWebAsset Include="@(_I18nFingerPrintedLocalizedTextResourceJson)">
         <SourceType>Computed</SourceType>
         <SourceId>$(PackageId)</SourceId>
         <ContentRoot>%(RelativeDir)</ContentRoot>
@@ -87,34 +84,77 @@
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
       </StaticWebAsset>
+      <_I18nIntermediateLocalizedTextResourceJson Remove="@(_I18nIntermediateLocalizedTextResourceJson)" />
+      <_I18nFingerPrintedLocalizedTextResourceJson Remove="@(_I18nFingerPrintedLocalizedTextResourceJson)" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(I18nTextIntermediateDir)" />
+    <Touch Files="$(I18nTextUpToDateMarker)" AlwaysCreate="true" />
+
+  </Target>
+
+  <!-- INCLUDE LOCALIZED TEXT SOURCES INTO AdditionalFiles ITEMS FOR THE I18N SOURCE GENERATOR  -->
+  <Target Name="_I18nText_PopulateLocalizedTextSources">
+    <ItemGroup>
+      <_I18nTextFile Include="$(I18nTextFilePattern)" />
+      <Content Remove="@(_I18nTextFile)" />
+      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
+      <!-- INCLUDES ~/i18ntext/*.{json|csv} TO BE PROCEEDED BY THE I18N SOURCE GENERATOR -->
+      <AdditionalFiles Remove="@(_I18nTextFile->'%(FullPath)')" />
+      <AdditionalFiles Include="@(_I18nTextFile->'%(FullPath)')" />
+      <_I18nTextFile Remove="@(_I18nTextFile)" />
     </ItemGroup>
   </Target>
 
-  <!-- ...FOR .NET9 SDK -->
-  <Target Name="_ResolveBlazorI18nTextStaticWebAssets" DependsOnTargets="CoreCompile" BeforeTargets="ResolveProjectStaticWebAssets" Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '9.0'))">
+  <!-- EXCLUDE LOCALIZED TEXT SOURCES FROM PUBLISHING CONTENTS -->
+  <Target Name="_I18nText_OmmitLocalizedTextSourcesFromContent" BeforeTargets="GetCopyToPublishDirectoryItems">
     <ItemGroup>
-      <_IntermediateBlazorI18nTextResourceJsons Include="$(I18nTextIntermediateDir)*.json" />
-      <Content Include="@(_IntermediateBlazorI18nTextResourceJsons)">
-        <SourceType>Computed</SourceType>
-        <SourceId>$(PackageId)</SourceId>
-        <ContentRoot>%(RelativeDir)</ContentRoot>
-        <BasePath>/</BasePath>
-        <RelativePath>_content/i18ntext/%(FileName)%(Extension)</RelativePath>
-        <OriginalItemSpec>%(FullPath)</OriginalItemSpec>
-        <AssetKind>All</AssetKind>
-        <AssetMode>All</AssetMode>
-        <AssetRole>Primary</AssetRole>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-      </Content>
+      <_I18nTextFile Include="$(I18nTextFilePattern)" />
+      <Content Remove="@(_I18nTextFile)" />
+      <ContentWithTargetPath Remove="@(_I18nTextFile)" />
+      <_I18nTextFile Remove="@(_I18nTextFile)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="_RemoveBlazorI18nTextStaticWebAssetsFromPackage" DependsOnTargets="_ResolveBlazorI18nTextStaticWebAssets">
+  <!-- [BEFORE ComputeReferencedProjectsPublishAssets] SAVE STATIC WEB ASSET ENDPOINTS FOR RECOVERY -->
+  <!-- REMARK: 
+  The "ComputeReferencedProjectsPublishAssets" target sometimes removes necessary "StaticWebAssetEndpoint" items incorrectly on NET SDK 9.
+  That will cause the "Endpoints not found for compressed asset" error when publishing the project.
+  "_I18bText_SaveStaticWebAssetEndpoints" and "_I18nText_RecoverStaticWebAssetEndpoints" targets are introduced to recover the removed StaticWebAssetEndpoint items.
+  -->
+  <Target Name="_I18bText_SaveStaticWebAssetEndpoints" BeforeTargets="ComputeReferencedProjectsPublishAssets">
     <ItemGroup>
-      <StaticWebAsset Remove="@(_IntermediateBlazorI18nTextResourceJsons)" />
+      <_I18nText_SavedStaticWebAssetEndpoint Include="@(StaticWebAssetEndpoint)" />
     </ItemGroup>
   </Target>
+
+  <!-- [AFTER ComputeReferencedProjectsPublishAssets] RECOVER STATIC WEB ASSET ENDPOINTS -->
+  <Target Name="_I18nText_RecoverStaticWebAssetEndpoints" BeforeTargets="ResolvePublishCompressedStaticWebAssets" DependsOnTargets="GeneratePublishCompressedStaticWebAssets">
+
+    <Toolbelt.Blazor.I18nText.CompileTask.RecoverStaticWebAssetEndpoints
+      StaticWebAssets="@(StaticWebAsset)"
+      StaticWebAssetEndpoints="@(StaticWebAssetEndpoint)"
+      SavedStaticWebAssetEndpoints="@(_I18nText_SavedStaticWebAssetEndpoint)">
+      <Output TaskParameter="RecoveredStaticWebAssetEndpoints" ItemName="_I18nText_RecoveredStaticWebAssetsEndpoints" />
+    </Toolbelt.Blazor.I18nText.CompileTask.RecoverStaticWebAssetEndpoints>
+
+    <ItemGroup>
+      <StaticWebAssetEndpoint Remove="@(_I18nText_RecoveredStaticWebAssetsEndpoints)" />
+      <StaticWebAssetEndpoint Include="@(_I18nText_RecoveredStaticWebAssetsEndpoints)" />
+    </ItemGroup>
+    <ItemGroup>
+      <_I18nText_SavedStaticWebAssetEndpoint Remove="@(_I18nText_SavedStaticWebAssetEndpoint)" />
+    </ItemGroup>
+
+  </Target>
+
+  <!-- FOR DOTNET WATCH -->
+  <ItemGroup>
+    <_I18nTextFile Include="$(I18nTextFilePattern)" />
+    <Watch Remove="@(_I18nTextFile->'%(FullPath)')" />
+    <Watch Include="@(_I18nTextFile->'%(FullPath)')" />
+    <_I18nTextFile Remove="@(_I18nTextFile)" />
+  </ItemGroup>
 
   <!-- THE OPTIMIZATION FLAG, WHETHER ENABLING USING THE IL-LINKER FOR BROWSER-WASM PLATFORM OR NOT -->
   <PropertyGroup>

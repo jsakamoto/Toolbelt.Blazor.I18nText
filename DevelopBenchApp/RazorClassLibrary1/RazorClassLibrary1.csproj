@@ -8,22 +8,21 @@
     <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
-
   <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.10" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="13.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.4" />
   </ItemGroup>
 
 </Project>

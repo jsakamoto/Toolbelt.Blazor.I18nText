@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
+namespace Toolbelt.Blazor.I18nText.Compiler.Shared.Internals
 {
     internal class I18nTextSource
     {

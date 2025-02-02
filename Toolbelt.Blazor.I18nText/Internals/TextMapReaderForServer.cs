@@ -37,7 +37,9 @@ internal class TextMapReaderForServer : ITextMapReader
 
         var staticFilesAsm = getAssembly("Microsoft.AspNetCore.StaticFiles");
         var staticFilesOptionsType = staticFilesAsm?.GetType("Microsoft.AspNetCore.Builder.StaticFileOptions");
+#pragma warning disable IL2076
         var ioptionsOfStaticFileType = staticFilesOptionsType is not null ? typeof(IOptions<>).MakeGenericType(staticFilesOptionsType) : null;
+#pragma warning restore IL2076
         var ioptionsOfStaticFile = ioptionsOfStaticFileType is not null ? services.GetService(ioptionsOfStaticFileType) : null;
         var staticFilesOptions = ioptionsOfStaticFileType?.GetProperty("Value")?.GetValue(ioptionsOfStaticFile);
 

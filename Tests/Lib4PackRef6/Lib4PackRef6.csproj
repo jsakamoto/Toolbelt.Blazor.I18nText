@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>13.0.0.0</Version>
+    <Version>14.0.0.4</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
@@ -13,13 +13,14 @@
 
   <ItemGroup>
     <SupportedPlatform Include="browser" />
+    <Content Update="global.json" Pack="false" CopyToOutputDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.32" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.36" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="13.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
   </ItemGroup>
 </Project>

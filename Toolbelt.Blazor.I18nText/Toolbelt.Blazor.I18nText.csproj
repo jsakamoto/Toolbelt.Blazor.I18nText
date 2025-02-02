@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net8.0;net9.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(MSBuildProjectName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591;NU1902</NoWarn>
@@ -32,6 +32,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.0-rc.2.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0-rc.2.*" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0-rc.2.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,6 +80,19 @@
       <LogicalName>ILLink.Substitutions.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="BuildI18nTextCompileTask" BeforeTargets="DispatchToInnerBuilds">
+    <PropertyGroup>
+      <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
+    </PropertyGroup>
+    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
+    <ItemGroup>
+      <None Include="$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\*.*">
+        <PackagePath>tools\</PackagePath>
+        <Pack>true</Pack>
+      </None>
+    </ItemGroup>
+  </Target>
 
   <Import Project="..\Build\BuildPackageReleaseNotes.targets" />
 

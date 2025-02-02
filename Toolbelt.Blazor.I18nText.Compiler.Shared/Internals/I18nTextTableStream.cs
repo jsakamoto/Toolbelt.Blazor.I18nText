@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Toolbelt.Blazor.I18nText.SourceGenerator.Internals
+namespace Toolbelt.Blazor.I18nText.Compiler.Shared.Internals
 {
     internal class I18nTextTableStream : Stream
     {

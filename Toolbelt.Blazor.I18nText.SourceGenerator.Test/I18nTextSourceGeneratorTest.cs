@@ -1,11 +1,10 @@
 using System.Reflection;
 using System.Runtime.Loader;
-using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 using Toolbelt.Blazor.I18nText.Interfaces;
-using Toolbelt.Blazor.I18nText.SourceGenerator.Internals;
 using Toolbelt.Blazor.I18nText.SourceGenerator.Test.Internals;
 
 namespace Toolbelt.Blazor.I18nText.SourceGenerator.Test;
@@ -32,7 +31,7 @@ public class I18nTextSourceGeneratorTest
 
         // Then: Validate compiled to i18n text types
         var generatedSourceTexts = context.GetGeneratedSourceTexts();
-        const string nameSpace = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText";
+        const string nameSpace = "Toolbelt.Blazor.I18nText.SourceGenerator.Test.I18nText";
         var fooBarClassName = $"{nameSpace}.Foo.Bar";
         var fizzBuzzClassName = disableSubNameSpace ? $"{nameSpace}.Buzz" : $"{nameSpace}.Fizz.Buzz";
 
@@ -42,48 +41,6 @@ public class I18nTextSourceGeneratorTest
         // The generated i18n text type source should be a valid C# code.
         ValidateGeneratedCSharpCode(fallbackLang, "l47c0gpbnx", fooBarClassSource, fooBarClassName, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
         ValidateGeneratedCSharpCode(fallbackLang, "o246f7as05", fizzBuzzClassSource, fizzBuzzClassName, new[] { "Text1", "Text2" });
-
-        // and, there are no errors.
-        context.GetDiagnostics().Any().IsFalse();
-    }
-
-    /// <summary>
-    /// Compile - I18n Text JSON files were generated
-    /// </summary>
-    [TestCase(true)]
-    [TestCase(false)]
-    public void Compile_I18nTextJsonFilesWereGenerated_Test(bool disableSubNameSpace)
-    {
-        // Given
-        using var workSpace = new WorkSpace();
-        var context = workSpace.CreateGeneratorExecutionContext(disableSubNameSpace: disableSubNameSpace);
-
-        // When
-        new I18nTextSourceGenerator().Execute(context);
-
-        // Then: Compiled i18n text json files should exist.
-        Directory.Exists(workSpace.TextResJsonsDir).IsTrue();
-        Directory.GetFiles(workSpace.TextResJsonsDir)
-            .Select(path => Path.GetFileName(path))
-            .OrderBy(name => name)
-            .Is(new[]{
-                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.en.json",
-                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.ja.json",
-                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json",
-                    $"Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json" }.OrderBy(n => n));
-
-        var enJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.en.json"));
-
-        var enTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(enJsonText) ?? new();
-        enTexts["HelloWorld"].Is("Hello World!");
-        enTexts["Exit"].Is("Exit");
-        enTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
-
-        var jaJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json"));
-        var jaTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(jaJsonText) ?? new();
-        jaTexts["HelloWorld"].Is("‚±‚ñ‚É‚¿‚Í¢ŠE!");
-        jaTexts["Exit"].Is("Exit");
-        jaTexts["GreetingOfJA"].Is("‚±‚ñ‚É‚¿‚Í");
 
         // and, there are no errors.
         context.GetDiagnostics().Any().IsFalse();
@@ -151,7 +108,7 @@ public class I18nTextSourceGeneratorTest
 
         // Then: It souhld be error.
         context.GetDiagnostics().Select(d => d.ToString()).Is(
-            "error I18N001: Could not find an I18n source text file of fallback language 'fr', for 'Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar'.");
+            "error I18N001: Could not find a localized text source file of fallback language 'fr', for 'Toolbelt.Blazor.I18nText.SourceGenerator.Test.I18nText.Foo.Bar'.");
     }
 
     /// <summary>
@@ -198,83 +155,6 @@ public class I18nTextSourceGeneratorTest
             "Foo.Bar.ja.json, Error I18N002: Unexpected character encountered while parsing value: H. Path '', line 0, position 0.");
     }
 
-    /// <summary>
-    /// Compile - sweep I18n Text JSON files
-    /// </summary>
-    [Test]
-    public void Compile_SweepTextJsonFiles_Test()
-    {
-        // Given
-        using var workSpace = new WorkSpace();
-        var context = workSpace.CreateGeneratorExecutionContext(
-            fallbackLang: "ja",
-            // Make the additional files to be only one to make this test to be simpler.
-            filterAdditionalFiles: file => Path.GetFileName(file.Path) == "Foo.Bar.ja.csv"
-        );
-        Directory.CreateDirectory(workSpace.TextResJsonsDir);
-        File.WriteAllLines(Path.Combine(workSpace.TextResJsonsDir, "Bar.json"), new[] { "{\"Key\":\"Value\"}" });
-
-        // When
-        new I18nTextSourceGenerator().Execute(context);
-
-        // Then: "Bar.json" should be sweeped.
-        Directory.GetFiles(workSpace.TextResJsonsDir)
-            .Select(path => Path.GetFileName(path))
-            .OrderBy(name => name)
-            .Is("Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText.Foo.Bar.ja.json");
-    }
-
-    /// <summary>
-    /// Compile - sweep type files
-    /// </summary>
-    [Test]
-    public void Compile_SweepTypeFiles_Test()
-    {
-        // Given
-        using var workSpace = new WorkSpace();
-        var context = workSpace.CreateGeneratorExecutionContext();
-
-        if (Directory.Exists(workSpace.TypesDir)) Directory.Delete(workSpace.TypesDir, recursive: true);
-        Directory.CreateDirectory(workSpace.TypesDir);
-        const string generatedMarker = "// <auto-generated by=\"the Blazor I18n Text compiler\" />";
-        File.WriteAllLines(Path.Combine(workSpace.TypesDir, "Bar.cs"), new[] { generatedMarker, "public class Bar {}" });
-        File.WriteAllLines(Path.Combine(workSpace.TypesDir, "Bar.cs.bak"), new[] { generatedMarker, "public class Bar {}" });
-        File.WriteAllLines(Path.Combine(workSpace.TypesDir, "Fizz.cs"), new[] { "public class Fizz {}" });
-
-        // When
-        new I18nTextSourceGenerator().Execute(context);
-
-        // Then: "Bar.cs" should be sweeped.
-        Directory.GetFiles(workSpace.TypesDir)
-            .Select(path => Path.GetFileName(path))
-            .OrderBy(name => name)
-            .Is("Bar.cs.bak",
-                "Fizz.cs");
-    }
-
-    /// <summary>
-    /// Compile - sweep type files and @types folder
-    /// </summary>
-    [Test]
-    public void Compile_SweepTypeFiles_and_TypesFolder_Test()
-    {
-        // Given
-        using var workSpace = new WorkSpace();
-        var context = workSpace.CreateGeneratorExecutionContext();
-
-        if (Directory.Exists(workSpace.TypesDir)) Directory.Delete(workSpace.TypesDir, recursive: true);
-        Directory.CreateDirectory(workSpace.TypesDir);
-        const string generatedMarker = "// <auto-generated by=\"the Blazor I18n Text compiler\" />";
-        File.WriteAllLines(Path.Combine(workSpace.TypesDir, "Bar.cs"), new[] { generatedMarker, "public class Bar {}" });
-        File.WriteAllLines(Path.Combine(workSpace.TypesDir, "Fizz.cs"), new[] { generatedMarker, "public class Fizz {}" });
-
-        // When
-        new I18nTextSourceGenerator().Execute(context);
-
-        // Then: "@types" folder should be sweeped.
-        Directory.Exists(workSpace.TypesDir).IsFalse();
-    }
-
     [Test]
     public void Compile_50Thousand_localizedTextSourceJsonfiles_Test()
     {
@@ -288,7 +168,7 @@ public class I18nTextSourceGeneratorTest
 
         // Then: Validate compiled to i18n text types
         var generatedSourceTexts = context.GetGeneratedSourceTexts();
-        const string nameSpace = "Toolbelt.Blazor.I18nTextCompileTask.Test.I18nText";
+        const string nameSpace = "Toolbelt.Blazor.I18nText.SourceGenerator.Test.I18nText";
         var generatedClassName = $"{nameSpace}.Numbers";
         var generatedClassSource = generatedSourceTexts.First(t => t.HintName == $"{generatedClassName}.g.cs");
 
