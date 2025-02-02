@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Security;
 using System.Security.Cryptography;
 using System.Threading;
@@ -104,22 +103,7 @@ namespace Toolbelt.Blazor.I18nText
             using var hash = SHA256.Create();
             using var stream = new I18nTextTableStream(i18nText);
             var hashBytes = hash.ComputeHash(stream);
-            return ToBase36(hashBytes);
-        }
-
-        private static string ToBase36(byte[] hash)
-        {
-            const string chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-            var result = new char[10];
-            var dividend = BigInteger.Abs(new BigInteger(hash.Take(9).ToArray()));
-            for (var i = 0; i < 10; i++)
-            {
-                dividend = BigInteger.DivRem(dividend, 36, out var remainder);
-                result[i] = chars[(int)remainder];
-            }
-
-            return new string(result);
+            return Base36.Encode(hashBytes);
         }
 
         private static string EscapeForXMLDocSummary(string text)

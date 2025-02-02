@@ -6,9 +6,8 @@ using System.Threading;
 using Microsoft.Build.Framework;
 using Toolbelt.Blazor.I18nText.Compiler.Shared;
 using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
-using Toolbelt.Blazor.I18nText.CompileTask;
 
-namespace Toolbelt.Blazor.I18nText.CompilerTask
+namespace Toolbelt.Blazor.I18nText.CompileTask
 {
     /// <summary>
     /// Generate Localized Text Resource JSON files from Localized Text Source files.
