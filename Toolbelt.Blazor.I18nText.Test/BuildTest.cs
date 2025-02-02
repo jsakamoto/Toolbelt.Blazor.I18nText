@@ -10,7 +10,7 @@ public class BuildTest
 {
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in new[] { "Client", "Host", "Server" }
-        from framework in new[] { "net6.0", "net8.0" }
+        from framework in new[] { "net8.0", "net9.0" }
         select new object[] { startupProjName, framework };
 
     private static readonly IEnumerable<(string FileName, string Key, string Value)> ExpectedTextResJsons = [
@@ -70,7 +70,7 @@ public class BuildTest
 
         // 1. Support client JavaScript file should be published into "_content/{PackageId}" folder.
         FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "helper.min.js").IsTrue();
-        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.lib.module.js").IsTrue();
+        FileIO.ExistsAnyFilesInDir(staticWebAssetDir, "Toolbelt.Blazor.I18nText.*.lib.module.js").IsTrue();
 
         // 2. Text resource json files have been generated under the publish folder.
         var actualTextResJsons = Directory.GetFiles(i18nDistDir, "*.json");

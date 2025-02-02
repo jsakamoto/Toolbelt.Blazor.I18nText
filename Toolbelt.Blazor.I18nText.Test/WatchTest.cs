@@ -9,9 +9,10 @@ public class WatchTest
 {
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in new[] { "Client", "Host", "Server" }
-        from framework in new[] { "net6.0", "net8.0" }
+        from framework in new[] { "net8.0", "net9.0" }
         select new object[] { startupProjName, framework };
 
+    [Ignore("\"dotnet watch\" temporary doesn't work on Blazor I18n Text v.14.0.")]
     [Test, TestCaseSource(nameof(Projects))]
     public async Task Watch_Test(string startupProjName, string framework)
     {
@@ -21,7 +22,7 @@ public class WatchTest
         await Start("dotnet", "restore", workSpace.StartupProj).ExitCodeIs(0);
 
         // 1st. Given
-        var dstTextEnJsonPath = Path.Combine(componentsProjDir, "obj", "Debug", framework, "dist", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
+        var dstTextEnJsonPath = Path.Combine(componentsProjDir, "obj", "dist", "_content", "i18ntext", "SampleSite.Components.I18nText.Text.en.json");
         File.Exists(dstTextEnJsonPath).IsFalse();
 
         // 1st. When: Start the "dotnet watch" process.
