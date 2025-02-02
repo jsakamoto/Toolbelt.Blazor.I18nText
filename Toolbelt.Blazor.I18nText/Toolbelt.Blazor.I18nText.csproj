@@ -85,7 +85,7 @@
     <PropertyGroup>
       <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
     </PropertyGroup>
-    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
     <ItemGroup>
       <None Include="$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\*.*">
         <PackagePath>tools\</PackagePath>
