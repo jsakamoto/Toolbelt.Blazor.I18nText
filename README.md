@@ -82,6 +82,12 @@ And also, **"Localized Text Resource JSON" files** will be generated in the outp
 
 ![fig.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002b.png)
 
+> [!CAUTION]
+> The hot reloading won't work well on the preview version, 14.0.0 Preview 4.
+> Therefore, you have to build the project explicitly whenever localized text source files are created or updated.
+
+<!--
+
 #### for Visual Studio IDE users
 
 On Visual Studio IDE, the source generator will work automatically in the background. Therefore, **Visual Studio IDE users usually do not need to build the project explicitly.**
@@ -101,6 +107,8 @@ After entering that dotnet CLI command, the command window will stay in executio
 When that dotnet CLI detects localized text source files changing, the dotnet CLI will recompile localized text source files into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
 
 ![fig.2-2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002-2b.png)
+
+-->
 
 ### Step 4 - Configure your app to use I18nText service
 

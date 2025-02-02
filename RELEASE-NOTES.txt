@@ -1,3 +1,7 @@
+v.14.0.0 Preview 4
+- Improve: .NET 9 SDK support
+- NOTICE: The hot reloading won't work well on this preview version.
+
 v.13.1.0
 - Improve: .NET 9 SDK support
 
