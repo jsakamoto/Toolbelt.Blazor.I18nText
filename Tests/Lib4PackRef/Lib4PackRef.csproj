@@ -4,7 +4,7 @@
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\_dist\</PackageOutputPath>
-    <Version>14.0.0.4</Version>
+    <Version>14.0.0.5</Version>
     <NoWarn>$(NoWarn);NU5104</NoWarn>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
@@ -23,6 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
   </ItemGroup>
 </Project>

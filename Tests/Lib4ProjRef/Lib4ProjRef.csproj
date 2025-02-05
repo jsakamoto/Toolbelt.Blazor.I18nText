@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>14.0.0.4</Version>
+    <Version>14.0.0.5</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
@@ -24,11 +24,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.4" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.5" />
   </ItemGroup>
 </Project>
