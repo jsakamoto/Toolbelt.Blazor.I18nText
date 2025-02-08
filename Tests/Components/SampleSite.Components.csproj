@@ -22,13 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lib4PackRef" Version="14.0.0.5" />
-    <PackageReference Include="Lib4PackRef6" Version="14.0.0.5" />
+    <PackageReference Include="Lib4PackRef" Version="14.0.0.10" />
+    <PackageReference Include="Lib4PackRef6" Version="14.0.0.10" />
     <ProjectReference Include="..\Lib4ProjRef\Lib4ProjRef.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>14.0.0.5</Version>
+    <Version>14.0.0.10</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">
