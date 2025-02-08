@@ -2,6 +2,7 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Toolbelt.Blazor.I18nText.Interfaces;
 using Toolbelt.Blazor.I18nText.Internals;
 
@@ -35,6 +36,21 @@ public class I18nText : IDisposable
         this.Options = serviceProvider.GetRequiredService<I18nTextOptions>();
         this.InitializeCurrentLanguage();
         this.HelperScript.ChangeLanguage += this.HelperScript_ChangeLanguage;
+
+        if (!VersionInfo.IsOptimizedForWasm()) HotReloadHandler.OnUpdateApplication += this.HotReloadHandler_OnUpdateApplication;
+    }
+
+    private async void HotReloadHandler_OnUpdateApplication(object? sender, HotReloadEventArgs e)
+    {
+        try
+        {
+            await this.I18nTextRepository.ChangeLanguageAsync(this.ScopeId, this._CurrentLanguage);
+            this.Components.InvokeStateHasChangedThreadSafe();
+        }
+        catch (Exception ex)
+        {
+            this.ServiceProvider.GetRequiredService<ILogger<I18nText>>().LogError(ex, ex.Message);
+        }
     }
 
     private async Task HelperScript_ChangeLanguage(object? sender, I18nTextChangeLanguageEventArgs e)
@@ -93,6 +109,7 @@ public class I18nText : IDisposable
 
     public void Dispose()
     {
+        if (!VersionInfo.IsOptimizedForWasm()) HotReloadHandler.OnUpdateApplication -= this.HotReloadHandler_OnUpdateApplication;
         this.HelperScript.ChangeLanguage -= this.HelperScript_ChangeLanguage;
         this.I18nTextRepository.RemoveScope(this.ScopeId);
     }
