@@ -85,13 +85,13 @@ namespace Toolbelt.Blazor.I18nText.SourceGenerator
             var globalOptions = context.AnalyzerConfigOptions.GlobalOptions;
             if (!globalOptions.TryGetValue("build_property.I18nTextUseSourceGenerator", out var _)) return null;
 
-            //if (!globalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace)) throw new Exception("Could not determin the root namespace.");
-            if (!globalOptions.TryGetValue("build_property.ProjectDir", out var projectDir)) throw new Exception("Could not determin the project diretcory.");
-            if (!globalOptions.TryGetValue("build_property.I18nTextIntermediateDir", out var i18ntextIntermediateDir)) throw new Exception("Could not determin the i18ntext intermediate directory.");
-            if (!globalOptions.TryGetValue("build_property.I18nTextNamespace", out var i18ntextNamespace)) throw new Exception("Could not determin the i18ntext namespace.");
+            //if (!globalOptions.TryGetValue("build_property.RootNamespace", out var rootNamespace)) throw new Exception("Could not determine the root namespace.");
+            if (!globalOptions.TryGetValue("build_property.ProjectDir", out var projectDir)) throw new Exception("Could not determine the project directory.");
+            if (!globalOptions.TryGetValue("build_property.I18nTextIntermediateDir", out var i18ntextIntermediateDir)) throw new Exception("Could not determine the i18ntext intermediate directory.");
+            if (!globalOptions.TryGetValue("build_property.I18nTextNamespace", out var i18ntextNamespace)) throw new Exception("Could not determine the i18ntext namespace.");
             if (!globalOptions.TryGetValue("build_property.I18nTextSourceDirectory", out var i18nTextSourceDirectory)) throw new Exception("Could not determin the i18ntext source directory.");
-            if (!globalOptions.TryGetValue("build_property.I18nTextFallBackLanguage", out var fallbackLang)) throw new Exception("Could not determin the fallback language.");
-            if (!globalOptions.TryGetValue("build_property.I18nTextDisableSubNameSpace", out var disableSubNameSpace)) throw new Exception("Could not determin whether disable sub-namespace or not.");
+            if (!globalOptions.TryGetValue("build_property.I18nTextFallBackLanguage", out var fallbackLang)) throw new Exception("Could not determine the fallback language.");
+            if (!globalOptions.TryGetValue("build_property.I18nTextDisableSubNameSpace", out var disableSubNameSpace)) throw new Exception("Could not determine whether disable sub-namespace or not.");
 
             return new I18nTextCompilerOptions(baseDir: projectDir)
             {
