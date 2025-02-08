@@ -19,6 +19,10 @@ public class WorkSpace : IDisposable
     /// </summary>
     public string TextResJsonsDir { get; }
 
+    /// <summary>
+    /// Gets the root namespace of the project.<br/>
+    /// "Toolbelt.Blazor.I18nText.SourceGenerator.Test" by default.
+    /// </summary>
     public string RootNamespace { get; }
 
     public string I18nTextNamespace { get; }

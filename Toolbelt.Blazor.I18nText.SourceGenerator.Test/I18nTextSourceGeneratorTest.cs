@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text.Json;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
@@ -39,8 +40,50 @@ public class I18nTextSourceGeneratorTest
         var fizzBuzzClassSource = generatedSourceTexts.First(t => t.HintName == $"{fizzBuzzClassName}.g.cs");
 
         // The generated i18n text type source should be a valid C# code.
-        ValidateGeneratedCSharpCode(fallbackLang, "l47c0gpbnx", fooBarClassSource, fooBarClassName, new[] { "HelloWorld", "Exit", "GreetingOfJA" });
-        ValidateGeneratedCSharpCode(fallbackLang, "o246f7as05", fizzBuzzClassSource, fizzBuzzClassName, new[] { "Text1", "Text2" });
+        ValidateGeneratedCSharpCode(fallbackLang, "l47c0gpbnx", fooBarClassSource, fooBarClassName, ["HelloWorld", "Exit", "GreetingOfJA"]);
+        ValidateGeneratedCSharpCode(fallbackLang, "o246f7as05", fizzBuzzClassSource, fizzBuzzClassName, ["Text1", "Text2"]);
+
+        // and, there are no errors.
+        context.GetDiagnostics().Any().IsFalse();
+    }
+
+    /// <summary>
+    /// Compile - I18n Text JSON files were generated
+    /// </summary>
+    [TestCase(true)]
+    [TestCase(false)]
+    public void Compile_I18nTextJsonFilesWereGenerated_Test(bool disableSubNameSpace)
+    {
+        // Given
+        using var workSpace = new WorkSpace();
+        var context = workSpace.CreateGeneratorExecutionContext(disableSubNameSpace: disableSubNameSpace);
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: Compiled i18n text json files should exist.
+        Directory.Exists(workSpace.TextResJsonsDir).IsTrue();
+        Directory.GetFiles(workSpace.TextResJsonsDir)
+            .Select(path => Path.GetFileName(path))
+            .OrderBy(name => name)
+            .Is(new[]{
+                $"{workSpace.RootNamespace}.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.en.json",
+                $"{workSpace.RootNamespace}.I18nText.{(disableSubNameSpace ? "" : "Fizz.")}Buzz.ja.json",
+                $"{workSpace.RootNamespace}.I18nText.Foo.Bar.en.json",
+                $"{workSpace.RootNamespace}.I18nText.Foo.Bar.ja.json" }.OrderBy(n => n));
+
+        var enJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, $"{workSpace.RootNamespace}.I18nText.Foo.Bar.en.json"));
+
+        var enTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(enJsonText) ?? [];
+        enTexts["HelloWorld"].Is("Hello World!");
+        enTexts["Exit"].Is("Exit");
+        enTexts["GreetingOfJA"].Is("こんにちは");
+
+        var jaJsonText = File.ReadAllText(Path.Combine(workSpace.TextResJsonsDir, $"{workSpace.RootNamespace}.I18nText.Foo.Bar.ja.json"));
+        var jaTexts = JsonSerializer.Deserialize<Dictionary<string, string>>(jaJsonText) ?? [];
+        jaTexts["HelloWorld"].Is("こんにちは世界!");
+        jaTexts["Exit"].Is("Exit");
+        jaTexts["GreetingOfJA"].Is("こんにちは");
 
         // and, there are no errors.
         context.GetDiagnostics().Any().IsFalse();
@@ -106,7 +149,7 @@ public class I18nTextSourceGeneratorTest
         // When
         new I18nTextSourceGenerator().Execute(context);
 
-        // Then: It souhld be error.
+        // Then: It should be error.
         context.GetDiagnostics().Select(d => d.ToString()).Is(
             "error I18N001: Could not find a localized text source file of fallback language 'fr', for 'Toolbelt.Blazor.I18nText.SourceGenerator.Test.I18nText.Foo.Bar'.");
     }
@@ -155,8 +198,34 @@ public class I18nTextSourceGeneratorTest
             "Foo.Bar.ja.json, Error I18N002: Unexpected character encountered while parsing value: H. Path '', line 0, position 0.");
     }
 
+    /// <summary>
+    /// Compile - sweep Localized Text Resource JSON files
+    /// </summary>
     [Test]
-    public void Compile_50Thousand_localizedTextSourceJsonfiles_Test()
+    public void Compile_SweepLocalizedTextResourceJsonFiles_Test()
+    {
+        // Given
+        using var workSpace = new WorkSpace();
+        var context = workSpace.CreateGeneratorExecutionContext(
+            fallbackLang: "ja",
+            // Make the additional files to be only one to make this test to be simpler.
+            filterAdditionalFiles: file => Path.GetFileName(file.Path) == "Foo.Bar.ja.csv"
+        );
+        Directory.CreateDirectory(workSpace.TextResJsonsDir);
+        File.WriteAllLines(Path.Combine(workSpace.TextResJsonsDir, "Bar.json"), ["{\"Key\":\"Value\"}"]);
+
+        // When
+        new I18nTextSourceGenerator().Execute(context);
+
+        // Then: "Bar.json" should be swept.
+        Directory.GetFiles(workSpace.TextResJsonsDir)
+            .Select(path => Path.GetFileName(path))
+            .OrderBy(name => name)
+            .Is($"{workSpace.RootNamespace}.I18nText.Foo.Bar.ja.json");
+    }
+
+    [Test]
+    public void Compile_50Thousand_localizedTextSourceJsonFiles_Test()
     {
         // Given
         const int numOfItems = 50000;

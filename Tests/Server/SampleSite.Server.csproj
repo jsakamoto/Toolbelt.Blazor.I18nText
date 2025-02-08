@@ -1,19 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
-    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
+    <RefI18nTextBy Condition=" '$(RefI18nTextBy)' == '' ">Package</RefI18nTextBy>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Components\SampleSite.Components.csproj" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
+
+  <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+
+  <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
   </ItemGroup>
+  <Import Project="..\..\Toolbelt.Blazor.I18nText\build\Toolbelt.Blazor.I18nText.targets" Condition=" '$(RefI18nTextBy)' == 'Project' " />
+
 </Project>

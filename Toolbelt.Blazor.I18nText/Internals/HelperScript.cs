@@ -27,8 +27,6 @@ internal class HelperScript : IAsyncDisposable
 
     private bool? _IsOnline = null;
 
-    private static bool ShowDeveloperGuide() => true;
-
     public event AsyncEventHandler<I18nTextChangeLanguageEventArgs>? ChangeLanguage;
 
     public HelperScript(I18nTextOptions options, IJSRuntime jSRuntime, ILogger<HelperScript> logger)
@@ -60,7 +58,7 @@ internal class HelperScript : IAsyncDisposable
                     }
                     catch (JSException e)
                     {
-                        if (ShowDeveloperGuide())
+                        if (!VersionInfo.IsOptimizedForWasm())
                         {
                             if (e.Message.StartsWith("Could not find 'Toolbelt.Blazor.getProperty'"))
                             {

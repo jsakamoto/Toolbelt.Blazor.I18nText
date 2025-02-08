@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Compiler.Shared;
+using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 using Toolbelt.Blazor.I18nText.CompileTask.Test.Internals;
 
 namespace Toolbelt.Blazor.I18nText.CompileTask.Test;

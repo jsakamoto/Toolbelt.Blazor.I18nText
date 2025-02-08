@@ -19,5 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Internals\I18nTextTable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\I18nTextTableStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internals\I18nTextType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internals\LocalizedTextResourceJsonGenerator.cs" />
   </ItemGroup>
 </Project>

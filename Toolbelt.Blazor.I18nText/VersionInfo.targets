@@ -9,6 +9,7 @@
       <VersionInfoLines Include="internal static class VersionInfo"/>
       <VersionInfoLines Include="{"/>
       <VersionInfoLines Include="%20%20%20%20internal const string VersionText = &quot;$(Version)&quot;%3b"/>
+      <VersionInfoLines Include="%20%20%20%20internal static bool IsOptimizedForWasm() => false%3b"/>
       <VersionInfoLines Include="}"/>
     </ItemGroup>
     <WriteLinesToFile File="VersionInfo.cs" Overwrite="true" Lines="@(VersionInfoLines)"></WriteLinesToFile>

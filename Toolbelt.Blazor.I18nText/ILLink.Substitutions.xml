@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <linker>
   <assembly fullname="Toolbelt.Blazor.I18nText">
-    <type fullname="Toolbelt.Blazor.I18nText.Internals.HelperScript" feature="Toolbelt.Blazor.I18nText.OptimizeForWasm" featurevalue="true">
-      <method signature="System.Boolean ShowDeveloperGuide()" body="stub" value="false" />
+    <type fullname="Toolbelt.Blazor.I18nText.VersionInfo" feature="Toolbelt.Blazor.I18nText.OptimizeForWasm" featurevalue="true">
+      <method signature="System.Boolean IsOptimizedForWasm()" body="stub" value="true" />
     </type>
   </assembly>
 </linker>

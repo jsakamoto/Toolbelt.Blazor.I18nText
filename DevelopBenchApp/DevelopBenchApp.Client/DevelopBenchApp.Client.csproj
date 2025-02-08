@@ -6,20 +6,20 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
-    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
+    <RefI18nTextBy Condition=" '$(RefI18nTextBy)' == '' ">Package</RefI18nTextBy>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.1" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.4" />
+  <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'false' ">
+  <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">
     <ProjectReference Include="..\..\Toolbelt.Blazor.I18nText\Toolbelt.Blazor.I18nText.csproj" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="14.0.0-preview.4" />
   </ItemGroup>
+  <Import Project="..\..\Toolbelt.Blazor.I18nText\build\Toolbelt.Blazor.I18nText.targets" Condition=" '$(RefI18nTextBy)' == 'Project' " />
 
 </Project>

@@ -5,10 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Toolbelt.Blazor.I18nText.Compiler.Shared;
-using Toolbelt.Blazor.I18nText.Compiler.Shared.Internals;
 
-namespace Toolbelt.Blazor.I18nText.CompileTask
+namespace Toolbelt.Blazor.I18nText.Compiler.Shared.Internals
 {
     internal class LocalizedTextResourceJsonGenerator
     {
@@ -45,11 +43,11 @@ namespace Toolbelt.Blazor.I18nText.CompileTask
 
             // Sweep old generated/should be purge text json files.
             var existsTextJsonFiles = Directory.GetFiles(options.OutDirectory, "*.json");
-            var shouldBeSweepedFiles = existsTextJsonFiles.Except(types.Select(t => t.jsonPath));
-            foreach (var shouldBeSweepedFile in shouldBeSweepedFiles)
+            var shouldBeSweptFiles = existsTextJsonFiles.Except(types.Select(t => t.jsonPath));
+            foreach (var shouldBeSweptFile in shouldBeSweptFiles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                File.Delete(shouldBeSweepedFile);
+                File.Delete(shouldBeSweptFile);
             }
 
             Parallel.ForEach(types, new ParallelOptions { CancellationToken = cancellationToken }, ((KeyValuePair<string, I18nTextTable> lang, string jsonPath) arg) =>

@@ -26,7 +26,7 @@ namespace Toolbelt.Blazor.I18nText.Compiler.Shared
         public I18nTextCompilerOptions(string baseDir)
         {
             this.I18nTextSourceDirectory = Path.Combine(baseDir, "i18ntext");
-            this.OutDirectory = Path.Combine(baseDir, "wwwroot", "content", "i18ntext");
+            this.OutDirectory = Path.Combine(baseDir, "obj", "dist", "_content", "i18ntext");
             this.NameSpace = Path.GetFileName(baseDir.TrimEnd('\\')) + ".I18nText";
             this.LogMessage = _ => { };
             this.LogError = _ => { };
