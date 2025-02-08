@@ -11,12 +11,12 @@
   <!-- DEFINE MSBUILD PROPERTIES FOR I18N TEXT -->
   <PropertyGroup>
     <I18nTextSourceSubDirectory Condition=" '$(I18nTextSourceSubDirectory)' == '' ">i18ntext</I18nTextSourceSubDirectory>
-    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(ProjectDir)$(I18nTextSourceSubDirectory)</I18nTextSourceDirectory>
+    <I18nTextSourceDirectory Condition=" '$(I18nTextSourceDirectory)' == '' ">$(MSBuildProjectDirectory)\$(I18nTextSourceSubDirectory)</I18nTextSourceDirectory>
     <I18nTextFilePattern Condition=" '$(I18nTextFilePattern)' == '' ">$(I18nTextSourceSubDirectory)\**\*.json;$(I18nTextSourceSubDirectory)\**\*.csv</I18nTextFilePattern>
     <I18nTextNamespace Condition=" '$(I18nTextNamespace)' == '' ">$(RootNamespace).I18nText</I18nTextNamespace>
     <I18nTextFallBackLanguage Condition=" '$(I18nTextFallBackLanguage)' == '' ">en</I18nTextFallBackLanguage>
     <I18nTextDisableSubNameSpace Condition=" '$(I18nTextDisableSubNameSpace)' == '' ">false</I18nTextDisableSubNameSpace>
-    <I18nTextIntermediateDir>$(ProjectDir)$(BaseIntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
+    <I18nTextIntermediateDir>$(MSBuildProjectDirectory)\$(BaseIntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);_I18nText_PopulateLocalizedTextSources</CoreCompileDependsOn>
