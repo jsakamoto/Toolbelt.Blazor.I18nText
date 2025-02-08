@@ -23,4 +23,5 @@
   <ItemGroup>
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0-preview.5" />
   </ItemGroup>
+
 </Project>

@@ -11,7 +11,6 @@
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
-    <RefI18nTextByPackage Condition=" '$(RefI18nTextByPackage)' == '' ">true</RefI18nTextByPackage>
   </PropertyGroup>
 
   <Import Project="../VersionInfo.props" />
@@ -66,9 +65,11 @@
     <TypeScriptSourceRoot />
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(RefI18nTextByPackage)' == 'true' ">
-    <ProjectReference Include="..\Toolbelt.Blazor.I18nText.SourceGenerator\Toolbelt.Blazor.I18nText.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
-    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="$(Version)" />
+  <ItemGroup>
+    <ProjectReference Include="..\Toolbelt.Blazor.I18nText.SourceGenerator\Toolbelt.Blazor.I18nText.SourceGenerator.csproj">
+      <OutputItemType>Analyzer</OutputItemType>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -81,16 +82,39 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="tools\**\*" />
+    <None Remove="tools\**\*" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
+    <I18nTextSrcGenNupkg>..\_dist\Toolbelt.Blazor.I18nText.SourceGenerator.$(Version).nupkg</I18nTextSrcGenNupkg>
+    <I18nTextSrcGenProjectDir>..\Toolbelt.Blazor.I18nText.SourceGenerator</I18nTextSrcGenProjectDir>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" Exists($(I18nTextSrcGenNupkg))">
+    <PackageReference Include="Toolbelt.Blazor.I18nText.SourceGenerator" Version="$(Version)" />
+  </ItemGroup>
+
+  <Target Name="BuildI18nTextSourceGenerator" BeforeTargets="Restore" Condition=" !Exists($(I18nTextSrcGenNupkg)) ">
+    <Exec Command="dotnet build -c Release" WorkingDirectory="$(I18nTextSrcGenProjectDir)" />
+    <Error Text="The I18n Text Source Generator was not found, so built it now. Please build this project again." />
+  </Target>
+
   <Target Name="BuildI18nTextCompileTask" BeforeTargets="DispatchToInnerBuilds">
-    <PropertyGroup>
-      <I18nTextCompileTaskProjectDir>..\Toolbelt.Blazor.I18nText.CompileTask\</I18nTextCompileTaskProjectDir>
-    </PropertyGroup>
-    <MSBuild Projects="$(I18nTextCompileTaskProjectDir)Toolbelt.Blazor.I18nText.CompileTask.csproj" Properties="Configuration=$(Configuration);TargetFramework=netstandard2.0" />
+    <Exec Command="dotnet build -c Release" WorkingDirectory="$(I18nTextCompileTaskProjectDir)"/>
     <ItemGroup>
-      <None Include="$(I18nTextCompileTaskProjectDir)bin\$(Configuration)\netstandard2.0\*.*">
+      <I18nTextCompileTaskOutput Include="$(I18nTextCompileTaskProjectDir)bin\Release\netstandard2.0\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(I18nTextCompileTaskOutput)" DestinationFolder="$(ProjectDir)tools" SkipUnchangedFiles="true" />
+    <ItemGroup>
+      <None Include="@(I18nTextCompileTaskOutput)">
         <PackagePath>tools\</PackagePath>
         <Pack>true</Pack>
       </None>
+      <Content Remove="tools\**\*" />
+      <None Remove="tools\**\*" />
     </ItemGroup>
   </Target>
 
