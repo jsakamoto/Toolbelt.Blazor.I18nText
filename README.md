@@ -82,37 +82,29 @@ And also, **"Localized Text Resource JSON" files** will be generated in the outp
 
 ![fig.2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002b.png)
 
-> [!CAUTION]
-> The hot reloading won't work well on the preview version, 14.0.0 Preview 4.
-> Therefore, you have to build the project explicitly whenever localized text source files are created or updated.
+#### For Visual Studio IDE users
 
-<!--
+In Visual Studio IDE, the source generator works automatically in the background. Therefore, **Visual Studio IDE users usually do not need to explicitly build the project.**
 
-#### for Visual Studio IDE users
+Localized text source files (.json or .csv) are automatically recompiled into "Typed Text Table class" and "Localized Text Resource JSON" files whenever they are updated.
 
-On Visual Studio IDE, the source generator will work automatically in the background. Therefore, **Visual Studio IDE users usually do not need to build the project explicitly.**
+#### For dotnet CLI users
 
-Localized text source files (.json or .csv) are recompiled into "Typed Text Table class" and "Localized Text Resource JSON" files automatically whenever they are updated.
-
-#### for dotnet CLI users
-
-When you are developing on dotnet CLI and want to recompile localized text source files automatically whenever they are changed, you can use the `dotnet watch` command.
+When developing with dotnet CLI and you want to automatically recompile localized text source files whenever they change, you can use the `dotnet watch` command.
 
 ```shell
 $ dotnet watch
 ```
 
-After entering that dotnet CLI command, the command window will stay in execution mode and watch for changes in the localized text source files.
+After entering that dotnet CLI command, the command window will remain in execution mode and watch for changes to the localized text source files.
 
-When that dotnet CLI detects localized text source files changing, the dotnet CLI will recompile localized text source files into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
+When the dotnet CLI detects changes to the localized text source files, it will recompile them into **"Typed Text Table class"** and **"Localized Text Resource JSON"** files.
 
 ![fig.2-2](https://raw.githubusercontent.com/jsakamoto/Toolbelt.Blazor.I18nText/master/.assets/fig.002-2b.png)
 
--->
+### Step 4 - Configure your app to use the I18nText service
 
-### Step 4 - Configure your app to use I18nText service
-
-Edit the "Program.cs" file to register "I18nText" service, like this.
+Edit the "Program.cs" file to register the "I18nText" service, like this:
 
 ```csharp
 // in your Program.cs
@@ -128,7 +120,7 @@ builder.Services.AddI18nText(
 ```
 
 > [!NOTE]
-> If your Blazor app has SSR areas, we strongly recommend to use `PersistanceLevel.Cookie` option to keep the language settings, because it is the only way to keep the language settings in the SSR areas. If your Blazor app doesn't have any SSR areas, you can use other options, such as `PersistanceLevel.Session`, etc.
+> If your Blazor app has SSR areas, we strongly recommend using the `PersistanceLevel.Cookie` option to persist the language settings, because it is the only way to maintain the language settings in SSR areas. If your Blazor app doesn't have any SSR areas, you can use other options, such as `PersistanceLevel.Session`.
 
 If your Blazor app has SSR areas, or the Server-side Pre-rendering is enabled, or the `I18n Text` options are configured to use cookies to persist language settings, you have to add the following code to configure the `RequestLocalization` middleware, and use the `RequestLocalization` middleware, like this.
 
