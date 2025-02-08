@@ -4,4 +4,4 @@ obj/
 _dist/
 *.user
 *.suo
-Toolbelt.Blazor.I18nText/tools/
+Toolbelt.Blazor.I18nText/PackageContents/tools/

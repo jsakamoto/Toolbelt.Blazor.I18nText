@@ -19,8 +19,14 @@
     <I18nTextIntermediateDir>$(MSBuildProjectDirectory)\$(BaseIntermediateOutputPath)dist\_content\i18ntext\</I18nTextIntermediateDir>
     <I18nTextUseSourceGenerator>true</I18nTextUseSourceGenerator>
     <I18nTextUpToDateMarker>$(I18nTextIntermediateDir).UpToDateMarker</I18nTextUpToDateMarker>
+    <I18nTextEnableHotReload Condition=" '$(I18nTextEnableHotReload)' == '' AND '$(Configuration)' == 'Debug' ">true</I18nTextEnableHotReload>
     <CoreCompileDependsOn>$(CoreCompileDependsOn);_I18nText_PopulateLocalizedTextSources</CoreCompileDependsOn>
   </PropertyGroup>
+
+  <!-- ENABLE HOT RELOAD SUPPORT WHEN THE CONFIGURATION IS DEBUG -->
+  <ItemGroup Condition=" '$(I18nTextEnableHotReload)' == 'true' ">
+    <Compile Include="$(MSBuildThisFileDirectory)..\sources\MetadataUpdateHandlerAttribute.cs" />
+  </ItemGroup>
 
   <!-- EXPOSE MSBUILD PROPERTY TO THE I18N SOURCE GENERATOR -->
   <ItemGroup>

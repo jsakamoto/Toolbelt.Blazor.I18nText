@@ -74,17 +74,19 @@
 
   <ItemGroup>
     <Content Update="**\*.json" Pack="false" CopyToOutputDirectory="Never" />
-    <None Include="build\Toolbelt.Blazor.I18nText.targets" Pack="true">
-      <PackagePath>build\Toolbelt.Blazor.I18nText.targets</PackagePath>
-    </None>
     <EmbeddedResource Include="ILLink.Substitutions.xml">
       <LogicalName>ILLink.Substitutions.xml</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="tools\**\*" />
-    <None Remove="tools\**\*" />
+    <Compile Remove="PackageContents\**\*" />
+    <Content Remove="PackageContents\**\*" />
+    <None Include="PackageContents\build\**\*" Pack="true">
+      <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+    </None>
+    <None Include="PackageContents\sources\**\*" Pack="true">
+      <PackagePath>sources\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+    </None>
+
   </ItemGroup>
 
   <PropertyGroup>
@@ -107,7 +109,7 @@
     <ItemGroup>
       <I18nTextCompileTaskOutput Include="$(I18nTextCompileTaskProjectDir)bin\Release\netstandard2.0\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(I18nTextCompileTaskOutput)" DestinationFolder="$(ProjectDir)tools" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(I18nTextCompileTaskOutput)" DestinationFolder="$(ProjectDir)PackageContents\tools" SkipUnchangedFiles="true" />
     <ItemGroup>
       <None Include="@(I18nTextCompileTaskOutput)">
         <PackagePath>tools\</PackagePath>
