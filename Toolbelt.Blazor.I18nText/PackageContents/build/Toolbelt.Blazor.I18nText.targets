@@ -77,7 +77,7 @@
     </Toolbelt.Blazor.I18nText.CompileTask.ComputeIntegrityAndFingerprint>
 
     <ItemGroup>
-      <StaticWebAsset Include="@(_I18nFingerPrintedLocalizedTextResourceJson)">
+      <_I18nFingerPrintedLocalizedTextResourceJson Update="@(_I18nFingerPrintedLocalizedTextResourceJson)">
         <SourceType>Computed</SourceType>
         <SourceId>$(PackageId)</SourceId>
         <ContentRoot>%(RelativeDir)</ContentRoot>
@@ -89,7 +89,16 @@
         <AssetRole>Primary</AssetRole>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         <TargetPath>wwwroot\_content\i18ntext\%(Filename)%(Extension)</TargetPath>
-      </StaticWebAsset>
+      </_I18nFingerPrintedLocalizedTextResourceJson>
+
+      <StaticWebAsset Include="@(_I18nFingerPrintedLocalizedTextResourceJson)" />
+      
+      <!--
+      SINCE .NET SDK 9.0.300, IT REQUIRES _CurrentProjectStaticWebAsset ITEMS AS WELL.
+      OTHERWISE, THE BUILD WILL BE FAILED WITH THE ERROR: "Endpoints not found for related asset."
+      -->
+      <_CurrentProjectStaticWebAsset Include="@(_I18nFingerPrintedLocalizedTextResourceJson)" />
+
       <_I18nIntermediateLocalizedTextResourceJson Remove="@(_I18nIntermediateLocalizedTextResourceJson)" />
       <_I18nFingerPrintedLocalizedTextResourceJson Remove="@(_I18nFingerPrintedLocalizedTextResourceJson)" />
     </ItemGroup>
