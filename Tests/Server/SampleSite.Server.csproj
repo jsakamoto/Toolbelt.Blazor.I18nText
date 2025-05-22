@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">

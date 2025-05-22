@@ -4,7 +4,7 @@
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <I18nTextFallBackLanguage>ja</I18nTextFallBackLanguage>
-    <Version>14.0.0.10</Version>
+    <Version>14.0.1.0</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <WarningsAsErrors>$(WarningsAsErrors);nullable</WarningsAsErrors>
@@ -16,15 +16,15 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.16" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
-    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.0" />
+    <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Project' ">
