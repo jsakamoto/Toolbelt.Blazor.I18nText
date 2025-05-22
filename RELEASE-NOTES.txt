@@ -1,3 +1,7 @@
+v.14.0.1
+- Fix: Fixed a build failure with the error message "File length for <path> is not defined" when using .NET SDK 9.0.300.
+- Fix: Removed dependencies on outdated preview packages when targeting .NET 9.
+
 v.14.0.0
 - Improvement: Enhanced compatibility with the .NET 9 SDK, now with better hot-reloading support.
 
