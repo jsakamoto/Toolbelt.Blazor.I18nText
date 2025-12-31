@@ -14,7 +14,7 @@ internal class WorkSpace : IDisposable
 
     public string PublishDir { get; }
 
-    public static string GetTestDir() => Path.Combine(FileIO.FindContainerDirToAncestor("*.sln"), "Tests");
+    public static string GetTestDir() => Path.Combine(FileIO.FindContainerDirToAncestor("*.slnx"), "Tests");
 
     public WorkSpace(string startupProjDir, string framework, string configuration)
     {

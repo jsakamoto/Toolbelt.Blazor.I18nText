@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/- README -/">
+    <File Path="API-REFERENCE.md" />
+    <File Path="README-CONFIGURATION.md" />
+    <File Path="README.md" />
+    <File Path="RELEASE-NOTES.txt" />
+    <File Path="THIRDPARTYNOTICES.txt" />
+  </Folder>
+  <Folder Name="/Build/">
+    <File Path="Build/BuildPackageReleaseNotes.targets" />
+    <File Path="VersionInfo.props" />
+  </Folder>
+  <Folder Name="/DevelopBenchApp/">
+    <Project Path="DevelopBenchApp/DevelopBenchApp.Client/DevelopBenchApp.Client.csproj" />
+    <Project Path="DevelopBenchApp/DevelopBenchApp/DevelopBenchApp.csproj" />
+    <Project Path="DevelopBenchApp/RazorClassLibrary1/RazorClassLibrary1.csproj" />
+  </Folder>
+  <Folder Name="/UnitTests/">
+    <Project Path="Toolbelt.Blazor.I18nText.CompileTask.Test/Toolbelt.Blazor.I18nText.CompileTask.Test.csproj" />
+    <Project Path="Toolbelt.Blazor.I18nText.SourceGenerator.Test/Toolbelt.Blazor.I18nText.SourceGenerator.Test.csproj" />
+    <Project Path="Toolbelt.Blazor.I18nText.Test/Toolbelt.Blazor.I18nText.Test.csproj" />
+  </Folder>
+  <Project Path="Toolbelt.Blazor.I18nText.Compiler.Shared/Toolbelt.Blazor.I18nText.Compiler.Shared.shproj" />
+  <Project Path="Toolbelt.Blazor.I18nText.CompileTask/Toolbelt.Blazor.I18nText.CompileTask.csproj" />
+  <Project Path="Toolbelt.Blazor.I18nText.SourceGenerator/Toolbelt.Blazor.I18nText.SourceGenerator.csproj" />
+  <Project Path="Toolbelt.Blazor.I18nText/Toolbelt.Blazor.I18nText.csproj" />
+</Solution>

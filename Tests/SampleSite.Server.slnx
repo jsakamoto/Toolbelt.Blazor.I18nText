@@ -1,0 +1,12 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="../Toolbelt.Blazor.I18nText/Toolbelt.Blazor.I18nText.csproj" />
+  <Project Path="Components/SampleSite.Components.csproj" />
+  <Project Path="Lib4PackRef6/Lib4PackRef6.csproj" />
+  <Project Path="Lib4ProjRef/Lib4ProjRef.csproj" />
+  <Project Path="Server/SampleSite.Server.csproj" />
+</Solution>
