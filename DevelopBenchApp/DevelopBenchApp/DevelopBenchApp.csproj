@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RefI18nTextBy Condition=" '$(RefI18nTextBy)' == '' ">Package</RefI18nTextBy>
@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
     <ProjectReference Include="..\RazorClassLibrary1\RazorClassLibrary1.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
