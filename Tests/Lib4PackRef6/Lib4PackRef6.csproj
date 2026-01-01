@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- CAUTION: Stick the old version of the Blazor i18n text package -->
     <PackageReference Include="Toolbelt.Blazor.I18nText" Version="14.0.1" />
   </ItemGroup>
 
