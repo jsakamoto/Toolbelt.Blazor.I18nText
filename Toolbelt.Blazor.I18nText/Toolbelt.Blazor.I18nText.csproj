@@ -47,7 +47,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <DotNetCliToolReference Include="BundlerMinifier.Core" Version="3.2.449" />
-    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" PrivateAssets="all" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" PrivateAssets="all" Condition=" '$(CI)' != 'true' " />
   </ItemGroup>
 
   <PropertyGroup>
