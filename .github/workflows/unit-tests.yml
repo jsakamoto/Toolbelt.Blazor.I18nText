@@ -1,0 +1,28 @@
+name: unit tests
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  perform-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v5
+
+      # Install .NET SDK
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      # Perform unit tests
+      - name: Perform the source generator tests
+        run: dotnet test --project ./Toolbelt.Blazor.I18nText.SourceGenerator.Test --output detailed
+      - name: Perform the compiler task tests
+        run: dotnet test --project .\Toolbelt.Blazor.I18nText.CompileTask.Test --output detailed
