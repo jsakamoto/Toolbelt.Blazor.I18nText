@@ -1,3 +1,8 @@
+v.14.1.0
+- Update: Added support for .NET 10, and dropped support for .NET 6.
+- Improve: Removed the dependency on the Toolbelt.Blazor.GetProperty.Script NuGet package for .NET 10 or later projects.
+- Improve: Better support for controlling JavaScript caching strategies on .NET 10 or later projects.
+
 v.14.0.1
 - Fix: Fixed a build failure with the error message "File length for <path> is not defined" when using .NET SDK 9.0.300.
 - Fix: Removed dependencies on outdated preview packages when targeting .NET 9.
