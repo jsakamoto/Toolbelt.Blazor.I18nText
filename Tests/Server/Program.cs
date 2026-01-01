@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Localization;
 using SampleSite.Components.Services;
+using SampleSite.Server.Components;
 using SampleSite.Server.Data;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Toolbelt.Blazor.I18nText;
@@ -9,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddI18nText(options => options.PersistenceLevel = PersistanceLevel.PersistentCookie);
 
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 builder.Services.AddSingleton<IWeatherForecastService, WeatherForecastService>();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -26,25 +27,22 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseRequestLocalization();
 app.UseHttpsRedirection();
+app.UseAntiforgery();
 #if NET9_0_OR_GREATER
 app.MapStaticAssets();
 #else
 app.UseStaticFiles();
 #endif
 
-app.UseRouting();
-#if NET9_0_OR_GREATER
-app.MapRazorPages().WithStaticAssets();
-#else
-app.MapRazorPages();
-#endif
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(SampleSite.Components.App).Assembly);
 
 app.Run();
