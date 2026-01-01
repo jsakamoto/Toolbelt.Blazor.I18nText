@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using NUnit.Framework;
 using Toolbelt.Blazor.I18nText.Test.Internals;
 using static Toolbelt.Diagnostics.XProcess;
@@ -9,10 +9,10 @@ public class WatchTest
 {
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in new[] { "Client", "Host", "Server" }
-        from framework in new[] { "net8.0", "net9.0" }
+        from framework in new[] { "net8.0", "net9.0", "net10.0" }
         select new object[] { startupProjName, framework };
 
-    [Ignore("\"dotnet watch\" temporary doesn't work on Blazor I18n Text v.14.0.")]
+    [Ignore("\"dotnet watch\" needs a browser connection.")]
     [Test, TestCaseSource(nameof(Projects))]
     public async Task Watch_Test(string startupProjName, string framework)
     {

@@ -10,7 +10,7 @@ public class BuildTest
 {
     public static readonly IEnumerable<object[]> Projects =
         from startupProjName in new[] { "Client", "Host", "Server" }
-        from framework in new[] { "net8.0", "net9.0" }
+        from framework in new[] { "net8.0", "net9.0", "net10.0" }
         select new object[] { startupProjName, framework };
 
     private static readonly IEnumerable<(string FileName, string Key, string Value)> ExpectedTextResJsons = [

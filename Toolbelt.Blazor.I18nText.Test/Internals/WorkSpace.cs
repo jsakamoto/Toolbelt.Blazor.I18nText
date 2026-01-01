@@ -28,6 +28,17 @@ internal class WorkSpace : IDisposable
         this.Obj = Path.Combine(this.StartupProj, "obj");
         this.OutputDir = Path.Combine(this.Bin, configuration, framework);
         this.PublishDir = Path.Combine(this.OutputDir, "publish");
+
+        // Prepare the project
+        var wwwrootDir = Path.Combine(this.WorkSpaceDir, "Client", "wwwroot");
+        var frameworkDependedIndexHtml = Path.Combine(wwwrootDir, $"index.{framework}.html");
+        File.Copy(frameworkDependedIndexHtml, Path.Combine(wwwrootDir, "index.html"), overwrite: true);
+        Directory.GetFiles(wwwrootDir, "index.*.html").ToList().ForEach(File.Delete);
+
+        var componentsDir = Path.Combine(this.WorkSpaceDir, "Server", "Components");
+        var frameworkDependedAppRazor = Path.Combine(componentsDir, $"App.{framework}.razor");
+        File.Copy(frameworkDependedAppRazor, Path.Combine(componentsDir, "App.razor"), overwrite: true);
+        Directory.GetFiles(componentsDir, "App.*.razor").ToList().ForEach(File.Delete);
     }
 
     public void Dispose() => this.WorkSpaceDir.Dispose();
