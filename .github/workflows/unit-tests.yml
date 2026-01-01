@@ -25,4 +25,4 @@ jobs:
       - name: Perform the source generator tests
         run: dotnet test --project ./Toolbelt.Blazor.I18nText.SourceGenerator.Test --output detailed
       - name: Perform the compiler task tests
-        run: dotnet test --project .\Toolbelt.Blazor.I18nText.CompileTask.Test --output detailed
+        run: dotnet test --project ./Toolbelt.Blazor.I18nText.CompileTask.Test --output detailed
