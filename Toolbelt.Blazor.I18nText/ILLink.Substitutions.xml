@@ -1,8 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <linker>
   <assembly fullname="Toolbelt.Blazor.I18nText">
-    <type fullname="Toolbelt.Blazor.I18nText.VersionInfo" feature="Toolbelt.Blazor.I18nText.OptimizeForWasm" featurevalue="true">
+
+    <type feature="Toolbelt.Blazor.I18nText.OptimizeForWasm" featurevalue="true" fullname="Toolbelt.Blazor.I18nText.VersionInfo" >
       <method signature="System.Boolean IsOptimizedForWasm()" body="stub" value="true" />
     </type>
+
+    <type feature="Toolbelt.Blazor.I18nText.JavaScriptCacheBusting" featurevalue="true" fullname="Toolbelt.Blazor.I18nText.Internals.HelperScript">
+      <method signature="System.Boolean CacheBustingEnabled()" body="stub" value="true" />
+    </type>
+    <type feature="Toolbelt.Blazor.I18nText.JavaScriptCacheBusting" featurevalue="false" fullname="Toolbelt.Blazor.I18nText.Internals.HelperScript">
+      <method signature="System.Boolean CacheBustingEnabled()" body="stub" value="false" />
+    </type>
+
   </assembly>
 </linker>

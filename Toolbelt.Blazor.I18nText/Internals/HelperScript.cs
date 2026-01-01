@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +37,40 @@ internal class HelperScript : IAsyncDisposable
         this._RefThis = DotNetObjectReference.Create(this);
     }
 
+    private static bool CacheBustingEnabled() => Environment.GetEnvironmentVariable("TOOLBELT_BLAZOR_I18NTEXT_JSCACHEBUSTING") != "0";
+
+#if NET10_0_OR_GREATER
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(I18nTextOptions))]
+    private async ValueTask<IJSObjectReference?> EnsureScriptAttachedAsync()
+    {
+        if (!this._Attached)
+        {
+            await this._Syncer.WaitAsync();
+            try
+            {
+                if (!this._Attached)
+                {
+                    // Add version string for refresh token only navigator is online.
+                    // (If the app runs on the offline mode, the module url with query parameters might cause the "resource not found" error.)
+                    var cacheBustingQueryAsync = CacheBustingEnabled() ?
+                        this._JSRuntime.GetValueAsync<bool>("navigator.onLine").AsTask().ContinueWith(static task => task.Result ? "?v=" + VersionInfo.VersionText : "") :
+                        Task.FromResult("");
+
+                    await using var module = await cacheBustingQueryAsync
+                        .ContinueWith(task => this._JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Toolbelt.Blazor.I18nText/helper.min.js" + task.Result).AsTask())
+                        .Unwrap();
+
+                    this._JSHelper = await module.InvokeAsync<IJSObjectReference>("attach", this._RefThis, this._Options);
+                    this._Attached = true;
+                }
+            }
+            catch { }
+            finally { this._Syncer.Release(); }
+        }
+
+        return this._JSHelper;
+    }
+#else
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(I18nTextOptions))]
     private async ValueTask<IJSObjectReference?> EnsureScriptAttachedAsync()
     {
@@ -81,6 +115,7 @@ internal class HelperScript : IAsyncDisposable
 
         return this._JSHelper;
     }
+#endif
 
     internal static async ValueTask<string> DefaultGetInitialLanguageAsync(IServiceProvider serviceProvider, I18nTextOptions options)
     {
@@ -102,7 +137,11 @@ internal class HelperScript : IAsyncDisposable
     {
         if (!this._IsOnline.HasValue)
         {
+#if NET10_0_OR_GREATER
+            this._IsOnline = await this._JSRuntime.GetValueAsync<bool>("navigator.onLine");
+#else
             await this.EnsureScriptAttachedAsync();
+#endif
         }
         return this._IsOnline!.Value;
     }
