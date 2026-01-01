@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
 
   <!--
   This targets file will be bundled with a NuGet package of this library in 'build' package path,
@@ -25,7 +25,7 @@
 
   <!-- ENABLE HOT RELOAD SUPPORT WHEN THE CONFIGURATION IS DEBUG -->
   <ItemGroup Condition=" '$(I18nTextEnableHotReload)' == 'true' ">
-    <Compile Include="$(MSBuildThisFileDirectory)..\sources\MetadataUpdateHandlerAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)..\sources\MetadataUpdateHandlerAttribute.cs" Visible="false" />
   </ItemGroup>
 
   <!-- EXPOSE MSBUILD PROPERTY TO THE I18N SOURCE GENERATOR -->
@@ -92,7 +92,7 @@
       </_I18nFingerPrintedLocalizedTextResourceJson>
 
       <StaticWebAsset Include="@(_I18nFingerPrintedLocalizedTextResourceJson)" />
-      
+
       <!--
       SINCE .NET SDK 9.0.300, IT REQUIRES _CurrentProjectStaticWebAsset ITEMS AS WELL.
       OTHERWISE, THE BUILD WILL BE FAILED WITH THE ERROR: "Endpoints not found for related asset."
