@@ -10,7 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DevelopBenchApp.Client\DevelopBenchApp.Client.csproj" />
     <ProjectReference Include="..\RazorClassLibrary1\RazorClassLibrary1.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(RefI18nTextBy)' == 'Package' ">
